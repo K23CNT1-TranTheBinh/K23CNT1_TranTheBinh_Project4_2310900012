@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EventTicket</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div style="display:flex;">
+        <aside style="width:250px; background:white; height:100vh; padding:1rem; box-shadow:2px 0 5px rgba(0,0,0,0.1);">
+            <h3>Admin Menu</h3>
+            <ul style="list-style:none;">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="manage-events.html">Quản Lý Sự Kiện</a></li>
+                <li><a href="manage-users.html">Quản Lý Người Dùng</a></li>
+            </ul>
+        </aside>
+        
+        <main style="flex:1; padding:2rem;">
+            <div class="card">
+                <h2>Dashboard Admin</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem; margin-top:1rem;">
+                    <div class="card">
+                        <h3>Tổng Doanh Thu</h3>
+                        <p id="totalRevenue" style="font-size:2rem; color:#667eea;">0 VNĐ</p>
+                    </div>
+                    <div class="card">
+                        <h3>Tổng Đơn Hàng</h3>
+                        <p id="totalBookings" style="font-size:2rem; color:#48bb78;">0</p>
+                    </div>
+                </div>
+                <canvas id="revenueChart" style="margin-top:2rem;"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load header
+        document.getElementById('header-placeholder').innerHTML = fetch('../../components/header.html').then(r => r.text());
+        
+        // TODO: Load stats from /api/admin/stats/dashboard
+        document.getElementById('totalRevenue').textContent = 'Loading...';
+        
+        // Sample chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Th 1', 'Th 2', 'Th 3', 'Th 4'],
+                datasets: [{ label: 'Doanh Thu', data: [120, 190, 300, 500], borderColor: '#667eea' }]
+            }
+        });
+    </script>
+</body>
+</html>
+
