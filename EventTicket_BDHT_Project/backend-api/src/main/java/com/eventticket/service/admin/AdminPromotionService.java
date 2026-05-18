@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor // Thêm cái này cho giống form
+@RequiredArgsConstructor 
 public class AdminPromotionService {
 
     // Bỏ @Autowired đi, dùng private final

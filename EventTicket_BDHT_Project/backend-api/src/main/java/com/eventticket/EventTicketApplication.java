@@ -8,6 +8,7 @@ public class EventTicketApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EventTicketApplication.class, args);
+		System.out.println("run vtsy");
 	}
 
 }
