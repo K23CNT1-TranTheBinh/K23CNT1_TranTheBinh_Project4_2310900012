@@ -3,22 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Ticket Booking Platform - BDHT</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>BDHT - Kênh bán vé sự kiện, ca nhạc, văn hóa nghệ thuật</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            purpleHover: '#4d0b6b',
+                            orange: '#f26f21',
+                            orangeHover: '#d95a12',
+                            darkBg: '#333333'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Outfit & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=1.3">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f9fafb;
+        }
+        /* Custom scrollbar styling */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Horizontal slider styling */
+        .mini-slider-card {
+            min-width: 220px;
+            width: 220px;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <!-- Header component will be loaded here -->
-    </header>
-    
-    <main>
-        <h1>Chào mừng đến với Nền tảng Đặt Vé Sự Kiện</h1>
-        <p>Khám phá các sự kiện hấp dẫn và đặt vé ngay hôm nay!</p>
-        <button onclick="loadEvents()">Xem Sự Kiện</button>
+<body class="text-slate-800 antialiased">
+
+    <!-- 1. Header Container for Dynamic Shared Components -->
+    <div id="header-container"></div>
+
+    <main class="pb-16">
+        
+        <!-- ==================== HERO BANNER SLIDER ==================== -->
+        <section class="relative w-full overflow-hidden bg-slate-200" style="height: 480px;">
+            <div id="hero-slider-track" class="w-full h-full flex transition-transform duration-700 ease-in-out">
+                <!-- Slide 1 -->
+                <div class="w-full h-full flex-shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=1500&auto=format&fit=crop" class="w-full h-full object-cover" alt="Banner 1">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-8 md:p-16">
+                        <div class="max-w-4xl text-white">
+                            <span class="bg-orange-500 text-white font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">HOT LIVE CONCERT</span>
+                            <h2 class="text-3xl md:text-5xl font-black mb-3 leading-tight">Liveshow HÀ NHI - Người Yêu Cũ Là Tri Kỷ</h2>
+                            <p class="text-xs md:text-sm font-semibold opacity-90 mb-5 max-w-2xl leading-relaxed">Đêm nhạc live hoành tráng giữa lòng thiên nhiên xanh mát Sky Melody Ecopark, đưa bạn qua những cung bậc cảm xúc khó quên.</p>
+                            <a href="user/event-detail.html?id=1" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 text-xs uppercase tracking-wider inline-block shadow-lg">Mua Vé Ngay</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="w-full h-full flex-shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1500&auto=format&fit=crop" class="w-full h-full object-cover" alt="Banner 2">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-8 md:p-16">
+                        <div class="max-w-4xl text-white">
+                            <span class="bg-purple-600 text-white font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">CULTURE EVENT</span>
+                            <h2 class="text-3xl md:text-5xl font-black mb-3 leading-tight">À Ố Show - Nghệ Thuật Xiếc Tre Việt Nam</h2>
+                            <p class="text-xs md:text-sm font-semibold opacity-90 mb-5 max-w-2xl leading-relaxed">Sự kết hợp đầy lôi cuốn giữa xiếc tre truyền thống Việt Nam và nghệ thuật múa đương đại đẳng cấp quốc tế tại Nhà Hát Lớn.</p>
+                            <a href="user/event-detail.html?id=2" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 text-xs uppercase tracking-wider inline-block shadow-lg">Khám Phá Chi Tiết</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="w-full h-full flex-shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1500&auto=format&fit=crop" class="w-full h-full object-cover" alt="Banner 3">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-8 md:p-16">
+                        <div class="max-w-4xl text-white">
+                            <span class="bg-blue-600 text-white font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">MUSIC FESTIVAL</span>
+                            <h2 class="text-3xl md:text-5xl font-black mb-3 leading-tight">Lễ Hội Âm Nhạc Điện Tử - Ravolution EDM 2026</h2>
+                            <p class="text-xs md:text-sm font-semibold opacity-90 mb-5 max-w-2xl leading-relaxed">Hòa mình vào bữa tiệc EDM bùng nổ của âm thanh và ánh sáng đỉnh cao với dàn DJ thuộc Top 100 thế giới tại SECC.</p>
+                            <a href="user/event-detail.html?id=3" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-6 py-3 rounded-xl transition duration-200 text-xs uppercase tracking-wider inline-block shadow-lg">Đặt Vé Ngay</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Prev / Next arrows -->
+            <button onclick="moveHeroSlide(-1)" type="button" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/35 hover:bg-black/60 text-white flex items-center justify-center transition border-none cursor-pointer outline-none z-10"><i class="fas fa-chevron-left"></i></button>
+            <button onclick="moveHeroSlide(1)" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/35 hover:bg-black/60 text-white flex items-center justify-center transition border-none cursor-pointer outline-none z-10"><i class="fas fa-chevron-right"></i></button>
+            
+            <!-- Dots -->
+            <div id="hero-dots-container" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
+                <span onclick="setHeroSlide(0)" class="w-2.5 h-2.5 rounded-full bg-white/50 cursor-pointer transition-all duration-300 hero-dot active"></span>
+                <span onclick="setHeroSlide(1)" class="w-2.5 h-2.5 rounded-full bg-white/50 cursor-pointer transition-all duration-300 hero-dot"></span>
+                <span onclick="setHeroSlide(2)" class="w-2.5 h-2.5 rounded-full bg-white/50 cursor-pointer transition-all duration-300 hero-dot"></span>
+            </div>
+        </section>
+
+        <!-- ==================== EVENT CATEGORIES HORIZONTAL TRACK ==================== -->
+        <section class="max-w-6xl mx-auto px-4 mt-10">
+            <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-3">
+                <div class="w-1.5 h-6 bg-orange-500 rounded"></div>
+                <h2 class="text-base font-black text-slate-800 uppercase tracking-wide">Danh Mục Sự Kiện Mới Nhất</h2>
+            </div>
+            
+            <!-- Scroller container -->
+            <div class="relative">
+                <div id="mini-slider-track" class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide scroll-smooth">
+                    <!-- Event category horizontal cards are rendered dynamically via home.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SEARCH BAR SECTION ==================== -->
+        <section class="max-w-6xl mx-auto px-4 mt-8">
+            <div class="bg-white p-5 rounded-2xl border border-gray-150 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-col">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider">Tìm Kiếm Sự Kiện</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-0.5">Khám phá các đêm nhạc và liveshow sắp diễn ra</p>
+                </div>
+                <div class="flex-1 max-w-xl flex gap-3">
+                    <input type="text" id="event-search-keyword" placeholder="Nhập tên sự kiện, ca sĩ hoặc địa điểm..." class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-xs font-semibold focus:border-brand-purple outline-none bg-slate-50 text-slate-800" />
+                    <button id="btn-search-events" type="button" class="bg-brand-purple hover:bg-brand-purpleHover text-white font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition duration-200">Tìm kiếm</button>
+                </div>
+            </div>
+            <!-- Category Chips Filter -->
+            <div id="category-filters" class="flex flex-wrap gap-2.5 mt-5">
+                <!-- Chips are populated via home.js -->
+            </div>
+        </section>
+
+        <!-- ==================== SỰ KIỆN NỔI BẬT SECTION ==================== -->
+        <section class="max-w-6xl mx-auto px-4 mt-12">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-6 flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-6 bg-orange-500 rounded"></div>
+                    <h2 class="text-base font-black text-slate-800 uppercase tracking-wide">SỰ KIỆN NỔI BẬT</h2>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <button class="border border-orange-500 text-orange-500 hover:bg-orange-50 font-extrabold px-4 py-2 rounded-xl text-[10px] uppercase tracking-wider transition inline-flex items-center gap-1.5"><i class="far fa-calendar-alt text-xs"></i> Lịch sự kiện</button>
+                    <a href="user/dashboard.html" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-4 py-2 rounded-xl text-[10px] uppercase tracking-wider transition inline-flex items-center gap-1.5"><i class="fas fa-plus text-[10px]"></i> Gửi sự kiện</a>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column: Giant Event Card -->
+                <div id="featured-giant-container" class="lg:col-span-1">
+                    <!-- Giant featured event renders here -->
+                </div>
+                
+                <!-- Right Column: Grid of small event cards -->
+                <div id="featured-grid-container" class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 4 small featured event cards render here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== DYNAMIC CATEGORY BLOCKS ==================== -->
+        <!-- 1. CA NHẠC (MUSIC SECTION) -->
+        <section class="max-w-6xl mx-auto px-4 mt-16">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-6 bg-orange-500 rounded"></div>
+                    <h2 class="text-base font-black text-slate-800 uppercase tracking-wide">CA NHẠC</h2>
+                </div>
+                <a href="./index.html?category=Vé%20ca%20nhạc" class="text-xs font-bold text-orange-500 hover:text-orange-600 transition flex items-center gap-1">Xem thêm <i class="fas fa-chevron-right text-[10px]"></i></a>
+            </div>
+            <div id="music-event-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- 2. VĂN HÓA NGHỆ THUẬT (CULTURE SECTION) -->
+        <section class="max-w-6xl mx-auto px-4 mt-16">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-6 bg-orange-500 rounded"></div>
+                    <h2 class="text-base font-black text-slate-800 uppercase tracking-wide">VĂN HÓA NGHỆ THUẬT</h2>
+                </div>
+                <a href="./index.html?category=Văn%20hóa%20nghệ%20thuật" class="text-xs font-bold text-orange-500 hover:text-orange-600 transition flex items-center gap-1">Xem thêm <i class="fas fa-chevron-right text-[10px]"></i></a>
+            </div>
+            <div id="culture-event-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- 3. THAM QUAN - DU LỊCH (TOURISM SECTION) -->
+        <section class="max-w-6xl mx-auto px-4 mt-16">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-1.5 h-6 bg-orange-500 rounded"></div>
+                    <h2 class="text-base font-black text-slate-800 uppercase tracking-wide">THAM QUAN - DU LỊCH</h2>
+                </div>
+                <a href="./index.html?category=Vé%20tham%20quan%20-%20du%20lịch" class="text-xs font-bold text-orange-500 hover:text-orange-600 transition flex items-center gap-1">Xem thêm <i class="fas fa-chevron-right text-[10px]"></i></a>
+            </div>
+            <div id="tourism-event-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- ==================== BANNER CALL TO ACTION ==================== -->
+        <section class="bg-brand-purple/5 py-12 mt-16 text-center px-4 rounded-3xl max-w-6xl mx-auto border border-brand-purple/10">
+            <h2 class="text-xl md:text-3xl font-black text-slate-850 mb-3">Bắt đầu bán vé sự kiện của bạn với BDHT</h2>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Hotline liên hệ dành cho Đối tác & Nhà tổ chức</p>
+            <div class="inline-flex items-center gap-2.5 text-xl md:text-2xl font-black text-orange-500 bg-white px-6 py-4 rounded-2xl shadow-lg border border-orange-100">
+                <i class="fas fa-phone-alt animate-bounce"></i> 08.999.80.818
+            </div>
+        </section>
+
     </main>
-    
-    <script src="assets/js/core/api-client.js"></script>
-    <script src="assets/js/home.js"></script>
+
+    <!-- 2. Shared Footer Container Placeholder -->
+    <div id="footer-container"></div>
+
+    <!-- ==================== CHAT AI FLOATING WIDGET (Tawk.to Styled) ==================== -->
+    <!-- Floating Action Button -->
+    <button id="chat-widget-fab" type="button" class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-2xl z-[1000] border-none cursor-pointer outline-none transition duration-300">
+        <i id="fab-chat-icon" class="far fa-comment-dots text-2xl"></i>
+        <i id="fab-close-icon" class="fas fa-times text-2xl hidden"></i>
+    </button>
+
+    <!-- Chat Popup Panel -->
+    <div id="chat-popup-container" class="hidden fixed bottom-24 right-6 w-[360px] h-[520px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden z-[1000] transition duration-300">
+        
+        <!-- ==================== VIEW 1: HOME VIEW ==================== -->
+        <div id="chat-home-view" class="flex-1 flex flex-col relative bg-slate-50">
+            <!-- Header to màu cam -->
+            <div class="bg-orange-500 text-white px-6 pt-8 pb-16 flex flex-col gap-2 rounded-b-[2rem]">
+                <h3 class="text-lg font-black tracking-wide leading-tight flex items-center gap-2">Xin chào! 👋</h3>
+                <p class="text-xs font-semibold opacity-90 leading-relaxed">Nếu quý khách chưa được hỗ trợ, xin vui lòng gửi tin nhắn. Trợ lý AI của chúng tôi sẽ giải đáp tức khắc!</p>
+            </div>
+
+            <!-- Floating White Card (đè lên giữa Header và Body) -->
+            <div class="px-5 -mt-10 relative z-10">
+                <button type="button" id="start-conversation-btn" class="w-full bg-white rounded-2xl shadow-xl border border-gray-150 p-5 text-left flex items-center justify-between hover:border-orange-500 hover:shadow-2xl transition duration-300 cursor-pointer outline-none group">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-xs font-black text-slate-800 uppercase tracking-wider group-hover:text-orange-500 transition">Cuộc trò chuyện mới</span>
+                        <span class="text-[10px] text-slate-400 font-bold">Chúng tôi thường phản hồi sau vài giây</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center shadow-sm group-hover:bg-orange-500 group-hover:text-white transition duration-300">
+                        <i class="fas fa-paper-plane text-sm"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Home Content Body -->
+            <div class="flex-1 px-5 py-6 flex flex-col gap-4 overflow-y-auto">
+                <div class="bg-white rounded-2xl p-4 border border-gray-150 shadow-sm flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-indigo-50 text-brand-purple flex items-center justify-center text-sm shadow-sm"><i class="fas fa-robot"></i></div>
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-xs font-black text-slate-800">Tìm kiếm sự kiện?</span>
+                        <span class="text-[10px] text-slate-400 font-bold">Hỏi tôi bất cứ Liveshow, concert, vé kịch nghệ nào nhé!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 2: MESSAGES (CHAT VIEW) ==================== -->
+        <div id="chat-messages-view" class="hidden flex-1 flex flex-col bg-slate-50 relative">
+            <!-- Header nhỏ màu cam với nút Back -->
+            <div class="bg-orange-500 text-white px-5 py-4 flex items-center gap-3 shadow-md">
+                <button type="button" id="chat-back-to-home" class="text-white bg-transparent border-none cursor-pointer outline-none font-black text-sm flex items-center gap-1.5 hover:opacity-80">
+                    <i class="fas fa-chevron-left text-xs"></i> <span>Quay lại</span>
+                </button>
+                <div class="flex-1 text-center font-black text-xs uppercase tracking-wider mr-6">Hội thoại AI</div>
+            </div>
+
+            <!-- Chat Box (Body tin nhắn) -->
+            <div id="chat-messages-box" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 text-xs font-bold text-slate-700">
+                <!-- Chào mừng mặc định -->
+                <div class="flex gap-2.5 items-start">
+                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center flex-shrink-0 font-bold"><i class="fas fa-robot text-xs"></i></div>
+                    <div class="bg-white border border-gray-150 p-3 rounded-2xl shadow-sm max-w-[80%] leading-relaxed font-semibold rounded-tl-none text-slate-850">
+                        Xin chào! Tôi là Trợ lý AI của BDHT. Bạn có câu hỏi nào về các liveshow nhạc hội hay thủ tục đặt mua vé không?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input (Hộp nhập tin nhắn) -->
+            <div class="p-3 bg-white border-t border-gray-150 flex gap-2 items-center">
+                <input type="text" id="chat-input-field" placeholder="Nhập câu hỏi của bạn..." class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-xs font-semibold focus:border-orange-500 outline-none bg-slate-50 text-slate-800" />
+                <button type="button" id="chat-send-btn" class="w-9 h-9 rounded-xl bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center border-none cursor-pointer shadow transition"><i class="fas fa-paper-plane text-xs"></i></button>
+            </div>
+        </div>
+
+        <!-- ==================== COMMON BOTTOM NAVIGATION ==================== -->
+        <nav class="bg-white border-t border-gray-150 h-14 flex justify-around items-center flex-shrink-0 shadow-lg">
+            <button type="button" id="nav-btn-home" class="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer outline-none text-orange-500">
+                <i class="fas fa-home text-base"></i>
+                <span class="text-[9px] font-black uppercase tracking-wider">Trang chủ</span>
+            </button>
+            <button type="button" id="nav-btn-messages" class="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer outline-none text-slate-400 hover:text-orange-500">
+                <i class="far fa-comment-dots text-base"></i>
+                <span class="text-[9px] font-black uppercase tracking-wider">Tin nhắn</span>
+            </button>
+        </nav>
+
+        <!-- Underbottom Powered by -->
+        <div class="bg-slate-50 border-t border-gray-100 text-center py-1 flex items-center justify-center gap-1 text-[8px] font-extrabold text-slate-400 uppercase tracking-widest">
+            <i class="fas fa-crow text-orange-400"></i> Powered by BDHT AI
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/core/api-client.js"></script>
+    <script src="../assets/js/home.js?v=1.3"></script>
+    <script src="../assets/js/ai-chat.js"></script>
 </body>
 </html>
-

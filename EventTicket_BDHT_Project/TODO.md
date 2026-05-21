@@ -1,9 +1,7 @@
-# TODO - Backend logic check & fixes
+# TODO - Fix frontend header/footer not showing
 
-- [x] Sửa ReviewService.createReview: lấy user/event đúng repository, gán user/event vào review, save vào DB.
-- [x] Implement policy trùng review (userId+eventId): nếu đã tồn tại thì update rating/comment thay vì tạo mới.
-- [x] Bổ sung validate rating trong create/update.
-- [ ] (Tuỳ chọn) Tăng cường ownership check ở update/delete/hide (nếu có thông tin user hiện tại/role trong security context).
-- [ ] Chạy `mvn test` và/hoặc `mvn -q test` để đảm bảo build pass.
-
+- [x] Tìm nguyên nhân: `pageUtils.loadHeader/loadFooter` fetch `/components/header.html` và `/components/footer.html` gây 404 khi chạy Live Server theo root khác.
+- [x] Sửa `frontend-web/assets/js/core/api-client.js`: đổi fetch từ `/components/...` sang `components/...`.
+- [ ] Chạy lại frontend và kiểm tra DevTools Network: `components/header.html` và `components/footer.html` trả về 200.
+- [ ] Hard refresh (Ctrl+F5) và xác nhận header/footer hiển thị đúng.
 

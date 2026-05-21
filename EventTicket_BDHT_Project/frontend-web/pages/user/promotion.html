@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khuyến Mãi - BDHT Premium</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: { purple: '#5f1082', orange: '#f26f21' } },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        .promotion-page { max-width: 900px; margin: 40px auto; padding: 20px; }
+        .promotion-panel { background:#f8f9fa; border:1px solid #ddd; border-radius:12px; padding:24px; }
+        .field-group { margin-bottom:20px; }
+        .field-group label { display:block; margin-bottom:8px; font-weight:600; }
+        .field-group input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; }
+        .btn-action { padding: 12px 22px; border:none; border-radius:8px; background:#28a745; color:white; cursor:pointer; }
+        .btn-action:hover { background:#218838; }
+        .result-box { margin-top:20px; font-weight:bold; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <main class="promotion-page">
+        <section class="promotion-panel">
+            <h1>Áp dụng mã khuyến mãi</h1>
+            <div class="field-group">
+                <label for="promo-code">Mã khuyến mãi</label>
+                <input id="promo-code" type="text" placeholder="Nhập mã khuyến mãi" />
+            </div>
+            <button id="btn-validate" class="btn-action">Kiểm tra mã</button>
+            <div class="field-group" style="margin-top:30px;">
+                <label for="original-price">Giá gốc (VNĐ)</label>
+                <input id="original-price" type="number" placeholder="Nhập giá gốc" min="0" />
+            </div>
+            <button id="btn-calculate" class="btn-action">Tính giá sau giảm</button>
+            <div id="promo-result" class="result-box">Nhập mã để kiểm tra hoặc giá gốc để tính giảm giá.</div>
+        </section>
+    </main>
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script src="../../assets/js/promotion.js"></script>
+</body>
+</html>

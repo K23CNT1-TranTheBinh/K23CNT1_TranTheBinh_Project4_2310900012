@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Sự kiện - BDHT Portal</title>
+    
+    <!-- Bảo mật và chặn truy cập trái phép -->
+    <script src="../../assets/js/admin/admin-auth.js"></script>
+
+    <!-- Tailwind CSS CDN & Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        admin: {
+                            sidebar: '#0f172a',
+                            sidebarActive: '#1e293b',
+                            accent: '#6366f1',
+                            accentHover: '#4f46e5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden h-screen flex">
+
+    <!-- 1. SIDEBAR -->
+    <aside class="w-64 bg-admin-sidebar text-gray-300 flex flex-col flex-shrink-0 border-r border-slate-800 z-20">
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+            <div class="w-8 h-8 rounded-lg bg-admin-accent flex items-center justify-center text-white font-black text-lg shadow-md">
+                B
+            </div>
+            <div>
+                <h1 class="text-white font-extrabold text-sm tracking-wide">BDHT ADMIN</h1>
+                <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Portal Quản Trị</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-chart-pie text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="manage-events.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition bg-admin-sidebarActive text-white border-l-4 border-admin-accent shadow-sm">
+                <i class="fa-solid fa-calendar-days text-lg text-admin-accent"></i>
+                <span>Quản lý Sự kiện</span>
+            </a>
+
+            <a href="manage-orders.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-receipt text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Đơn hàng</span>
+            </a>
+
+            <a href="manage-promotions.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-tags text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Mã giảm giá</span>
+            </a>
+
+            <a href="manage-users.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-users text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Người dùng</span>
+            </a>
+
+            <a href="manage-venues.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-map-location-dot text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Địa điểm</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <a href="../../index.html" class="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                Về trang chủ User
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. KHU VỰC CHÍNH BÊN PHẢI -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 z-10">
+            <div class="w-96 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Tìm tên sự kiện, ca sĩ..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+            </div>
+
+            <div class="flex items-center gap-6">
+                <!-- Dropdown Avatar -->
+                <div class="relative group">
+                    <button class="flex items-center gap-3 outline-none" id="admin-menu-button">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-extrabold flex items-center justify-center shadow-md shadow-indigo-500/20" id="admin-avatar-char">
+                            A
+                        </div>
+                        <div class="text-left hidden md:block">
+                            <h3 class="text-sm font-bold text-gray-900 leading-tight" id="admin-display-name">Admin BDHT</h3>
+                            <span class="text-xs text-gray-400 font-medium">Quản trị viên</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-50/50 p-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Danh sách Sự kiện</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-1">Quản lý duyệt, đăng tải thông tin sự kiện và cấu hình các loại vé bán.</p>
+                </div>
+                <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    Thêm sự kiện mới
+                </button>
+            </div>
+
+            <!-- Bảng Sự kiện -->
+            <div class="bg-white rounded-2xl border border-gray-150 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <th class="px-6 py-4">Sự kiện</th>
+                            <th class="px-6 py-4">Nghệ sĩ</th>
+                            <th class="px-6 py-4">Thể loại</th>
+                            <th class="px-6 py-4">Địa điểm</th>
+                            <th class="px-6 py-4">Thời gian</th>
+                            <th class="px-6 py-4">Trạng thái</th>
+                            <th class="px-6 py-4 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTableBody" class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fa-solid fa-spinner animate-spin text-2xl mb-2 block"></i>
+                                Đang tải danh sách sự kiện...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: THÊM / SỬA SỰ KIỆN (Popup) -->
+    <!-- ========================================== -->
+    <div id="eventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col max-h-[90vh]">
+            <!-- Header Modal -->
+            <div class="px-8 py-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                <h3 class="text-lg font-extrabold text-gray-900" id="modalTitle">Thêm Sự Kiện Mới</h3>
+                <button onclick="closeEventModal()" class="w-8 h-8 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Body Modal (Scrollable) -->
+            <form id="eventForm" class="p-8 overflow-y-auto flex-1 space-y-5">
+                <input type="hidden" id="eventIdInput">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Tiêu đề sự kiện *</label>
+                        <input type="text" id="titleInput" required placeholder="Ví dụ: Đại Nhạc Hội Mùa Hè 2026" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Tên ca sĩ / Nghệ sĩ</label>
+                        <input type="text" id="artistInput" placeholder="Ví dụ: Sơn Tùng M-TP, Soobin" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Danh mục *</label>
+                        <select id="categoryInput" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                            <option value="">-- Chọn danh mục --</option>
+                            <option value="Nhạc Trẻ">Nhạc Trẻ</option>
+                            <option value="Rock">Rock</option>
+                            <option value="EDM">EDM</option>
+                            <option value="Kịch Nghệ">Kịch Nghệ</option>
+                            <option value="Sân Vận Động">Sân Vận Động</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-2 flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Địa điểm tổ chức *</label>
+                        <select id="venueInput" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                            <option value="">Đang tải danh sách địa điểm...</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-2 flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Đường dẫn ảnh Banner (URL)</label>
+                        <input type="url" id="bannerInput" placeholder="https://example.com/banner.jpg" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Thời gian bắt đầu *</label>
+                        <input type="datetime-local" id="startTimeInput" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Thời gian kết thúc *</label>
+                        <input type="datetime-local" id="endTimeInput" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Trạng thái phát hành</label>
+                        <select id="statusInput" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                            <option value="DRAFT">DRAFT (Bản nháp)</option>
+                            <option value="PUBLISHED">PUBLISHED (Mở bán)</option>
+                            <option value="CANCELLED">CANCELLED (Hủy bỏ)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Mô tả sự kiện</label>
+                    <textarea id="descriptionInput" rows="4" placeholder="Nhập mô tả sự kiện chi tiết..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition resize-none"></textarea>
+                </div>
+
+                <!-- Footer Modal (Buttons) -->
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeEventModal()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl text-sm transition">Hủy</button>
+                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow-md transition">Lưu Lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: QUẢN LÝ HẠNG VÉ (Slide-over/Modal rộng) -->
+    <!-- ========================================== -->
+    <div id="ticketsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-3xl w-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col max-h-[85vh]">
+            <!-- Header Modal -->
+            <div class="px-8 py-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                <div>
+                    <h3 class="text-lg font-extrabold text-gray-900">Quản Lý Hạng Vé</h3>
+                    <p class="text-xs text-gray-400 font-semibold mt-0.5" id="ticketsModalSubtitle">Sự kiện: ---</p>
+                </div>
+                <button onclick="closeTicketsModal()" class="w-8 h-8 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body Modal -->
+            <div class="p-8 overflow-y-auto flex-1 flex flex-col gap-6">
+                <!-- Form thêm hạng vé mới -->
+                <div class="bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-5">
+                    <h4 class="text-sm font-bold text-indigo-900 mb-3.5 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-indigo-500"></i> Thêm Hạng Vé Mới
+                    </h4>
+                    <form id="ticketTypeForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <input type="hidden" id="ticketTypeEventId">
+                        <input type="hidden" id="ticketTypeIdInput"> <!-- Chỉ dùng khi Edit hạng vé -->
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Tên hạng vé *</label>
+                            <input type="text" id="ticketTypeName" required placeholder="Ví dụ: Vé VIP, Vé Thường" class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Giá vé (VNĐ) *</label>
+                            <input type="number" id="ticketTypePrice" required min="0" placeholder="Ví dụ: 500000" class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Số lượng phát hành *</label>
+                            <input type="number" id="ticketTypeQty" required min="1" placeholder="Ví dụ: 200" class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+                        </div>
+                        
+                        <div class="md:col-span-3 flex justify-end gap-2 mt-2">
+                            <button type="button" id="btnCancelTicketEdit" onclick="resetTicketForm()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold rounded-xl text-xs transition hidden">Hủy sửa</button>
+                            <button type="submit" id="btnSubmitTicket" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition">Thêm hạng vé</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Bảng các hạng vé hiện có -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-500"></i> Các hạng vé hiện có của Sự kiện
+                    </h4>
+                    <div class="border border-gray-150 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase">
+                                    <th class="px-5 py-3.5">Hạng vé</th>
+                                    <th class="px-5 py-3.5">Giá bán</th>
+                                    <th class="px-5 py-3.5">Số lượng phát hành</th>
+                                    <th class="px-5 py-3.5">Đã bán</th>
+                                    <th class="px-5 py-3.5 text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketTypesTableBody" class="divide-y divide-gray-100 text-sm font-medium">
+                                <tr>
+                                    <td colspan="5" class="px-5 py-8 text-center text-gray-400">
+                                        Không tìm thấy hạng vé nào. Hãy thêm hạng vé ở form trên!
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core và JavaScript -->
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script src="../../assets/js/admin/manage-events.js"></script>
+</body>
+</html>

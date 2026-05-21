@@ -35,7 +35,7 @@ public class SecurityConfig {
                                                                                                               // (Session)
                 .authorizeHttpRequests(auth -> auth
                         // 1. Các link tự do của bạn cũ
-                        .requestMatchers("/api/v1/auth/**", "/api/v1/public/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/public/**", "/api/nat/public/**").permitAll()
                         
                         // 2. THÊM DÒNG NÀY: Mở cửa cho các API admin bạn đang viết để test cho nhanh
                         .requestMatchers("/api/admin/**").permitAll() 

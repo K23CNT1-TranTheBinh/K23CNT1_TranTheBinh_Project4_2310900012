@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khung Layout Admin - BDHT Portal</title>
+    
+    <!-- Admin Security Guard chạy ngay lập tức trước khi render body -->
+    <script src="../../assets/js/admin/admin-auth.js"></script>
+
+    <!-- Tailwind CSS CDN & Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        admin: {
+                            sidebar: '#0f172a',    /* Slate 900 */
+                            sidebarActive: '#1e293b', /* Slate 800 */
+                            accent: '#6366f1',     /* Indigo 500 */
+                            accentHover: '#4f46e5' /* Indigo 600 */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden h-screen flex">
+
+    <!-- 1. SIDEBAR (Nền tối bg-slate-900 chuyên nghiệp) -->
+    <aside class="w-64 bg-admin-sidebar text-gray-300 flex flex-col flex-shrink-0 border-r border-slate-800 z-20">
+        <!-- Logo -->
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+            <div class="w-8 h-8 rounded-lg bg-admin-accent flex items-center justify-center text-white font-black text-lg shadow-md shadow-indigo-500/25">
+                B
+            </div>
+            <div>
+                <h1 class="text-white font-extrabold text-sm tracking-wide">BDHT ADMIN</h1>
+                <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Portal Quản Trị</span>
+            </div>
+        </div>
+
+        <!-- Menu Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <!-- Dashboard -->
+            <a href="dashboard.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-admin-sidebarActive text-white border-l-4 border-admin-accent shadow-sm">
+                <i class="fa-solid fa-chart-pie text-lg text-admin-accent"></i>
+                <span>Tổng quan</span>
+            </a>
+
+            <!-- Quản lý Sự kiện -->
+            <a href="manage-events.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-calendar-days text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Sự kiện</span>
+            </a>
+
+            <!-- Quản lý Đơn hàng -->
+            <a href="#" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-receipt text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Đơn hàng</span>
+            </a>
+
+            <!-- Quản lý Mã giảm giá -->
+            <a href="#" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-tags text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Mã giảm giá</span>
+            </a>
+
+            <!-- Quản lý Người dùng -->
+            <a href="manage-users.html" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-users text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Người dùng</span>
+            </a>
+
+            <!-- Quản lý Địa điểm -->
+            <a href="#" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-map-location-dot text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Địa điểm</span>
+            </a>
+        </nav>
+
+        <!-- Footer Sidebar -->
+        <div class="p-4 border-t border-slate-800 flex items-center justify-between">
+            <a href="../../index.html" class="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                Về trang chủ User
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. KHU VỰC CHÍNH BÊN PHẢI -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 z-10">
+            <!-- Search Bar -->
+            <div class="w-96 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" placeholder="Tìm kiếm nhanh đơn hàng, sự kiện..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+            </div>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-6">
+                <!-- Notifications -->
+                <button class="relative w-10 h-10 rounded-xl hover:bg-gray-50 flex items-center justify-center text-gray-600 transition group">
+                    <i class="fa-regular fa-bell text-xl group-hover:animate-wiggle"></i>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                </button>
+
+                <!-- Vertical Divider -->
+                <div class="h-8 w-px bg-gray-200"></div>
+
+                <!-- Admin Profile Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center gap-3 outline-none" id="admin-menu-button">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-purple-600 text-white font-extrabold flex items-center justify-center shadow-md shadow-indigo-500/20" id="admin-avatar-char">
+                            A
+                        </div>
+                        <div class="text-left hidden md:block">
+                            <h3 class="text-sm font-bold text-gray-900 leading-tight" id="admin-display-name">Admin BDHT</h3>
+                            <span class="text-xs text-gray-400 font-medium">Quản trị viên cấp cao</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-1 transition group-hover:translate-y-0.5"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-3 w-56 bg-white rounded-2xl border border-gray-100 shadow-[0_15px_30px_rgba(0,0,0,0.08)] py-2 hidden group-focus-within:block group-hover:block transition-all z-30">
+                        <div class="px-4 py-2.5 border-b border-gray-100">
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Hành động</p>
+                        </div>
+                        <a href="../user/profile.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                            <i class="fa-solid fa-user-gear text-gray-400 text-base"></i>
+                            Hồ sơ cá nhân
+                        </a>
+                        <button id="btn-logout" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition border-t border-gray-100">
+                            <i class="fa-solid fa-power-off text-rose-500 text-base"></i>
+                            Đăng xuất khỏi hệ thống
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Scroll Container -->
+        <main class="flex-1 overflow-y-auto bg-gray-50/50 p-8">
+            
+            <!-- Welcome Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight" id="welcome-text">Xin chào, Admin!</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-1">Dưới đây là tổng hợp số liệu vận hành của ngày hôm nay.</p>
+                </div>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    Thêm sự kiện mới
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Stat 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Tổng Doanh Thu</span>
+                        <h3 class="text-2xl font-black text-gray-900 mt-2" id="totalRevenue">0 VNĐ</h3>
+                        <span class="text-xs text-emerald-500 font-semibold flex items-center gap-1 mt-2">
+                            <i class="fa-solid fa-trend-up"></i> +12% so với tháng trước
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-admin-accent text-xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                
+                <!-- Stat 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Tổng Đơn Hàng</span>
+                        <h3 class="text-2xl font-black text-gray-900 mt-2" id="totalBookings">0 Đơn</h3>
+                        <span class="text-xs text-emerald-500 font-semibold flex items-center gap-1 mt-2">
+                            <i class="fa-solid fa-trend-up"></i> +8% so với tuần trước
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Vé Đã Bán</span>
+                        <h3 class="text-2xl font-black text-gray-900 mt-2" id="totalTickets">0 Vé</h3>
+                        <span class="text-xs text-rose-500 font-semibold flex items-center gap-1 mt-2">
+                            <i class="fa-solid fa-trend-down"></i> -2% so với hôm qua
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 text-xl">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Tổng Thành Viên</span>
+                        <h3 class="text-2xl font-black text-gray-900 mt-2" id="totalUsers">0 User</h3>
+                        <span class="text-xs text-emerald-500 font-semibold flex items-center gap-1 mt-2">
+                            <i class="fa-solid fa-trend-up"></i> +150 đăng ký mới
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Content (Bảng dữ liệu & Biểu đồ) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Biểu đồ Doanh thu -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] lg:col-span-2">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-base font-bold text-gray-900">Biểu đồ doanh thu 6 tháng gần nhất</h3>
+                        <select class="text-xs font-bold text-gray-500 border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white outline-none">
+                            <option>Năm 2026</option>
+                            <option>Năm 2025</option>
+                        </select>
+                    </div>
+                    <div class="h-80 w-full relative">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sự kiện bán chạy -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                    <h3 class="text-base font-bold text-gray-900 mb-6">Tỷ lệ vé bán theo danh mục</h3>
+                    <div class="h-64 w-full relative flex items-center justify-center">
+                        <!-- Biểu đồ hình tròn -->
+                        <canvas id="salesPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Tải Core API client và các script điều khiển -->
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script>
+        // Cập nhật thông tin Admin hiển thị trên header/avatar
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUserStr = localStorage.getItem('currentUser');
+            if (currentUserStr) {
+                try {
+                    const user = JSON.parse(currentUserStr);
+                    document.getElementById('admin-display-name').innerText = user.fullName || 'Admin BDHT';
+                    document.getElementById('welcome-text').innerText = `Xin chào, ${user.fullName || 'Admin'}!`;
+                    document.getElementById('admin-avatar-char').innerText = (user.fullName || 'A').charAt(0).toUpperCase();
+                } catch (e) {
+                    console.error('Lỗi hiển thị thông tin Admin:', e);
+                }
+            }
+
+            // Đăng xuất admin
+            const logoutBtn = document.getElementById('btn-logout');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (confirm('Bạn thực sự muốn đăng xuất khỏi cổng Quản trị?')) {
+                        window.apiClient.clearToken();
+                        window.location.href = '../user/login.html';
+                    }
+                });
+            }
+
+            // Tải biểu đồ Doanh thu (Chart.js)
+            const ctxLine = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                    datasets: [{
+                        label: 'Doanh thu (triệu VNĐ)',
+                        data: [150, 230, 180, 310, 420, 560],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(243, 244, 246, 1)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Tải biểu đồ Tròn tỉ lệ bán vé
+            const ctxPie = document.getElementById('salesPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Nhạc Trẻ', 'Rock', 'Kịch Nghệ', 'Sân Vận Động'],
+                    datasets: [{
+                        data: [45, 25, 15, 15],
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899'],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

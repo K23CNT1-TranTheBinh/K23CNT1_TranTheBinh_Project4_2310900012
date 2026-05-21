@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Thanh Toán - EventTicket</title>
+    <link rel="stylesheet" href="../../assets/css/style.css?v=1.3">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            orange: '#f26f21',
+                            orangeHover: '#d95a12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Outfit & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.45; }
+        }
+        .pulse-timer {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 pb-20">
+
+    <!-- 1. Header & Navigation (Placeholder tags) -->
+    <div id="header-container"></div>
+    <div id="header-placeholder"></div>
+
+    <!-- Main Payment Container Layout -->
+    <main class="max-w-5xl mx-auto px-4 mt-10">
+        
+        <!-- Toast Notification Alert for Copying -->
+        <div id="copy-toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-full shadow-lg z-50 opacity-0 pointer-events-none transition-all duration-300">
+            <i class="fas fa-check-circle mr-1.5"></i> Đã sao chép vào bộ nhớ tạm!
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-150">
+            
+            <!-- Left Column (Thông tin đơn hàng) -->
+            <div class="p-6 md:p-8 flex flex-col justify-between gap-6 border-b md:border-b-0 md:border-r border-gray-200">
+                <div class="flex flex-col gap-5">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-purple-100 text-brand-purple font-extrabold px-3 py-1 rounded-full uppercase">
+                            Thanh toán đơn hàng
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mã đơn hàng / Order ID</span>
+                        <h2 id="payment-order-id" class="text-lg font-black text-slate-900 tracking-wide uppercase">
+                            BDHT42357
+                        </h2>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tên sự kiện / Event Name</span>
+                        <p id="payment-event-name" class="text-base font-extrabold text-slate-800 leading-snug">
+                            Show diễn xiếc tre nghệ thuật Teh Dar | Bản sắc Tây Nguyên 2026
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Số tiền cần thanh toán / Amount</span>
+                        <div id="payment-amount" class="text-2xl md:text-3xl font-black text-brand-orange">
+                            3.100.000đ
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối đếm ngược (Countdown timer) -->
+                <div class="bg-red-50 border border-red-100 rounded-xl p-5 flex flex-col gap-3 mt-6">
+                    <div class="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-wider">
+                        <i class="far fa-clock text-base pulse-timer"></i>
+                        <span>Đơn hàng sẽ hết hạn sau:</span>
+                    </div>
+                    
+                    <div class="flex gap-2.5 items-center">
+                        <div class="flex flex-col items-center bg-white border border-red-200 rounded-lg w-14 py-2.5 shadow-sm">
+                            <span id="timer-min" class="text-xl font-black text-slate-850">10</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase">Phút</span>
+                        </div>
+                        <span class="text-xl font-black text-red-400">:</span>
+                        <div class="flex flex-col items-center bg-white border border-red-200 rounded-lg w-14 py-2.5 shadow-sm">
+                            <span id="timer-sec" class="text-xl font-black text-slate-850">00</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase">Giây</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút Quay Về & Xác Nhận -->
+                <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <a href="#" id="back-btn" class="inline-flex items-center gap-2 text-xs font-extrabold text-gray-400 hover:text-brand-purple uppercase tracking-widest transition">
+                        <i class="fas fa-arrow-left"></i> Quay về
+                    </a>
+                    <button type="button" id="btn-confirm-payment" class="bg-brand-orange hover:bg-brand-orangeHover hover:-translate-y-1 active:scale-95 text-white font-extrabold px-6 py-3 rounded-full text-sm transition-all duration-300 shadow-md shadow-brand-orange/30 flex items-center gap-2">
+                        Xác nhận đã thanh toán <i class="fas fa-check-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column (Khu vực QR Code động) -->
+            <div class="flex flex-col justify-center">
+
+                <!-- 1. Giao Diện MoMo (id="momo-view") -->
+                <div id="momo-view" class="bg-[#a50064] text-white p-6 md:p-8 flex flex-col items-center justify-center gap-6 h-full min-h-[460px]">
+                    <div class="flex flex-col items-center gap-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo Logo" class="w-16 h-16 rounded-xl shadow-lg border border-[#c30076]" />
+                        <span class="text-xs font-black uppercase tracking-wider text-pink-100">Thanh toán qua Ví MoMo</span>
+                    </div>
+
+                    <!-- Square QR code in white backdrop -->
+                    <div class="bg-white p-4 rounded-xl shadow-2xl flex items-center justify-center border-4 border-pink-700/30">
+                        <img id="momo-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MoMoPaymentDemo_BDHT42357_3100000" alt="MoMo QR Code" class="w-48 h-48 object-contain" />
+                    </div>
+
+                    <div class="text-center flex flex-col gap-2 max-w-xs">
+                        <p class="text-xs font-extrabold leading-normal text-white">
+                            Sử dụng App MoMo hoặc ứng dụng camera hỗ trợ QR code để quét mã thanh toán.
+                        </p>
+                        <span class="text-[9px] font-bold text-pink-200 tracking-wide">Giao dịch được mã hóa và bảo mật an toàn 100%.</span>
+                    </div>
+                </div>
+
+                <!-- 2. Giao Diện Chuyển khoản Ngân hàng VietQR (id="bank-view" hidden) -->
+                <div id="bank-view" class="bg-[#f0f4ff] border-l-0 md:border-l border-gray-200 p-6 md:p-8 flex flex-col gap-6 h-full min-h-[460px] hidden">
+                    
+                    <div class="flex justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-gray-150">
+                        <img src="https://img.vietqr.io/assets/images/vietqr.png" alt="VietQR Logo" class="h-8 object-contain" />
+                        <!-- Bank Logo (MB Bank) -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_MB_new.png" alt="MB Bank Logo" class="h-6 object-contain" />
+                    </div>
+
+                    <!-- Split container: Left QR, Right bank texts -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <!-- Left QR -->
+                        <div class="flex flex-col items-center justify-center bg-slate-50 p-2.5 rounded-lg border border-gray-100">
+                            <img id="bank-qr-img" src="https://img.vietqr.io/image/MB-123456789-print.png?amount=3100000&addInfo=BDHT42357&accountName=CONG%20TY%20ALADDIN" alt="VietQR Bank Code" class="w-full max-w-[170px] h-auto object-contain rounded" />
+                        </div>
+
+                        <!-- Right Text inputs with Copy triggers -->
+                        <div class="flex flex-col gap-3 text-xs">
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Ngân hàng</span>
+                                <span class="font-extrabold text-slate-800">MB BANK (Ngân hàng Quân Đội)</span>
+                            </div>
+
+                            <div class="flex flex-col gap-0.5">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Chủ tài khoản</span>
+                                <span class="font-extrabold text-slate-800">CONG TY ALADDIN</span>
+                            </div>
+
+                            <div class="flex flex-col gap-0.5 relative group">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Số tài khoản</span>
+                                <div class="flex items-center justify-between bg-slate-50 border border-gray-200 rounded px-2.5 py-1.5 mt-0.5">
+                                    <span id="bank-acc-no" class="font-black text-slate-900 font-mono">123456789</span>
+                                    <button type="button" onclick="copyText('bank-acc-no')" class="text-brand-purple hover:text-indigo-650 hover:scale-110 active:scale-95 transition ml-1" title="Sao chép số tài khoản">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-0.5 relative group">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Nội dung chuyển khoản</span>
+                                <div class="flex items-center justify-between bg-slate-50 border border-gray-200 rounded px-2.5 py-1.5 mt-0.5">
+                                    <span id="bank-memo" class="font-black text-slate-900 font-mono uppercase">BDHT42357</span>
+                                    <button type="button" onclick="copyText('bank-memo')" class="text-brand-purple hover:text-indigo-650 hover:scale-110 active:scale-95 transition ml-1" title="Sao chép nội dung">
+                                        <i class="far fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center flex flex-col gap-1.5 max-w-sm mx-auto">
+                        <p class="text-xs font-extrabold leading-normal text-slate-650">
+                            Mở app ngân hàng để quét mã VietQR hoặc chuyển khoản thủ công.
+                        </p>
+                        <span class="text-[9px] font-bold text-slate-400 tracking-wide">Lưu ý: Chuyển khoản đúng số tiền và nội dung chuyển khoản ở trên để hệ thống tự động xác nhận đơn hàng.</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Dynamic Container Placeholder -->
+    <div id="footer-container"></div>
+    <div id="footer-placeholder"></div>
+
+    <!-- Dynamic scripts -->
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script src="../../assets/js/payment.js?v=1.2"></script>
+</body>
+</html>

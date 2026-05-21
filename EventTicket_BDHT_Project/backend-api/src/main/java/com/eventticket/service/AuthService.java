@@ -65,7 +65,7 @@ public class AuthService {
     /**
      * GUEST: Quên mật khẩu (Gửi email yêu cầu khôi phục)
      */
-    public void requestPasswordReset(String email) {
+    public long requestPasswordReset(String email) {
         Optional<G8_users> userOpt = userRepository.findByEmail(email);
 
         if (userOpt.isEmpty()) {
@@ -73,32 +73,52 @@ public class AuthService {
         }
 
         G8_users user = userOpt.get();
-        String resetToken = UUID.randomUUID().toString();
-        LocalDateTime expiryTime = LocalDateTime.now().plusHours(1);
+        // Tạo mã OTP gồm 6 chữ số ngẫu nhiên
+        String otp = String.format("%06d", (int) (Math.random() * 1000000));
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(3); // Hết hạn trong 3 phút
 
-        user.setResetToken(resetToken);
+        user.setResetToken(otp);
         user.setResetTokenExpiry(expiryTime);
         userRepository.save(user);
 
-        // TODO: Gửi email với link reset password
-        // emailService.sendPasswordResetEmail(email, resetToken);
+        // TODO: Gửi email với mã OTP thực tế
+        // emailService.sendPasswordResetEmail(email, otp);
+
+        return 180; // Trả về 180 giây (3 phút)
+    }
+
+    /**
+     * MEMBER: Xác thực mã OTP
+     */
+    public void verifyOtp(String email, String otp) {
+        Optional<G8_users> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("Email không tồn tại");
+        }
+
+        G8_users user = userOpt.get();
+
+        if (user.getResetToken() == null || !user.getResetToken().equals(otp)) {
+            throw new RuntimeException("Mã OTP không chính xác");
+        }
+
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Mã OTP đã hết hạn");
+        }
     }
 
     /**
      * MEMBER: Đặt lại mật khẩu mới (Reset Password)
      */
-    public void resetPassword(String resetToken, String newPassword) {
-        Optional<G8_users> userOpt = userRepository.findByResetToken(resetToken);
+    public void resetPassword(String email, String newPassword) {
+        Optional<G8_users> userOpt = userRepository.findByEmail(email);
 
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("Token không hợp lệ");
+            throw new RuntimeException("Email không tồn tại");
         }
 
         G8_users user = userOpt.get();
-
-        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token đã hết hạn");
-        }
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
