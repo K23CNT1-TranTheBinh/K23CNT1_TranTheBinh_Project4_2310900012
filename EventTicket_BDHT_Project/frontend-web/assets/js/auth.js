@@ -60,7 +60,7 @@ function setupLogin() {
         errorMsg.innerHTML = '<span style="color: blue;">Dang kiem tra thong tin xac thuc...</span>';
 
         try {
-            const response = await window.apiClient.post('/api/nat/public/auth/login', {
+            const response = await window.apiClient.post('/api/ttb/public/auth/login', {
                 email: emailInput.value,
                 password: passwordInput.value
             });
@@ -115,7 +115,7 @@ function setupRegister() {
         msgBox.innerHTML = '<span style="color: blue;">Dang tao tai khoan...</span>';
 
         try {
-            const response = await window.apiClient.post('/api/nat/public/auth/register', {
+            const response = await window.apiClient.post('/api/ttb/public/auth/register', {
                 fullName: fullName,
                 email: email,
                 phoneNumber: phoneNumber,
@@ -172,7 +172,7 @@ function loginWithGoogle() {
             }
 
             try {
-                const response = await window.apiClient.post('/api/nat/public/auth/social-login', {
+                const response = await window.apiClient.post('/api/ttb/public/auth/social-login', {
                     provider: 'google',
                     accessToken: tokenResponse.access_token
                 });
@@ -273,7 +273,7 @@ function setupGlobalLogout() {
             e.preventDefault();
             
             // Tùy chọn: Gọi API backend để blacklist token nếu Backend có hỗ trợ chức năng này
-            // try { await window.apiClient.post('/api/nat/public/auth/logout', {}); } catch(err) {}
+            // try { await window.apiClient.post('/api/ttb/public/auth/logout', {}); } catch(err) {}
 
             // 1. Dọn dẹp toàn bộ dữ liệu xác thực khỏi bộ nhớ cục bộ
             localStorage.removeItem('token');

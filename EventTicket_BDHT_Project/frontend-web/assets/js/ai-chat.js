@@ -106,7 +106,7 @@ function initAiChat() {
     async function generateChatSession() {
         try {
             if (window.apiClient) {
-                const response = await window.apiClient.get('/api/nat/public/ai-chat/generate-session');
+                const response = await window.apiClient.get('/api/ttb/public/ai-chat/generate-session');
                 sessionCode = response.sessionCode || '';
             } else {
                 sessionCode = "MOCK-SESSION-" + Date.now();
@@ -147,7 +147,7 @@ function initAiChat() {
         try {
             let aiText = "Xin lỗi, tôi chưa kết nối được hệ thống.";
             if (window.apiClient) {
-                const response = await window.apiClient.post('/api/nat/public/ai-chat/message', {
+                const response = await window.apiClient.post('/api/ttb/public/ai-chat/message', {
                     sessionCode,
                     message
                 });
@@ -234,7 +234,7 @@ async function loadChatHistory() {
     container.innerHTML = '<div class="text-center py-4 text-[10px] font-bold text-gray-400"><i class="fas fa-spinner fa-spin mr-1"></i> Đang tải lịch sử...</div>';
     
     try {
-        const response = await fetch('http://localhost:8080/api/nat/member/ai-chat/my-history', {
+        const response = await fetch('http://localhost:8080/api/ttb/member/ai-chat/my-history', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`

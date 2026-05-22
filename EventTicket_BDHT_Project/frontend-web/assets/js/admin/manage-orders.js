@@ -239,7 +239,7 @@ async function openDetailsModal(orderId) {
         
         try {
             // Gọi API lấy các mục trong đơn hàng
-            const items = await window.apiClient.get(`/api/nat/member/orders/${orderId}/items`);
+            const items = await window.apiClient.get(`/api/ttb/member/orders/${orderId}/items`);
             if (items && items.length > 0) {
                 itemsTbody.innerHTML = '';
                 items.forEach(item => {

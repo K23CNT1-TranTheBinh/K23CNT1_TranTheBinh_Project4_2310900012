@@ -90,8 +90,8 @@ async function loadCart() {
     cartDetails.style.display = 'none';
 
     try {
-        const order = await window.apiClient.get(`/api/nat/member/orders/${orderId}`);
-        const items = await window.apiClient.get(`/api/nat/member/orders/${orderId}/items`);
+        const order = await window.apiClient.get(`/api/ttb/member/orders/${orderId}`);
+        const items = await window.apiClient.get(`/api/ttb/member/orders/${orderId}/items`);
 
         if (!order || !items) {
             throw new Error('Không thể tải dữ liệu đơn hàng.');
@@ -165,7 +165,7 @@ async function loadCart() {
 
 async function updateCartItem(orderId, itemId, quantity) {
     try {
-        await window.apiClient.put(`/api/nat/member/orders/${orderId}/items/${itemId}`, { quantity });
+        await window.apiClient.put(`/api/ttb/member/orders/${orderId}/items/${itemId}`, { quantity });
         await loadCart();
     } catch (error) {
         alert('Không thể cập nhật số lượng: ' + error.message);
@@ -174,7 +174,7 @@ async function updateCartItem(orderId, itemId, quantity) {
 
 async function removeCartItem(orderId, itemId) {
     try {
-        await window.apiClient.delete(`/api/nat/member/orders/${orderId}/items/${itemId}`);
+        await window.apiClient.delete(`/api/ttb/member/orders/${orderId}/items/${itemId}`);
         await loadCart();
     } catch (error) {
         alert('Không thể xóa mục: ' + error.message);
@@ -188,7 +188,7 @@ async function confirmCurrentOrder() {
         return;
     }
     try {
-        const order = await window.apiClient.post(`/api/nat/member/orders/${orderId}/confirm`, {});
+        const order = await window.apiClient.post(`/api/ttb/member/orders/${orderId}/confirm`, {});
         localStorage.setItem('currentOrderId', orderId);
         alert('Đơn hàng đã được xác nhận. Bạn có thể tiếp tục thanh toán.');
         await loadCart();

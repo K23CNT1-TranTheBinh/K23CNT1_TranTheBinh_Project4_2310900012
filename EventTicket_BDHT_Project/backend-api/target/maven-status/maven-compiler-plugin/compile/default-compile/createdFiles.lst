@@ -2,7 +2,6 @@ com\eventticket\controller\admin\AdminTicketTypeController.class
 com\eventticket\controller\user\UserProfileController$UpdateProfileRequest.class
 com\eventticket\service\AdminDashboardService$RevenueStats.class
 com\eventticket\security\JwtAuthenticationFilter.class
-com\eventticket\entity\G8_AppTranslation.class
 com\eventticket\security\JwtUtil.class
 com\eventticket\controller\admin\AdminPromotionController.class
 com\eventticket\service\ReviewService.class
@@ -28,12 +27,10 @@ com\eventticket\controller\user\VenueController.class
 com\eventticket\entity\G8_payment.class
 com\eventticket\service\AdminDashboardService$DashboardStats.class
 com\eventticket\config\CorsConfig.class
-com\eventticket\repository\AppTranslationRepository.class
 com\eventticket\controller\user\TicketController.class
 com\eventticket\controller\user\AuthController$LoginRequest.class
 com\eventticket\controller\user\PaymentController$PaymentWebhookRequest.class
 com\eventticket\security\SecurityConfig.class
-com\eventticket\controller\user\TranslationController.class
 com\eventticket\repository\AiChatLogRepository.class
 com\eventticket\entity\G8_order.class
 com\eventticket\repository\ReviewRepository.class
@@ -59,7 +56,6 @@ com\eventticket\controller\user\AuthController$SocialLoginRequest.class
 com\eventticket\controller\user\PromotionController$PromotionResponse.class
 com\eventticket\service\EventImageService.class
 com\eventticket\service\admin\AdminUserService.class
-com\eventticket\service\admin\AdminVenueService.class
 com\eventticket\controller\admin\AdminOrderController.class
 com\eventticket\service\OtpService$OtpData.class
 com\eventticket\config\MailConfig.class
@@ -79,7 +75,6 @@ com\eventticket\controller\user\EventController.class
 com\eventticket\service\admin\AdminTicketTypeService.class
 com\eventticket\service\OrderService.class
 com\eventticket\controller\user\AuthController$VerifyOtpRequest.class
-com\eventticket\service\AppTranslationService.class
 com\eventticket\service\VenueService.class
 com\eventticket\repository\TicketTypeRepository.class
 com\eventticket\controller\user\AuthController$ForgotPasswordRequest.class
@@ -88,7 +83,6 @@ com\eventticket\controller\user\OrderController$AddTicketRequest.class
 com\eventticket\service\UserService.class
 com\eventticket\repository\PromotionRepository.class
 com\eventticket\entity\G8_ticket.class
-com\eventticket\controller\admin\AdminVenueController.class
 com\eventticket\repository\TicketRepository.class
 com\eventticket\repository\OrderItemRepository.class
 com\eventticket\entity\G8_AiChatLog.class

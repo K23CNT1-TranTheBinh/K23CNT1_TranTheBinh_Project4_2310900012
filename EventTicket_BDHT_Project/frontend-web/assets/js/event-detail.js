@@ -40,7 +40,7 @@ async function loadEventDetails() {
         let isFallback = false;
 
         try {
-            event = await window.apiClient.get(`/api/nat/public/events/${eventId}`);
+            event = await window.apiClient.get(`/api/ttb/public/events/${eventId}`);
         } catch (apiErr) {
             console.warn("Lỗi API lấy chi tiết sự kiện, đang kiểm tra dữ liệu dự phòng:", apiErr);
             event = getFallbackEventDetails(eventId);
@@ -102,8 +102,8 @@ async function loadEventDetails() {
         } else {
             try {
                 const ticketApi = window.apiClient.getToken() ?
-                    `/api/nat/member/ticket-types/${eventId}/available` :
-                    `/api/nat/public/ticket-types/${eventId}`;
+                    `/api/ttb/member/ticket-types/${eventId}/available` :
+                    `/api/ttb/public/ticket-types/${eventId}`;
                 ticketTypes = await window.apiClient.get(ticketApi);
             } catch (ticketErr) {
                 console.warn("Lỗi tải hạng vé thực tế, dùng hạng vé của sự kiện:", ticketErr);
@@ -147,7 +147,7 @@ async function loadEventDetails() {
 // Tải thêm ảnh phụ sự kiện
 async function loadEventImages(eventId) {
     try {
-        const images = await window.apiClient.get(`/api/nat/public/events/${eventId}/images`);
+        const images = await window.apiClient.get(`/api/ttb/public/events/${eventId}/images`);
         return Array.isArray(images) && images.length > 0 ? images : [];
     } catch (error) {
         console.warn('Không lấy được ảnh sự kiện phụ:', error);
@@ -387,7 +387,7 @@ function setupBookingForm() {
 
         try {
             const orderId = await getOrCreateOrder();
-            await window.apiClient.post(`/api/nat/member/orders/${orderId}/items`, {
+            await window.apiClient.post(`/api/ttb/member/orders/${orderId}/items`, {
                 ticketTypeId,
                 quantity: qty
             });
@@ -412,7 +412,7 @@ async function getOrCreateOrder() {
     let orderId = localStorage.getItem('currentOrderId');
     if (orderId) return orderId;
 
-    const data = await window.apiClient.post('/api/nat/member/orders', {});
+    const data = await window.apiClient.post('/api/ttb/member/orders', {});
     if (!data || !data.orderId) {
         throw new Error('Không tạo được phiên giao dịch đơn hàng.');
     }

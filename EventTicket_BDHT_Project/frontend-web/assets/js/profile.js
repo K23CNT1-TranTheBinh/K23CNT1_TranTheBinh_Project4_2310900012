@@ -89,7 +89,7 @@ async function loadProfileDetails() {
 
     try {
         // Gọi API lấy hồ sơ từ Backend (JWT đính kèm tự động từ window.apiClient)
-        const user = await window.apiClient.get('/api/nat/member/profile');
+        const user = await window.apiClient.get('/api/ttb/member/profile');
         
         if (user) {
             // Cập nhật thông tin vào input fields
@@ -150,7 +150,7 @@ async function loadTransactionHistory() {
 
     try {
         // Lấy danh sách đơn hàng thực tế của thành viên
-        const orders = await window.apiClient.get('/api/nat/member/orders');
+        const orders = await window.apiClient.get('/api/ttb/member/orders');
         
         if (!orders || orders.length === 0) {
             container.innerHTML = `
@@ -230,7 +230,7 @@ async function loadMyTickets() {
 
     try {
         // Lấy danh sách vé đã mua thành công từ Backend
-        const tickets = await window.apiClient.get('/api/nat/member/my-tickets');
+        const tickets = await window.apiClient.get('/api/ttb/member/my-tickets');
 
         if (!tickets || tickets.length === 0) {
             container.innerHTML = `
@@ -332,7 +332,7 @@ window.showTicketQrModal = async function(ticketId, ticketCode) {
         const token = localStorage.getItem('token');
         if (!token) throw new Error("Chưa đăng nhập");
 
-        const response = await fetch(`http://localhost:8080/api/nat/member/tickets/${ticketId}`, {
+        const response = await fetch(`http://localhost:8080/api/ttb/member/tickets/${ticketId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -422,7 +422,7 @@ function setupFormSubmissions() {
 
             try {
                 // Gọi API PUT cập nhật thông tin thật
-                const updatedUser = await window.apiClient.put('/api/nat/member/profile', {
+                const updatedUser = await window.apiClient.put('/api/ttb/member/profile', {
                     fullName: fullName,
                     phoneNumber: phone
                 });
@@ -475,7 +475,7 @@ function setupFormSubmissions() {
 
             try {
                 // Gọi API đổi mật khẩu thật
-                await window.apiClient.post('/api/nat/member/change-password', {
+                await window.apiClient.post('/api/ttb/member/change-password', {
                     oldPassword: oldPass,
                     newPassword: newPass
                 });
@@ -565,7 +565,7 @@ document.getElementById('refund-form')?.addEventListener('submit', async (e) => 
     btnSubmit.classList.add('opacity-70');
 
     try {
-        const response = await fetch(`http://localhost:8080/api/nat/member/payments/${currentRefundPaymentId}/refund`, {
+        const response = await fetch(`http://localhost:8080/api/ttb/member/payments/${currentRefundPaymentId}/refund`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

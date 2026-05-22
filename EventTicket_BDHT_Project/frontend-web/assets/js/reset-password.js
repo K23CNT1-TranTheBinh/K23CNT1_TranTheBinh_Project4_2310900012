@@ -33,7 +33,7 @@ function attachEventListeners() {
             }
         });
 
-        // Xử lý nút xoá ngược Backspace mượt mà như native app
+        // Xử lý nút xoá ngược Backspace mượt mà như ttbive app
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace') {
                 if (!e.target.value && index > 0) {
@@ -84,7 +84,7 @@ async function handleEmailSubmit(e) {
     button.textContent = 'Đang gửi...';
 
     try {
-        const response = await window.apiClient.post('/api/nat/public/auth/forgot-password', { email });
+        const response = await window.apiClient.post('/api/ttb/public/auth/forgot-password', { email });
 
         if (response && response.message) {
             resetState.email = email;
@@ -128,7 +128,7 @@ async function handleOtpSubmit(e) {
     button.textContent = 'Đang xác thực...';
 
     try {
-        const response = await window.apiClient.post('/api/nat/public/auth/verify-otp', {
+        const response = await window.apiClient.post('/api/ttb/public/auth/verify-otp', {
             email: resetState.email,
             otp,
         });
@@ -173,7 +173,7 @@ async function handlePasswordSubmit(e) {
     button.textContent = 'Đang đặt lại...';
 
     try {
-        const response = await window.apiClient.post('/api/nat/public/auth/reset-password', {
+        const response = await window.apiClient.post('/api/ttb/public/auth/reset-password', {
             email: resetState.email,
             newPassword,
         });
@@ -206,7 +206,7 @@ async function resendOtp() {
     button.textContent = 'Đang gửi lại...';
 
     try {
-        const response = await window.apiClient.post('/api/nat/public/auth/forgot-password', {
+        const response = await window.apiClient.post('/api/ttb/public/auth/forgot-password', {
             email: resetState.email,
         });
 

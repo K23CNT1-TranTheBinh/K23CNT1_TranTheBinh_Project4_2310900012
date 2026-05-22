@@ -16,7 +16,7 @@ async function loadVenueDetails() {
     }
 
     try {
-        const venue = await window.apiClient.get(`/api/nat/public/venues/${venueId}`);
+        const venue = await window.apiClient.get(`/api/ttb/public/venues/${venueId}`);
         if (!venue) {
             throw new Error('Không có thông tin địa điểm.');
         }

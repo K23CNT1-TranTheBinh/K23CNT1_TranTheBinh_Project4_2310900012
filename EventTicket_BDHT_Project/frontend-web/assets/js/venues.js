@@ -36,7 +36,7 @@ async function loadRecentVenues() {
     if (!results) return;
     results.innerHTML = '<div class="empty-state">Đang tải danh sách địa điểm...</div>';
     try {
-        const venues = await window.apiClient.get('/api/nat/public/venues/search?keyword=');
+        const venues = await window.apiClient.get('/api/ttb/public/venues/search?keyword=');
         showVenues(venues || []);
     } catch (error) {
         results.innerHTML = `<div class="empty-state">Không thể tải dữ liệu: ${error.message}</div>`;
@@ -48,7 +48,7 @@ async function searchVenues(keyword) {
     if (!results) return;
     results.innerHTML = '<div class="empty-state">Đang tìm kiếm...</div>';
     try {
-        const venues = await window.apiClient.get(`/api/nat/public/venues/search?keyword=${encodeURIComponent(keyword)}`);
+        const venues = await window.apiClient.get(`/api/ttb/public/venues/search?keyword=${encodeURIComponent(keyword)}`);
         showVenues(venues || []);
     } catch (error) {
         results.innerHTML = `<div class="empty-state">Lỗi tìm kiếm: ${error.message}</div>`;
@@ -60,7 +60,7 @@ async function filterVenuesByCapacity(minCapacity) {
     if (!results) return;
     results.innerHTML = '<div class="empty-state">Đang lọc địa điểm...</div>';
     try {
-        const venues = await window.apiClient.get(`/api/nat/public/venues/by-capacity?minCapacity=${encodeURIComponent(minCapacity)}`);
+        const venues = await window.apiClient.get(`/api/ttb/public/venues/by-capacity?minCapacity=${encodeURIComponent(minCapacity)}`);
         showVenues(venues || []);
     } catch (error) {
         results.innerHTML = `<div class="empty-state">Lỗi lọc: ${error.message}</div>`;

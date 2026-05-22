@@ -211,7 +211,7 @@ function setupConfirmPayment() {
             const token = localStorage.getItem('token');
             if (!token) throw new Error("Bạn chưa đăng nhập.");
 
-            const response = await fetch('http://localhost:8080/api/nat/member/payments', {
+            const response = await fetch('http://localhost:8080/api/ttb/member/payments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -31,7 +31,7 @@ async function renderReviews() {
     }
 
     try {
-        const reviews = await window.apiClient.get('/api/nat/member/reviews');
+        const reviews = await window.apiClient.get('/api/ttb/member/reviews');
         reviewState.data = Array.isArray(reviews) ? reviews : [];
         reviewState.editingId = null;
         renderReviewItems();
@@ -170,7 +170,7 @@ async function saveReviewEdit(reviewId) {
     const comment = commentField.value.trim();
 
     try {
-        await window.apiClient.put(`/api/nat/member/reviews/${encodeURIComponent(reviewId)}`, {
+        await window.apiClient.put(`/api/ttb/member/reviews/${encodeURIComponent(reviewId)}`, {
             rating,
             comment,
         });
@@ -276,7 +276,7 @@ function closeModal() {
 
 async function deleteReview(reviewId) {
     try {
-        await window.apiClient.delete(`/api/nat/member/reviews/${encodeURIComponent(reviewId)}`);
+        await window.apiClient.delete(`/api/ttb/member/reviews/${encodeURIComponent(reviewId)}`);
         await renderReviews();
     } catch (error) {
         console.error('Lỗi xóa đánh giá:', error);

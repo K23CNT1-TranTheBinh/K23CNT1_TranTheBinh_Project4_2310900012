@@ -134,7 +134,7 @@ async function loadHomePage() {
         let homeData = { categories: [], featuredEvents: [], latestEvents: [] };
         if (window.apiClient) {
             try {
-                homeData = await window.apiClient.get('/api/nat/public/home');
+                homeData = await window.apiClient.get('/api/ttb/public/home');
             } catch(apiErr) {
                 console.warn("Lỗi API public/home, chuyển sang mock data:", apiErr);
             }
@@ -207,7 +207,7 @@ function setupDateFilter() {
         btnFilterDate.classList.add('pointer-events-none', 'opacity-50');
 
         try {
-            const response = await window.apiClient.get(`/api/nat/public/events/date-range?startDate=${startDate}&endDate=${endDate}`);
+            const response = await window.apiClient.get(`/api/ttb/public/events/date-range?startDate=${startDate}&endDate=${endDate}`);
             
             const giantContainer = document.getElementById('featured-giant-container');
             const gridContainer = document.getElementById('featured-grid-container');
@@ -323,7 +323,7 @@ async function searchEvents(keyword) {
 
     try {
         if (!window.apiClient) throw new Error('API Client không khả dụng');
-        const events = await window.apiClient.get(`/api/nat/public/events/search?keyword=${encodeURIComponent(keyword)}`);
+        const events = await window.apiClient.get(`/api/ttb/public/events/search?keyword=${encodeURIComponent(keyword)}`);
         
         giantContainer.innerHTML = '';
         if (events.length === 0) {
@@ -344,7 +344,7 @@ async function loadEventsByCategory(category) {
 
     try {
         if (!window.apiClient) throw new Error('API Client không khả dụng');
-        const events = await window.apiClient.get(`/api/nat/public/events/category/${encodeURIComponent(category)}`);
+        const events = await window.apiClient.get(`/api/ttb/public/events/category/${encodeURIComponent(category)}`);
         
         giantContainer.innerHTML = '';
         if (events.length === 0) {
@@ -572,21 +572,21 @@ function renderMiniSlider(events) {
         const categoryLabel = item.category || 'Sự kiện mới';
 
         // Map mini-slider category badge label to localization key dynamically
-        let categoryI18nAttr = '';
+        let categoryI18ttbtr = '';
         const normCat = categoryLabel.toLowerCase().trim();
-        if (normCat.includes('ca nhạc') || normCat.includes('concert')) categoryI18nAttr = 'data-i18n="nav.music"';
-        else if (normCat.includes('văn hóa') || normCat.includes('culture') || normCat.includes('nghệ thuật')) categoryI18nAttr = 'data-i18n="nav.culture"';
-        else if (normCat.includes('tham quan') || normCat.includes('du lịch') || normCat.includes('tourism') || normCat.includes('sightseeing')) categoryI18nAttr = 'data-i18n="nav.tourism"';
-        else if (normCat.includes('workshop')) categoryI18nAttr = 'data-i18n="nav.workshop"';
-        else if (normCat.includes('xem phim') || normCat.includes('movies') || normCat.includes('movie')) categoryI18nAttr = 'data-i18n="nav.movies"';
-        else if (normCat.includes('thể thao') || normCat.includes('sports')) categoryI18nAttr = 'data-i18n="nav.sports"';
-        else if (normCat.includes('tin tức') || normCat.includes('news')) categoryI18nAttr = 'data-i18n="nav.news"';
+        if (normCat.includes('ca nhạc') || normCat.includes('concert')) categoryI18ttbtr = 'data-i18n="nav.music"';
+        else if (normCat.includes('văn hóa') || normCat.includes('culture') || normCat.includes('nghệ thuật')) categoryI18ttbtr = 'data-i18n="nav.culture"';
+        else if (normCat.includes('tham quan') || normCat.includes('du lịch') || normCat.includes('tourism') || normCat.includes('sightseeing')) categoryI18ttbtr = 'data-i18n="nav.tourism"';
+        else if (normCat.includes('workshop')) categoryI18ttbtr = 'data-i18n="nav.workshop"';
+        else if (normCat.includes('xem phim') || normCat.includes('movies') || normCat.includes('movie')) categoryI18ttbtr = 'data-i18n="nav.movies"';
+        else if (normCat.includes('thể thao') || normCat.includes('sports')) categoryI18ttbtr = 'data-i18n="nav.sports"';
+        else if (normCat.includes('tin tức') || normCat.includes('news')) categoryI18ttbtr = 'data-i18n="nav.news"';
 
         return `
             <a href="${detailUrl}" class="mini-slider-card group flex-shrink-0 block bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-2 transition-all duration-300 ease-in-out p-3">
                 <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 mb-4">
                     <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" alt="${title}">
-                    <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md text-brand-purple font-extrabold text-[9px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm z-10" ${categoryI18nAttr}>${categoryLabel}</span>
+                    <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md text-brand-purple font-extrabold text-[9px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm z-10" ${categoryI18ttbtr}>${categoryLabel}</span>
                 </div>
                 <h4 class="text-sm font-extrabold text-gray-900 line-clamp-1 leading-snug group-hover:text-brand-purple transition-colors px-1 tracking-tight">${title}</h4>
             </a>
