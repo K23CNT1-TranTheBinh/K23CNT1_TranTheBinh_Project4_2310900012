@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Địa điểm - BDHT Portal</title>
+    <title>Quản lý Vé điện tử - BDHT Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Bảo mật chặn truy cập trái phép -->
     <script src="../../assets/js/admin/admin-auth.js"></script>
@@ -66,10 +66,10 @@
                 <span>Quản lý Sự kiện</span>
             </a>
 
+
             <a href="manage-tickets.html"
-                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
-                <i
-                    class="fa-solid fa-receipt text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition bg-admin-sidebarActive text-white border-l-4 border-admin-accent shadow-sm">
+                <i class="fa-solid fa-receipt text-lg text-admin-accent"></i>
                 <span>Quản lý vé </span>
             </a>
 
@@ -99,8 +99,9 @@
             </a>
 
             <a href="manage-venues.html"
-                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition bg-admin-sidebarActive text-white border-l-4 border-admin-accent shadow-sm">
-                <i class="fa-solid fa-map-location-dot text-lg text-admin-accent"></i>
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-map-location-dot text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
                 <span>Quản lý Địa điểm</span>
             </a>
         </nav>
@@ -122,7 +123,7 @@
             <div class="w-96 relative">
                 <i
                     class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm nhanh địa điểm..."
+                <input type="text" id="searchInput" placeholder="Tìm tên, email, số điện thoại..."
                     class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
             </div>
 
@@ -144,116 +145,133 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto bg-gray-50/50 p-8">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Quản lý Địa điểm</h2>
-                    <p class="text-sm text-gray-500 font-medium mt-1">Cập nhật và duy trì hệ thống địa điểm tổ chức, rạp
-                        hát và khán đài của sự kiện.</p>
+                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                        Quản lý Vé điện tử
+                    </h2>
+                    <p class="text-sm text-gray-500 font-medium mt-1">
+                        Duyệt danh sách vé, tìm kiếm QR Code và check-in tại cổng sự kiện
+                    </p>
                 </div>
 
-                <button onclick="openCreateModal()"
-                    class="px-5 py-2.5 bg-admin-accent hover:bg-admin-accentHover text-white font-bold rounded-xl text-xs shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
-                    <i class="fa-solid fa-plus text-sm"></i>
-                    Thêm Địa Điểm
+                <button onclick="openCheckinModal()"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-qrcode"></i>
+                    Quét QR Check-in
                 </button>
             </div>
 
-            <!-- Bảng Địa điểm -->
             <div
-                class="bg-white rounded-2xl border border-gray-150 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                class="bg-white rounded-2xl border border-gray-150 p-5 mb-6 shadow-[04px20pxrgba(0,0,0,0.01)] flex flex-wrap gap-4 items-center">
+                <div class="flex-1 min-w-[280px] relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+
+                    <input type="text" id="searchInput" placeholder="Tìm theo mã QR Code..."
+                        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:bg-white focus:border-indigo-500 outline-none transition">
+                </div>
+
+                <div class="min-w-[180px]">
+                    <select id="statusFilter"
+                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 outline-none focus:bg-white focus:border-indigo-500 transition">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="true">Đã Check-in</option>
+                        <option value="false">Chưa Check-in</option>
+                    </select>
+                </div>
+
+                <div class="ml-auto text-xs font-bold text-gray-400 uppercase">
+                    Tổng vé:
+                    <span id="ticketCountText" class="text-indigo-600 font-extrabold">0</span>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-2xl border border-gray-150 shadow-[04px20pxrgba(0,0,0,0.02)] overflow-hidden">
+
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr
                             class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                            <th class="px-6 py-4">Mã</th>
-                            <th class="px-6 py-4">Tên Địa Điểm</th>
-                            <th class="px-6 py-4">Địa Chỉ</th>
-                            <th class="px-6 py-4">Sức Chứa Tối Đa</th>
-                            <th class="px-6 py-4">Ngày Đăng Ký</th>
+                            <th class="px-6 py-4">ID Vé</th>
+                            <th class="px-6 py-4">QR Code</th>
+                            <th class="px-6 py-4">Khách hàng</th>
+                            <th class="px-6 py-4">Sự kiện</th>
+                            <th class="px-6 py-4">Trạng thái</th>
+                            <th class="px-6 py-4">Thời gian check-in</th>
                             <th class="px-6 py-4 text-center">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody id="venuesTableBody" class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+
+                    <tbody id="ticketsTableBody" class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
                                 <i class="fa-solid fa-spinner animate-spin text-2xl mb-2 block"></i>
-                                Đang tải danh sách địa điểm...
+                                Đang tải danh sách vé...
                             </td>
                         </tr>
+
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL: THÊM / SỬA ĐỊA ĐIỂM -->
-    <!-- ========================================== -->
-    <div id="venueModal"
+    <div id="checkinModal"
         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col max-h-[90vh]">
-            <!-- Header Modal -->
-            <div class="px-6 py-4.5 border-b border-gray-100 flex items-center justify-between">
+
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-[020px50pxrgba(0,0,0,0.2)] border border-gray-100">
+
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
-                    <h3 class="text-base font-extrabold text-gray-900" id="modalTitle">Thêm Địa Điểm Tổ Chức</h3>
-                    <p class="text-xs text-gray-400 font-semibold mt-0.5">Nhập các thông số địa lý và sức chứa khán giả.
+                    <h3 class="text-base font-extrabold text-gray-900">
+                        Quét mã QR Check-in
+                    </h3>
+
+                    <p class="text-xs text-gray-400 font-semibold mt-0.5">
+                        Nhập hoặc quét mã QR vé điện tử
                     </p>
                 </div>
-                <button onclick="closeVenueModal()"
+
+                <button onclick="closeCheckinModal()"
                     class="w-8 h-8 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <!-- Body Modal (Scrollable) -->
-            <form id="venueForm" onsubmit="handleFormSubmit(event)" class="p-6 overflow-y-auto flex-1 space-y-4">
-                <!-- Tên Địa Điểm -->
+            <form onsubmit="processCheckin(event)" class="p-6 space-y-4">
+
                 <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Tên địa điểm
-                        <span class="text-rose-500">*</span></label>
-                    <input type="text" id="venueName" required
-                        placeholder="Ví dụ: Sân vận động Mỹ Đình, Trung tâm Hội nghị Quốc gia..."
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent outline-none font-bold text-gray-900 transition-all">
+                    <label class="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-2">
+                        QR Code
+                    </label>
+
+                    <input type="text" id="qrInput" required placeholder="Ví dụ: QRABC123456"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:bg-white focus:border-emerald-500 outline-none transition">
                 </div>
 
-                <!-- Địa Chỉ Chi Tiết -->
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Địa chỉ chi
-                        tiết <span class="text-rose-500">*</span></label>
-                    <input type="text" id="venueAddress" required
-                        placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện, tỉnh..."
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent outline-none font-semibold text-gray-900 transition-all">
+                <div id="checkinResult" class="hidden rounded-2xl border p-4 text-sm font-semibold">
                 </div>
 
-                <!-- Sức Chứa Khán Giả -->
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Sức chứa tối
-                        đa (Capacity) <span class="text-rose-500">*</span></label>
-                    <input type="number" id="venueCapacity" required min="1" placeholder="Ví dụ: 40000"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent outline-none font-bold text-gray-900 transition-all">
-                </div>
-
-                <!-- Footer Modal inside Form -->
-                <div class="pt-4 border-t border-gray-100 flex items-center justify-end gap-2">
-                    <button type="button" onclick="closeVenueModal()"
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeCheckinModal()"
                         class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition">
-                        Hủy bỏ
+                        Hủy
                     </button>
+
                     <button type="submit"
-                        class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition">
-                        Lưu Thông Tin
+                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                        Xác nhận Check-in
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Core và JavaScript -->
     <script src="../../assets/js/core/api-client.js"></script>
-    <script src="../../assets/js/admin/manage-venues.js"></script>
+    <script src="../../assets/js/admin/manage-tickets.js"></script>
 </body>
 
 </html>

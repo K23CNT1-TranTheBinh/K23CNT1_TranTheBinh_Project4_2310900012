@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = JSON.parse(currentUserStr);
             document.getElementById('admin-display-name').innerText = user.fullName || 'Admin BDHT';
             document.getElementById('admin-avatar-char').innerText = (user.fullName || 'A').charAt(0).toUpperCase();
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // Tải tài nguyên
@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const val = e.target.value.toLowerCase().trim();
-            renderEventsTable(allEvents.filter(ev => 
-                (ev.title || '').toLowerCase().includes(val) || 
+            renderEventsTable(allEvents.filter(ev =>
+                (ev.title || '').toLowerCase().includes(val) ||
                 (ev.artistNames || '').toLowerCase().includes(val)
             ));
         });
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ticketTypeForm) {
         ticketTypeForm.addEventListener('submit', handleTicketTypeSubmit);
     }
+    loadCategories();
 });
 
 // ==========================================
@@ -71,15 +72,11 @@ async function loadVenues() {
     }
 }
 
-// ==========================================
-// 2. TẢI DỮ LIỆU SỰ KIỆN (EVENTS)
-// ==========================================
 async function loadEvents() {
     const tableBody = document.getElementById('eventsTableBody');
     try {
         const events = await window.apiClient.get('/api/admin/events');
         if (events) {
-            // Lọc ra các sự kiện chưa bị xóa (deletedAt là null)
             allEvents = events.filter(e => e.deletedAt === null);
             renderEventsTable(allEvents);
         }
@@ -118,12 +115,10 @@ function renderEventsTable(events) {
     events.forEach(e => {
         const defaultBanner = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=300';
         const bannerUrl = e.bannerImageUrl || defaultBanner;
-        
-        // Format thời gian
+
         const dateOpt = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
         const startTimeStr = e.startTime ? new Date(e.startTime).toLocaleDateString('vi-VN', dateOpt) : 'Chưa định cấu hình';
-        
-        // Badge trạng thái
+
         let statusBadge = '';
         if (e.status === 'PUBLISHED') {
             statusBadge = '<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-emerald-100 flex items-center gap-1 w-fit"><i class="fa-solid fa-circle text-[6px]"></i> Mở bán</span>';
@@ -171,18 +166,42 @@ function renderEventsTable(events) {
     });
 }
 
-// ==========================================
-// 3. XỬ LÝ THÊM & SỬA SỰ KIỆN
-// ==========================================
 function openCreateModal() {
     document.getElementById('modalTitle').innerText = 'Thêm Sự Kiện Mới';
     document.getElementById('eventForm').reset();
     document.getElementById('eventIdInput').value = '';
-    
-    // Đặt mặc định trạng thái DRAFT
+
     document.getElementById('statusInput').value = 'DRAFT';
-    
+
     document.getElementById('eventModal').classList.remove('hidden');
+}
+
+async function loadCategories() {
+    try {
+        const events = await window.apiClient.get('/api/admin/events');
+
+        if (!events) return;
+        const categories = [...new Set(
+            events
+                .map(e => e.categoryName)
+                .filter(c => c && c.trim() !== '')
+        )];
+
+        const select = document.getElementById('categoryInput');
+
+        select.innerHTML = `
+            <option value="">-- Chọn danh mục cũ --</option>
+        `;
+
+        categories.forEach(c => {
+            select.innerHTML += `
+                <option value="${c}">${c}</option>
+            `;
+        });
+
+    } catch (err) {
+        console.error('Lỗi tải danh mục:', err);
+    }
 }
 
 function openEditModal(eventId) {
@@ -191,16 +210,16 @@ function openEditModal(eventId) {
 
     document.getElementById('modalTitle').innerText = 'Cập Nhật Sự Kiện';
     document.getElementById('eventIdInput').value = event.eventId;
-    
+
     document.getElementById('titleInput').value = event.title || '';
     document.getElementById('artistInput').value = event.artistNames || '';
+    document.getElementById('newCategoryInput').value = '';
     document.getElementById('categoryInput').value = event.categoryName || '';
     document.getElementById('venueInput').value = event.venue ? event.venue.venueId : '';
     document.getElementById('bannerInput').value = event.bannerImageUrl || '';
     document.getElementById('statusInput').value = event.status || 'DRAFT';
     document.getElementById('descriptionInput').value = event.description || '';
 
-    // Định dạng datetime-local (yyyy-MM-ddThh:mm)
     if (event.startTime) {
         document.getElementById('startTimeInput').value = event.startTime.substring(0, 16);
     }
@@ -221,10 +240,24 @@ async function handleEventSubmit(e) {
     const id = document.getElementById('eventIdInput').value;
     const venueId = document.getElementById('venueInput').value;
 
+    // Ưu tiên category mới
+    const newCategory = document.getElementById('newCategoryInput').value.trim();
+
+    const selectedCategory = document.getElementById('categoryInput').value;
+
+    const finalCategory = newCategory || selectedCategory;
+
+    if (!finalCategory) {
+        alert('Vui lòng nhập hoặc chọn danh mục!');
+        return;
+    }
+
     const eventPayload = {
         title: document.getElementById('titleInput').value.trim(),
         artistNames: document.getElementById('artistInput').value.trim(),
-        categoryName: document.getElementById('categoryInput').value,
+
+        categoryName: finalCategory,
+
         bannerImageUrl: document.getElementById('bannerInput').value.trim(),
         startTime: document.getElementById('startTimeInput').value,
         endTime: document.getElementById('endTimeInput').value,
@@ -233,42 +266,47 @@ async function handleEventSubmit(e) {
     };
 
     try {
-        let result;
         if (id) {
-            // Cập nhật sự kiện
-            result = await window.apiClient.put(`/api/admin/events/update/${id}?venueId=${venueId}`, eventPayload);
+            await window.apiClient.put(
+                `/api/admin/events/update/${id}?venueId=${venueId}`,
+                eventPayload
+            );
+
             alert('🎉 Cập nhật thông tin sự kiện thành công!');
         } else {
-            // Thêm mới sự kiện
-            result = await window.apiClient.post(`/api/admin/events/add?venueId=${venueId}`, eventPayload);
+            await window.apiClient.post(
+                `/api/admin/events/add?venueId=${venueId}`,
+                eventPayload
+            );
+
             alert('🎉 Tạo mới sự kiện thành công!');
         }
 
         closeEventModal();
-        loadEvents(); // Reload bảng
+
+        await loadEvents();
+        await loadCategories();
+
     } catch (err) {
         console.error('Lỗi khi lưu sự kiện:', err);
-        alert(`❌ Có lỗi xảy ra: ${err.message || 'Không thể lưu thông tin.'}`);
+
+        alert(`Có lỗi xảy ra: ${err.message || 'Không thể lưu thông tin.'}`);
     }
 }
 
-// Xóa sự kiện
 async function deleteEvent(id) {
-    if (confirm('⚠️ Bạn thực sự muốn xóa sự kiện này? Hành động này sẽ đánh dấu xóa và không hiển thị phía người dùng.')) {
+    if (confirm('Bạn thực sự muốn xóa sự kiện này? Hành động này sẽ đánh dấu xóa và không hiển thị phía người dùng.')) {
         try {
             await window.apiClient.delete(`/api/admin/events/delete/${id}`);
             alert('🗑️ Đã xóa sự kiện thành công!');
             loadEvents();
         } catch (err) {
             console.error('Lỗi khi xóa sự kiện:', err);
-            alert(`❌ Không thể xóa sự kiện: ${err.message}`);
+            alert(`Không thể xóa sự kiện: ${err.message}`);
         }
     }
 }
 
-// ==========================================
-// 4. QUẢN LÝ HẠNG VÉ (TICKET TYPES)
-// ==========================================
 let activeEventId = null;
 let currentTicketTypes = [];
 
@@ -276,10 +314,10 @@ async function openTicketsModal(eventId, eventTitle) {
     activeEventId = eventId;
     document.getElementById('ticketsModalSubtitle').innerText = `Sự kiện: ${eventTitle}`;
     document.getElementById('ticketTypeEventId').value = eventId;
-    
+
     resetTicketForm();
     await loadTicketTypes(eventId);
-    
+
     document.getElementById('ticketsModal').classList.remove('hidden');
 }
 
@@ -291,7 +329,7 @@ function closeTicketsModal() {
 async function loadTicketTypes(eventId) {
     const tbody = document.getElementById('ticketTypesTableBody');
     if (!tbody) return;
-    
+
     tbody.innerHTML = `
         <tr>
             <td colspan="5" class="px-5 py-6 text-center text-gray-400">
@@ -338,10 +376,10 @@ function renderTicketTypesTable(list) {
     list.forEach(t => {
         const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(t.price);
         const soldQty = t.soldQuantity || 0;
-        
+
         // Tính tỷ lệ đã bán
         const rate = t.totalQuantity > 0 ? Math.round((soldQty * 100) / t.totalQuantity) : 0;
-        
+
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-gray-50/50 transition font-semibold text-gray-700';
         tr.innerHTML = `
@@ -380,7 +418,7 @@ function editTicketTypeLocal(id) {
     document.getElementById('ticketTypeName').value = type.typeName || '';
     document.getElementById('ticketTypePrice').value = type.price || 0;
     document.getElementById('ticketTypeQty').value = type.totalQuantity || 1;
-    
+
     // Cập nhật giao diện nút
     document.getElementById('btnSubmitTicket').innerText = 'Lưu thay đổi';
     document.getElementById('btnCancelTicketEdit').classList.remove('hidden');
@@ -391,7 +429,7 @@ function resetTicketForm() {
     document.getElementById('ticketTypeName').value = '';
     document.getElementById('ticketTypePrice').value = '';
     document.getElementById('ticketTypeQty').value = '';
-    
+
     document.getElementById('btnSubmitTicket').innerText = 'Thêm hạng vé';
     document.getElementById('btnCancelTicketEdit').classList.add('hidden');
 }
@@ -399,7 +437,7 @@ function resetTicketForm() {
 // Submit Thêm / Sửa Hạng vé
 async function handleTicketTypeSubmit(e) {
     e.preventDefault();
-    
+
     const eventId = activeEventId;
     const ticketTypeId = document.getElementById('ticketTypeIdInput').value;
 
@@ -419,25 +457,25 @@ async function handleTicketTypeSubmit(e) {
             await window.apiClient.post(`/api/admin/ticket-types/add?eventId=${eventId}`, payload);
             alert('🎉 Đã thêm hạng vé mới thành công!');
         }
-        
+
         resetTicketForm();
         loadTicketTypes(eventId); // Reload bảng vé
     } catch (err) {
         console.error('Lỗi khi lưu hạng vé:', err);
-        alert(`❌ Có lỗi xảy ra: ${err.message || 'Không thể lưu hạng vé.'}`);
+        alert(`Có lỗi xảy ra: ${err.message || 'Không thể lưu hạng vé.'}`);
     }
 }
 
 // Xóa hạng vé
 async function deleteTicketType(id) {
-    if (confirm('⚠️ Bạn thực sự muốn xóa hạng vé này? Hành động này có thể ảnh hưởng đến các đơn đặt chỗ chưa thanh toán!')) {
+    if (confirm('Bạn thực sự muốn xóa hạng vé này? Hành động này có thể ảnh hưởng đến các đơn đặt chỗ chưa thanh toán!')) {
         try {
             await window.apiClient.delete(`/api/admin/ticket-types/delete/${id}`);
             alert('🗑️ Đã xóa hạng vé thành công!');
             loadTicketTypes(activeEventId);
         } catch (err) {
             console.error('Lỗi xóa hạng vé:', err);
-            alert(`❌ Không thể xóa hạng vé: ${err.message}`);
+            alert(`Không thể xóa hạng vé: ${err.message}`);
         }
     }
 }
