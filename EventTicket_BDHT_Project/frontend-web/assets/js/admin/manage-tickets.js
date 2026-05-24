@@ -19,12 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadTickets();
 
-    const searchInput = document.getElementById('searchInput');
+    // Xử lý cho ô tìm kiếm QR CODE (Ở giữa màn hình)
+    const qrSearchInput = document.getElementById('qrSearchInput');
 
-    if (searchInput) {
-        searchInput.addEventListener(
+    if (qrSearchInput) {
+        qrSearchInput.addEventListener(
             'input',
             debounce(handleSearchInput, 300)
+        );
+    }
+
+    // Xử lý cho ô tìm kiếm TÊN / EMAIL (Ở trên Header)
+    const headerSearchInput = document.getElementById('searchInput');
+
+    if (headerSearchInput) {
+        headerSearchInput.addEventListener(
+            'input',
+            debounce(handleGeneralSearch, 300)
         );
     }
 
@@ -171,6 +182,32 @@ function renderTicketsTable(tickets) {
 
         tableBody.appendChild(tr);
     });
+}
+
+// HÀM MỚI: XỬ LÝ LỌC TÊN / SỰ KIỆN TỪ HEADER
+function handleGeneralSearch(e) {
+    const keyword = e.target.value.toLowerCase().trim();
+
+    if (!keyword) {
+        loadFilteredTickets();
+        return;
+    }
+
+    if (!allTickets || allTickets.length === 0) return;
+
+    const filteredTickets = allTickets.filter(t => {
+        const customerName = (t.order?.user?.fullName || '').toLowerCase();
+        
+        const eventName = (t.ticketType?.event?.title || '').toLowerCase();
+        
+        const qrCode = (t.qrCode || '').toLowerCase();
+
+        return customerName.includes(keyword) || 
+               eventName.includes(keyword) || 
+               qrCode.includes(keyword);
+    });
+
+    renderTicketsTable(filteredTickets);
 }
 
 async function handleSearchInput(e) {

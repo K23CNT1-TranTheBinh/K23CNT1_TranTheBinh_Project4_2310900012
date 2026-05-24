@@ -26,7 +26,6 @@ com\eventticket\service\TicketService.class
 com\eventticket\controller\user\VenueController.class
 com\eventticket\entity\G8_payment.class
 com\eventticket\service\AdminDashboardService$DashboardStats.class
-com\eventticket\config\CorsConfig.class
 com\eventticket\controller\user\TicketController.class
 com\eventticket\controller\user\AuthController$LoginRequest.class
 com\eventticket\controller\user\PaymentController$PaymentWebhookRequest.class
