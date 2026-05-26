@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/tickets")
+@RequestMapping("/api/ttb/tickets")
 @RequiredArgsConstructor
 public class AdminTicketController {
 
@@ -42,7 +42,7 @@ public class AdminTicketController {
     
     /**
      * API: Xác nhận Check-in vé và ghi nhận thời gian
-     * URL: POST /api/admin/tickets/process-checkin/{qrCode}
+     * URL: POST /api/ttb/tickets/process-checkin/{qrCode}
      */
     @PostMapping("/process-checkin/{qrCode}")
     public ResponseEntity<?> processTicketCheckIn(@PathVariable String qrCode) {

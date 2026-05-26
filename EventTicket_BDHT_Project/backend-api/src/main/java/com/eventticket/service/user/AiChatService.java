@@ -130,8 +130,8 @@ public class AiChatService {
      */
     public String generateAiResponse(String userMessage) {
         if (!isConfigured()) {
-            log.warn("AI chat is not configured. Returning smart fallback response.");
-            return generateSmartFallback(userMessage);
+            log.warn("AI chat is not configured. Returning fallback response.");
+            return FALLBACK_MESSAGE;
         }
 
         try {
@@ -141,33 +141,9 @@ public class AiChatService {
                 default -> extractOpenAiResponse(callOpenAI(userMessage));
             };
         } catch (Exception ex) {
-            log.error("Failed to call AI provider, using smart fallback", ex);
-            return generateSmartFallback(userMessage);
+            log.error("Failed to call AI provider", ex);
+            return ERROR_MESSAGE;
         }
-    }
-
-    private String generateSmartFallback(String userMessage) {
-        if (userMessage == null) return "Xin chào! Tôi là trợ lý BDHT Assistant. Tôi có thể hỗ trợ bạn tìm kiếm sự kiện, hướng dẫn đăng ký/đăng nhập, hoặc giải đáp thắc mắc về mua vé. Hãy cho tôi biết bạn cần hỗ trợ gì nhé!";
-        
-        String msg = userMessage.toLowerCase();
-        
-        if (msg.contains("đăng nhập") || msg.contains("login") || msg.contains("đăng nhâp")) {
-            return "Để đăng nhập vào tài khoản BDHT, bạn vui lòng sử dụng liên kết đăng nhập tôi đã gửi. Đăng nhập sẽ giúp bạn lưu lịch sử mua vé và theo dõi đơn hàng dễ dàng hơn!";
-        }
-        if (msg.contains("đăng ký") || msg.contains("register")) {
-            return "Để đăng ký tài khoản mới trên BDHT, vui lòng nhấp vào liên kết đăng ký tôi đã gửi. Chỉ mất chưa đầy 1 phút để tạo tài khoản!";
-        }
-        if (msg.contains("sự kiện") || msg.contains("liveshow") || msg.contains("concert") || msg.contains("show") || msg.contains("event") || msg.contains("vé")) {
-            return "BDHT có rất nhiều sự kiện âm nhạc, workshop, thể thao hấp dẫn đang mở bán vé. Bạn có thể gõ tên chủ đề bạn muốn tìm kiếm (ví dụ: 'âm nhạc', 'workshop') để tôi lọc sự kiện nhanh chóng cho bạn!";
-        }
-        if (msg.contains("thanh toán") || msg.contains("mua vé") || msg.contains("đặt vé")) {
-            return "Quy trình mua vé trên BDHT cực kỳ đơn giản:\n1. Chọn sự kiện bạn yêu thích.\n2. Chọn hạng vé và số lượng.\n3. Nhấn 'Mua Vé Ngay' và điền thông tin khách hàng.\n4. Chọn phương thức thanh toán (VietQR, Momo, Zalopay...) và hoàn tất giao dịch.";
-        }
-        if (msg.contains("giá") || msg.contains("tiền")) {
-            return "Giá vé của mỗi sự kiện phụ thuộc vào hạng vé (Standard, VIP...) mà bạn lựa chọn. Bạn có thể click 'Xem chi tiết' tại bất kỳ sự kiện nào để xem bảng giá vé chi tiết nhất.";
-        }
-        
-        return "Xin chào! Tôi là trợ lý BDHT Assistant. Tôi có thể giúp bạn tìm kiếm sự kiện theo chủ đề, cung cấp liên kết đăng nhập/đăng ký nhanh, và hướng dẫn quy trình đặt vé. Bạn cần tôi hỗ trợ thông tin gì ạ?";
     }
 
     private Map<String, Object> callOpenAI(String userMessage) {

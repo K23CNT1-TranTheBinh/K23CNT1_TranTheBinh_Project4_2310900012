@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 async function loadVenues() {
     try {
-        const venues = await window.apiClient.get('/api/admin/venues');
+        const venues = await window.apiClient.get('/api/ttb/venues');
         if (venues) {
             allVenues = venues;
             const select = document.getElementById('venueInput');
@@ -75,7 +75,7 @@ async function loadVenues() {
 async function loadEvents() {
     const tableBody = document.getElementById('eventsTableBody');
     try {
-        const events = await window.apiClient.get('/api/lpth/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
         if (events) {
             allEvents = events.filter(e => e.deletedAt === null);
             renderEventsTable(allEvents);
@@ -178,7 +178,7 @@ function openCreateModal() {
 
 async function loadCategories() {
     try {
-        const events = await window.apiClient.get('/api/lpth/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
 
         if (!events) return;
         const categories = [...new Set(
@@ -268,14 +268,14 @@ async function handleEventSubmit(e) {
     try {
         if (id) {
             await window.apiClient.put(
-                `/api/lpth/admin/events/update/${id}?venueId=${venueId}`,
+                `/api/ttb/events/update/${id}?venueId=${venueId}`,
                 eventPayload
             );
 
             alert('🎉 Cập nhật thông tin sự kiện thành công!');
         } else {
             await window.apiClient.post(
-                `/api/lpth/admin/events/add?venueId=${venueId}`,
+                `/api/ttb/events/add?venueId=${venueId}`,
                 eventPayload
             );
 
@@ -297,7 +297,7 @@ async function handleEventSubmit(e) {
 async function deleteEvent(id) {
     if (confirm('Bạn thực sự muốn xóa sự kiện này? Hành động này sẽ đánh dấu xóa và không hiển thị phía người dùng.')) {
         try {
-            await window.apiClient.delete(`/api/lpth/admin/events/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/events/delete/${id}`);
             alert('🗑️ Đã xóa sự kiện thành công!');
             loadEvents();
         } catch (err) {
@@ -339,7 +339,7 @@ async function loadTicketTypes(eventId) {
     `;
 
     try {
-        const list = await window.apiClient.get(`/api/lpth/admin/ticket-types/event/${eventId}`);
+        const list = await window.apiClient.get(`/api/ttb/ticket-types/event/${eventId}`);
         if (list) {
             currentTicketTypes = list;
             renderTicketTypesTable(list);
@@ -450,11 +450,11 @@ async function handleTicketTypeSubmit(e) {
     try {
         if (ticketTypeId) {
             // Cập nhật hạng vé
-            await window.apiClient.put(`/api/lpth/admin/ticket-types/update/${ticketTypeId}`, payload);
+            await window.apiClient.put(`/api/ttb/ticket-types/update/${ticketTypeId}`, payload);
             alert('🎉 Đã cập nhật hạng vé thành công!');
         } else {
             // Thêm mới hạng vé
-            await window.apiClient.post(`/api/lpth/admin/ticket-types/add?eventId=${eventId}`, payload);
+            await window.apiClient.post(`/api/ttb/ticket-types/add?eventId=${eventId}`, payload);
             alert('🎉 Đã thêm hạng vé mới thành công!');
         }
 
@@ -470,7 +470,7 @@ async function handleTicketTypeSubmit(e) {
 async function deleteTicketType(id) {
     if (confirm('Bạn thực sự muốn xóa hạng vé này? Hành động này có thể ảnh hưởng đến các đơn đặt chỗ chưa thanh toán!')) {
         try {
-            await window.apiClient.delete(`/api/lpth/admin/ticket-types/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/ticket-types/delete/${id}`);
             alert('🗑️ Đã xóa hạng vé thành công!');
             loadTicketTypes(activeEventId);
         } catch (err) {

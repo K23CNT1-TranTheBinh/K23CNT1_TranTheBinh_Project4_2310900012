@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/ttb/users")
 @RequiredArgsConstructor // Chuẩn Lombok đồng bộ hệ thống
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
 
     // Xem danh sách, Tìm kiếm và Lọc (Gom chung 1 method GET giống Promotion)
-    // API: GET /api/admin/users
+    // API: GET /api/ttb/users
     @GetMapping
     public ResponseEntity<List<G8_users>> getUsers(
             @RequestParam(required = false) String keyword,
@@ -33,35 +33,35 @@ public class AdminUserController {
     }
 
     // Lấy chi tiết 1 người dùng
-    // API: GET /api/admin/users/{id}
+    // API: GET /api/ttb/users/{id}
     @GetMapping("/{id}")
     public ResponseEntity<G8_users> getUserById(@PathVariable Integer id) {
         return ResponseEntity.ok(adminUserService.getUserProfile(id));
     }
 
     // Thêm mới người dùng (Tạo tài khoản trực tiếp từ Admin)
-    // API: POST /api/admin/users/add
+    // API: POST /api/ttb/users/add
     @PostMapping("/add")
     public ResponseEntity<G8_users> createUser(@RequestBody G8_users user) {
         return ResponseEntity.ok(adminUserService.createUser(user));
     }
 
     // Khóa tài khoản người dùng
-    // API: PUT /api/admin/users/block/{id}
+    // API: PUT /api/ttb/users/block/{id}
     @PutMapping("/block/{id}")
     public ResponseEntity<G8_users> blockUser(@PathVariable Integer id) {
         return ResponseEntity.ok(adminUserService.blockUser(id));
     }
 
     // Mở khóa tài khoản người dùng
-    // API: PUT /api/admin/users/unblock/{id}
+    // API: PUT /api/ttb/users/unblock/{id}
     @PutMapping("/unblock/{id}")
     public ResponseEntity<G8_users> unblockUser(@PathVariable Integer id) {
         return ResponseEntity.ok(adminUserService.unblockUser(id));
     }
 
     // Xóa hẳn dòng người dùng ra khỏi cơ sở dữ liệu
-    // API: DELETE /api/admin/users/delete/{id}
+    // API: DELETE /api/ttb/users/delete/{id}
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
         adminUserService.deleteUser(id);
@@ -69,14 +69,14 @@ public class AdminUserController {
     }
 
     // Lấy danh sách người dùng đang hoạt động
-    // API: GET /api/admin/users/active
+    // API: GET /api/ttb/users/active
     @GetMapping("/active")
     public ResponseEntity<List<G8_users>> getActiveUsers() {
         return ResponseEntity.ok(adminUserService.getActiveUsers());
     }
 
     // Đếm số lượng Admin hiện có trong hệ thống
-    // API: GET /api/admin/users/count-admins
+    // API: GET /api/ttb/users/count-admins
     @GetMapping("/count-admins")
     public ResponseEntity<Long> countAdmins() {
         return ResponseEntity.ok(adminUserService.countAdmins());

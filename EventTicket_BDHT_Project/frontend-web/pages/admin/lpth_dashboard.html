@@ -172,7 +172,7 @@
                         <div class="px-4 py-2.5 border-b border-gray-100">
                             <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Hành động</p>
                         </div>
-                        <a href="../user/nat-profile.html"
+                        <a href="../user/profile.html"
                             class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                             <i class="fa-solid fa-user-gear text-gray-400 text-base"></i>
                             Hồ sơ cá nhân
@@ -301,7 +301,7 @@
     </div>
 
     <!-- Tải Core API client và các script điều khiển -->
-    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/core/api-client.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Cập nhật thông tin Admin hiển thị trên Header
@@ -324,7 +324,7 @@
                     e.preventDefault();
                     if (confirm('Bạn thực sự muốn đăng xuất khỏi cổng Quản trị?')) {
                         window.apiClient.clearToken();
-                        window.location.href = '../user/nat-login.html';
+                        window.location.href = '../user/login.html';
                     }
                 });
             }
@@ -340,7 +340,7 @@
             };
 
             try {
-                const response = await window.apiClient.get('/api/lpth/admin/dashboard/stats');
+                const response = await window.apiClient.get('/api/ttb/dashboard/stats');
                 if (response) {
                     statsData = response;
 
@@ -372,7 +372,7 @@
                 const endDateStr = now.toISOString().split('.')[0];
                 const startDateStr = sixMonthsAgo.toISOString().split('.')[0];
 
-                const revResponse = await window.apiClient.get(`/api/lpth/admin/dashboard/revenue?startDate=${startDateStr}&endDate=${endDateStr}`);
+                const revResponse = await window.apiClient.get(`/api/ttb/dashboard/revenue?startDate=${startDateStr}&endDate=${endDateStr}`);
                 if (revResponse) {
                     totalRevenueSum = revResponse.totalRevenue || 0;
 

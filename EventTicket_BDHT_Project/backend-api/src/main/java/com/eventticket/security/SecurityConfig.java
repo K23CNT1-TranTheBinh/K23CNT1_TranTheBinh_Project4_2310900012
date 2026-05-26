@@ -1,6 +1,7 @@
 package com.eventticket.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +67,7 @@ public class SecurityConfig {
 
                         // --- ADMIN ---
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/uploads/**").permitAll()
 
                         // --- TẤT CẢ CÒN LẠI CHO PHÉP ---
                         .anyRequest().permitAll())
@@ -95,6 +97,10 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/uploads/**");
     }
 
     @Bean

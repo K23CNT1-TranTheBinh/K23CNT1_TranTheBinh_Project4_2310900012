@@ -20,7 +20,7 @@ public class G8_users {
     @Column(name = "G8_user_id")
     private Integer userId;
 
-    @Column(name = "G8_full_name", nullable = false, length = 100)
+    @Column(name = "G8_full_name", nullable = false, columnDefinition = "nvarchar(200)")
     private String fullName;
 
     @Column(name = "G8_email", nullable = false, unique = true, length = 100)

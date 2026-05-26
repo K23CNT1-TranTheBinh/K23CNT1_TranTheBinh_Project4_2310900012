@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadOrders() {
     const tableBody = document.getElementById('ordersTableBody');
     try {
-        const orders = await window.apiClient.get('/api/lpth/admin/orders');
+        const orders = await window.apiClient.get('/api/ttb/orders');
         if (orders) {
             allOrders = orders;
             renderOrdersTable(orders);
@@ -132,7 +132,7 @@ async function handleSearchInput(e) {
 
     try {
         // Gọi API tìm kiếm theo email
-        const results = await window.apiClient.get(`/api/lpth/admin/orders`);
+        const results = await window.apiClient.get(`/api/ttb/orders`);
         if (results) {
             const filtered = results.filter(o => 
                 o.user && o.user.email.toLowerCase().includes(email.toLowerCase())
@@ -166,7 +166,7 @@ async function loadFilteredOrders() {
     const queryString = query.length > 0 ? `?${query.join('&')}` : '';
 
     try {
-        const filtered = await window.apiClient.get(`/api/lpth/admin/orders${queryString}`);
+        const filtered = await window.apiClient.get(`/api/ttb/orders${queryString}`);
         if (filtered) {
             renderOrdersTable(filtered);
         }
@@ -192,7 +192,7 @@ async function openDetailsModal(orderId) {
     
     // Tải dữ liệu tổng quan đơn hàng
     try {
-        const o = await window.apiClient.get(`/api/lpth/admin/orders/${orderId}`);
+        const o = await window.apiClient.get(`/api/ttb/orders/${orderId}`);
         if (o) {
             // Định dạng ngày tạo
             const dateOpt = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -296,7 +296,7 @@ function closeDetailsModal() {
 async function updateStatusSubmit() {
     const status = document.getElementById('detailStatusSelect').value;
     try {
-        await window.apiClient.put(`/api/lpth/admin/orders/update-status/${activeOrderId}?status=${status}`);
+        await window.apiClient.put(`/api/ttb/orders/update-status/${activeOrderId}?status=${status}`);
         alert('🎉 Cập nhật trạng thái đơn hàng thành công!');
         closeDetailsModal();
         loadOrders(); // Tải lại danh sách bảng
@@ -310,7 +310,7 @@ async function updateStatusSubmit() {
 async function deleteOrderSubmit() {
     if (confirm('⚠️ CẢNH BÁO CỰC KỲ QUAN TRỌNG: Bạn thực sự muốn XÓA VĨNH VIỄN đơn hàng này khỏi cơ sở dữ liệu? Hành động này sẽ loại bỏ hóa đơn và thông tin đặt chỗ của khách hàng.')) {
         try {
-            await window.apiClient.delete(`/api/lpth/admin/orders/delete/${activeOrderId}`);
+            await window.apiClient.delete(`/api/ttb/orders/delete/${activeOrderId}`);
             alert('🗑️ Đã xóa hóa đơn đặt vé thành công!');
             closeDetailsModal();
             loadOrders();

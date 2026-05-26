@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/orders")
+@RequestMapping("/api/ttb/orders")
 @RequiredArgsConstructor 
 public class AdminOrderController {
 
@@ -19,7 +19,7 @@ public class AdminOrderController {
 
     // ==========================================
     // 1. Xem danh sách và Lọc đơn hàng
-    // API: GET /api/admin/orders
+    // API: GET /api/ttb/orders
     // ==========================================
     @GetMapping
     public ResponseEntity<List<G8_order>> getOrders(
@@ -33,7 +33,7 @@ public class AdminOrderController {
 
     // ==========================================
     // 2. Lấy chi tiết 1 đơn hàng theo ID
-    // API: GET /api/admin/orders/{id}
+    // API: GET /api/ttb/orders/{id}
     // ==========================================
     @GetMapping("/{id}")
     public ResponseEntity<G8_order> getOrderById(@PathVariable Integer id) {
@@ -42,7 +42,7 @@ public class AdminOrderController {
 
     // ==========================================
     // 3. Cập nhật trạng thái đơn hàng (Duyệt/Hủy)
-    // API: PUT /api/admin/orders/update-status/{id}?status=COMPLETED
+    // API: PUT /api/ttb/orders/update-status/{id}?status=COMPLETED
     // ==========================================
     @PutMapping("/update-status/{id}")
     public ResponseEntity<G8_order> updateOrderStatus(
@@ -53,7 +53,7 @@ public class AdminOrderController {
 
     // ==========================================
     // 4. Xóa hoàn toàn đơn hàng khỏi hệ thống
-    // API: DELETE /api/admin/orders/delete/{id}
+    // API: DELETE /api/ttb/orders/delete/{id}
     // ==========================================
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
@@ -63,7 +63,7 @@ public class AdminOrderController {
 
     // ==========================================
     // 5. Tạo mới đơn hàng (Admin tự tạo đơn offline)
-    // API: POST /api/admin/orders/add
+    // API: POST /api/ttb/orders/add
     // ==========================================
     @PostMapping("/add")
     public ResponseEntity<G8_order> createOrder(@RequestBody G8_order order) {

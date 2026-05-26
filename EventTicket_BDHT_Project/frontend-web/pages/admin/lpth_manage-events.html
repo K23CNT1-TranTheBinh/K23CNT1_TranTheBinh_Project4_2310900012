@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -97,7 +97,7 @@
                 <span>Quản lý Người dùng</span>
             </a>
 
-            <a href="lpth_manage-venues.html"
+            <a href="lpth_manage-users.html_manage-venues.html"
                 class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
                 <i
                     class="fa-solid fa-map-location-dot text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
@@ -106,7 +106,7 @@
         </nav>
 
         <div class="p-4 border-t border-slate-800">
-            <a href="../index.html"
+            <a href="../../index.html"
                 class="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-arrow-left-long"></i>
                 Về trang chủ User
@@ -253,10 +253,10 @@
                     </div>
 
                     <div class="col-span-2 flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Đường dẫn ảnh Banner
-                            (URL)</label>
-                        <input type="url" id="bannerInput" placeholder="https://example.com/banner.jpg"
-                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition">
+                        <label class="text-xs font-bold text-gray-600 uppercase tracking-wider">Ảnh Banner sự kiện (Chọn file) *</label>
+                        <input type="file" id="bannerFileInput" accept="image/*"
+                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-indigo-500 outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                            <input type="hidden" id="oldBannerUrlInput">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -330,36 +330,34 @@
                         <i class="fa-solid fa-plus-circle text-indigo-500"></i> Thêm Hạng Vé Mới
                     </h4>
                     <form id="ticketTypeForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                        <input type="hidden" id="ticketTypeEventId">
-                        <input type="hidden" id="ticketTypeIdInput"> <!-- Chỉ dùng khi Edit hạng vé -->
+    <input type="hidden" id="ticketTypeEventId">
+    <input type="hidden" id="ticketTypeIdInput">
 
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Tên hạng vé *</label>
-                            <input type="text" id="ticketTypeName" required placeholder="Ví dụ: Vé VIP, Vé Thường"
-                                class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
-                        </div>
+    <div class="w-full flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-indigo-950/70 uppercase">Tên hạng vé *</label>
+        <input type="text" id="ticketTypeName" required placeholder="Ví dụ: Vé VIP"
+            class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+    </div>
 
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Giá vé (VNĐ) *</label>
-                            <input type="number" id="ticketTypePrice" required min="0" placeholder="Ví dụ: 500000"
-                                class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
-                        </div>
+    <div class="w-full flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-indigo-950/70 uppercase">Giá vé (VNĐ) *</label>
+        <input type="number" id="ticketTypePrice" required min="0" placeholder="Ví dụ: 500000"
+            class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+    </div>
 
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-indigo-950/70 uppercase">Số lượng phát hành *</label>
-                            <input type="number" id="ticketTypeQty" required min="1" placeholder="Ví dụ: 200"
-                                class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
-                        </div>
+    <div class="w-full flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-indigo-950/70 uppercase">Số lượng phát hành *</label>
+        <input type="number" id="ticketTypeQty" required min="1" placeholder="Ví dụ: 200"
+            class="w-full px-4 py-2 bg-white border border-indigo-200 rounded-xl text-sm focus:border-indigo-500 outline-none transition">
+    </div>
 
-                        <div class="md:col-span-3 flex justify-end gap-2 mt-2">
-                            <button type="button" id="btnCancelTicketEdit" onclick="resetTicketForm()"
-                                class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold rounded-xl text-xs transition hidden">Hủy
-                                sửa</button>
-                            <button type="submit" id="btnSubmitTicket"
-                                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition">Thêm
-                                hạng vé</button>
-                        </div>
-                    </form>
+    <div class="md:col-span-3 flex justify-end gap-2 mt-2">
+        <button type="button" id="btnCancelTicketEdit" onclick="resetTicketForm()"
+            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold rounded-xl text-xs transition hidden">Hủy sửa</button>
+        <button type="submit" id="btnSubmitTicket"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/25 transition">Thêm hạng vé</button>
+    </div>
+</form>
                 </div>
 
                 <!-- Bảng các hạng vé hiện có -->
@@ -368,25 +366,27 @@
                         <i class="fa-solid fa-list-check text-indigo-500"></i> Các hạng vé hiện có của Sự kiện
                     </h4>
                     <div class="border border-gray-150 rounded-2xl overflow-hidden">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr
-                                    class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase">
-                                    <th class="px-5 py-3.5">Hạng vé</th>
-                                    <th class="px-5 py-3.5">Giá bán</th>
-                                    <th class="px-5 py-3.5">Số lượng phát hành</th>
-                                    <th class="px-5 py-3.5">Đã bán</th>
-                                    <th class="px-5 py-3.5 text-center">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ticketTypesTableBody" class="divide-y divide-gray-100 text-sm font-medium">
-                                <tr>
-                                    <td colspan="5" class="px-5 py-8 text-center text-gray-400">
-                                        Không tìm thấy hạng vé nào. Hãy thêm hạng vé ở form trên!
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <table class="w-full text-left border-collapse table-fixed"> 
+    <thead>
+        <tr class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase">
+            <th class="px-5 py-3.5 w-4/12">Hạng vé</th>
+            <th class="px-5 py-3.5 w-2/12">Giá bán</th>
+            <th class="px-5 py-3.5 w-3/12">Số lượng phát hành</th>
+            <th class="px-5 py-3.5 w-1/12">Đã bán</th>
+            <th class="px-5 py-3.5 w-2/12 text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody id="ticketTypesTableBody" class="divide-y divide-gray-100 text-sm font-medium">
+        <tr>
+            <td colspan="5" class="px-5 py-10 text-center text-gray-400">
+                <div class="flex flex-col items-center justify-center gap-2">
+                    <i class="fa-solid fa-ticket text-2xl text-gray-200"></i>
+                    <p>Hiện chưa có hạng vé nào. Hãy thêm hạng vé mới ở form trên!</p>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
                     </div>
                 </div>
             </div>
@@ -394,7 +394,7 @@
     </div>
 
     <!-- Core và JavaScript -->
-    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/core/api-client.js"></script>
     <script src="../../assets/js/admin/manage-events.js"></script>
 </body>
 
