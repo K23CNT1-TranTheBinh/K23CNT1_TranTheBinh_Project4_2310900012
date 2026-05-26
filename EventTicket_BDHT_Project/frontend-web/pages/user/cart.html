@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đơn Hàng Đang Xử Lý - BDHT Premium</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { purple: '#5f1082', orange: '#f26f21', orangeHover: '#e05c15' }
+                    },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        .cart-page { max-width: 900px; margin: 40px auto; padding: 20px; }
+        .cart-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #f3f4f6;
+        }
+        .cart-header {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 20px;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s;
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item:hover { background: #fdfdfd; }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            color: #4b5563;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .qty-btn:hover { background: #f3f4f6; color: #111827; }
+        .qty-input {
+            width: 40px;
+            height: 32px;
+            text-align: center;
+            font-weight: 600;
+            border: none;
+            border-left: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            outline: none;
+        }
+        .cart-footer {
+            background: #fdfdfd;
+            padding: 24px 32px;
+            border-top: 1px solid #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="header-container"></div>
+    <main class="cart-page">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-1">Đơn Hàng Của Bạn</h1>
+                <p class="text-gray-500 font-medium">Kiểm tra thông tin vé trước khi tiếp tục thanh toán.</p>
+            </div>
+            <button id="btn-refresh" class="text-brand-orange hover:text-brand-orangeHover font-semibold transition-colors flex items-center gap-2">
+                <i class="fas fa-sync-alt"></i> Tải lại
+            </button>
+        </div>
+
+        <div id="cart-message" class="text-center py-20 text-gray-400 font-medium bg-white rounded-2xl shadow-sm border border-gray-100">
+            <i class="fas fa-spinner fa-spin text-3xl mb-3 text-brand-orange"></i>
+            <p>Đang tải đơn hàng...</p>
+        </div>
+
+        <div id="cart-details" style="display:none;" class="cart-card">
+            <div class="cart-header" id="cart-summary">
+                <!-- Sẽ được điền bằng JS -->
+            </div>
+            
+            <div id="cart-items" class="flex flex-col">
+                <!-- Sẽ được điền bằng JS -->
+            </div>
+            
+            <div class="cart-footer flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <span class="text-gray-500 font-medium">Tổng thanh toán</span>
+                    <div id="cart-total" class="text-2xl font-black text-brand-orange mt-1"></div>
+                </div>
+                <button id="btn-go-payment" class="w-full md:w-auto bg-brand-orange hover:bg-brand-orangeHover active:scale-95 transition-all text-white font-extrabold uppercase tracking-wider py-4 px-8 rounded-xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-3">
+                    Tiếp tục thanh toán <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script src="../../assets/js/cart.js"></script>
+</body>
+</html>

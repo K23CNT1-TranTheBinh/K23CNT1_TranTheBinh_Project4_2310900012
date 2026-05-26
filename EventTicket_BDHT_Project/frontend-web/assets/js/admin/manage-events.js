@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 async function loadVenues() {
     try {
-        const venues = await window.apiClient.get('/api/admin/venues');
+        const venues = await window.apiClient.get('/api/ttb/venues');
         if (venues) {
             allVenues = venues;
             const select = document.getElementById('venueInput');
@@ -75,7 +75,7 @@ async function loadVenues() {
 async function loadEvents() {
     const tableBody = document.getElementById('eventsTableBody');
     try {
-        const events = await window.apiClient.get('/api/lpth/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
         if (events) {
             allEvents = events.filter(e => e.deletedAt === null);
             renderEventsTable(allEvents);
@@ -113,8 +113,29 @@ function renderEventsTable(events) {
 
     tableBody.innerHTML = '';
     events.forEach(e => {
-        const defaultBanner = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=300';
-        const bannerUrl = e.bannerImageUrl || defaultBanner;
+        // --- ĐÃ SỬA LẠI LOGIC HIỂN THỊ ẢNH Ở ĐÂY ---
+        let imageElement = '';
+        if (e.bannerImageUrl && e.bannerImageUrl.trim() !== '') {
+            let imageUrl = e.bannerImageUrl.trim();
+            
+            // XỬ LÝ ĐƯỜNG DẪN: Ghép domain của Backend nếu ảnh dùng đường dẫn tương đối
+            if (!imageUrl.startsWith('http')) {
+                if (!imageUrl.startsWith('/')) {
+                    imageUrl = '/' + imageUrl;
+                }
+                imageUrl = 'http://localhost:8080' + imageUrl;
+            }
+
+            // Có URL ảnh: Hiển thị ảnh thực tế với imageUrl đã xử lý
+            imageElement = `<img src="${imageUrl}" class="w-12 h-12 object-cover rounded-xl border border-gray-100 shadow-sm" onerror="this.outerHTML='<div class=\\'w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shadow-sm\\'><i class=\\'fa-regular fa-image\\'></i></div>'">`;
+        } else {
+            // Không có URL ảnh (sự kiện mới thêm): Hiển thị ô vuông xám mặc định
+            imageElement = `
+                <div class="w-12 h-12 flex-shrink-0 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shadow-sm">
+                    <i class="fa-regular fa-image text-lg"></i>
+                </div>
+            `;
+        }
 
         const dateOpt = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
         const startTimeStr = e.startTime ? new Date(e.startTime).toLocaleDateString('vi-VN', dateOpt) : 'Chưa định cấu hình';
@@ -133,7 +154,7 @@ function renderEventsTable(events) {
         tr.innerHTML = `
             <td class="px-6 py-4.5">
                 <div class="flex items-center gap-3">
-                    <img src="${bannerUrl}" class="w-12 h-12 object-cover rounded-xl border border-gray-100 shadow-sm" onerror="this.src='${defaultBanner}'">
+                    ${imageElement}
                     <div>
                         <div class="font-bold text-gray-900 leading-snug">${e.title}</div>
                         <div class="text-xs text-gray-400 font-medium mt-0.5">ID: ${e.eventId}</div>
@@ -151,6 +172,9 @@ function renderEventsTable(events) {
                     <button onclick="openTicketsModal(${e.eventId}, '${e.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-xs font-bold border border-indigo-100 transition flex items-center gap-1">
                         <i class="fa-solid fa-ticket-simple"></i> Cấu hình vé
                     </button>
+                    
+                
+
                     <!-- Nút sửa -->
                     <button onclick="openEditModal(${e.eventId})" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-indigo-600 transition" title="Sửa sự kiện">
                         <i class="fa-solid fa-pen text-sm"></i>
@@ -178,7 +202,7 @@ function openCreateModal() {
 
 async function loadCategories() {
     try {
-        const events = await window.apiClient.get('/api/lpth/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
 
         if (!events) return;
         const categories = [...new Set(
@@ -216,7 +240,14 @@ function openEditModal(eventId) {
     document.getElementById('newCategoryInput').value = '';
     document.getElementById('categoryInput').value = event.categoryName || '';
     document.getElementById('venueInput').value = event.venue ? event.venue.venueId : '';
-    document.getElementById('bannerInput').value = event.bannerImageUrl || '';
+    
+    // --- LƯU LINK ẢNH CŨ VÀ RESET Ô CHỌN FILE ---
+    const oldUrlInput = document.getElementById('oldBannerUrlInput');
+    if (oldUrlInput) oldUrlInput.value = event.bannerImageUrl || '';
+    
+    const fileInput = document.getElementById('bannerFileInput');
+    if (fileInput) fileInput.value = ''; 
+
     document.getElementById('statusInput').value = event.status || 'DRAFT';
     document.getElementById('descriptionInput').value = event.description || '';
 
@@ -240,11 +271,8 @@ async function handleEventSubmit(e) {
     const id = document.getElementById('eventIdInput').value;
     const venueId = document.getElementById('venueInput').value;
 
-    // Ưu tiên category mới
     const newCategory = document.getElementById('newCategoryInput').value.trim();
-
     const selectedCategory = document.getElementById('categoryInput').value;
-
     const finalCategory = newCategory || selectedCategory;
 
     if (!finalCategory) {
@@ -252,13 +280,45 @@ async function handleEventSubmit(e) {
         return;
     }
 
+    // --- BƯỚC 1: XỬ LÝ UPLOAD ẢNH (NẾU CÓ CHỌN FILE) ---
+    // Mặc định lấy link ảnh cũ nếu đang sửa mà không tải file mới
+    let finalBannerUrl = '';
+    const oldUrlInput = document.getElementById('oldBannerUrlInput');
+    if (oldUrlInput) {
+        finalBannerUrl = oldUrlInput.value;
+    }
+
+    const fileInput = document.getElementById('bannerFileInput');
+    if (fileInput && fileInput.files.length > 0) {
+        try {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const token = window.apiClient.getToken();
+            const uploadRes = await fetch('http://localhost:8080/api/ttb/events/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }, // Bắt buộc không set Content-Type
+                body: formData
+            });
+
+            if (!uploadRes.ok) {
+                throw new Error('Lỗi khi tải ảnh lên máy chủ!');
+            }
+            
+            const uploadData = await uploadRes.json();
+            finalBannerUrl = uploadData.url; // Lấy URL do Backend trả về
+        } catch (err) {
+            alert('Lỗi upload ảnh: ' + err.message);
+            return; // Dừng lại không lưu sự kiện nữa nếu ảnh lỗi
+        }
+    }
+
+    // --- BƯỚC 2: GỬI JSON LÊN CONTROLLER JAVA CŨ CỦA BẠN ---
     const eventPayload = {
         title: document.getElementById('titleInput').value.trim(),
         artistNames: document.getElementById('artistInput').value.trim(),
-
         categoryName: finalCategory,
-
-        bannerImageUrl: document.getElementById('bannerInput').value.trim(),
+        bannerImageUrl: finalBannerUrl, // Đưa URL chữ vào JSON
         startTime: document.getElementById('startTimeInput').value,
         endTime: document.getElementById('endTimeInput').value,
         status: document.getElementById('statusInput').value,
@@ -267,37 +327,26 @@ async function handleEventSubmit(e) {
 
     try {
         if (id) {
-            await window.apiClient.put(
-                `/api/lpth/admin/events/update/${id}?venueId=${venueId}`,
-                eventPayload
-            );
-
+            await window.apiClient.put(`/api/ttb/events/update/${id}?venueId=${venueId}`, eventPayload);
             alert('🎉 Cập nhật thông tin sự kiện thành công!');
         } else {
-            await window.apiClient.post(
-                `/api/lpth/admin/events/add?venueId=${venueId}`,
-                eventPayload
-            );
-
+            await window.apiClient.post(`/api/ttb/events/add?venueId=${venueId}`, eventPayload);
             alert('🎉 Tạo mới sự kiện thành công!');
         }
 
         closeEventModal();
-
         await loadEvents();
         await loadCategories();
 
     } catch (err) {
         console.error('Lỗi khi lưu sự kiện:', err);
-
         alert(`Có lỗi xảy ra: ${err.message || 'Không thể lưu thông tin.'}`);
     }
 }
-
 async function deleteEvent(id) {
     if (confirm('Bạn thực sự muốn xóa sự kiện này? Hành động này sẽ đánh dấu xóa và không hiển thị phía người dùng.')) {
         try {
-            await window.apiClient.delete(`/api/lpth/admin/events/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/events/delete/${id}`);
             alert('🗑️ Đã xóa sự kiện thành công!');
             loadEvents();
         } catch (err) {
@@ -339,7 +388,7 @@ async function loadTicketTypes(eventId) {
     `;
 
     try {
-        const list = await window.apiClient.get(`/api/lpth/admin/ticket-types/event/${eventId}`);
+        const list = await window.apiClient.get(`/api/ttb/ticket-types/event/${eventId}`);
         if (list) {
             currentTicketTypes = list;
             renderTicketTypesTable(list);
@@ -361,48 +410,41 @@ function renderTicketTypesTable(list) {
     if (!tbody) return;
 
     if (!list || list.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="px-5 py-8 text-center text-gray-400 font-semibold">
-                    <i class="fa-solid fa-tags text-2xl mb-2 block"></i>
-                    Không tìm thấy hạng vé nào. Hãy dùng form trên để thêm!
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-gray-400">Không tìm thấy hạng vé.</td></tr>';
         return;
     }
 
     tbody.innerHTML = '';
     list.forEach(t => {
-        const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(t.price);
-        const soldQty = t.soldQuantity || 0;
+        // Kiểm tra log xem backend trả về tên trường là gì
+        console.log("Dữ liệu một dòng vé:", t);
 
-        // Tính tỷ lệ đã bán
-        const rate = t.totalQuantity > 0 ? Math.round((soldQty * 100) / t.totalQuantity) : 0;
+        // TỰ ĐỘNG TÌM ĐÚNG TÊN TRƯỜNG (Dù backend để tên thế nào cũng chạy)
+        const typeName = t.typeName || t.g8_type_name || t.G8_type_name || "N/A";
+        const price = t.price || t.g8_price || t.G8_price || 0;
+        const totalQty = t.totalQuantity || t.g8_total_quantity || t.G8_total_quantity || 0;
+        const soldQty = t.soldQuantity || t.g8_sold_quantity || t.G8_sold_quantity || 0;
+
+        const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        const rate = totalQty > 0 ? Math.round((soldQty * 100) / totalQty) : 0;
 
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-gray-50/50 transition font-semibold text-gray-700';
         tr.innerHTML = `
-            <td class="px-5 py-4 font-bold text-gray-900">${t.typeName}</td>
+            <td class="px-5 py-4 font-bold text-gray-900">${typeName}</td>
             <td class="px-5 py-4 text-indigo-600">${formattedPrice}</td>
-            <td class="px-5 py-4">${t.totalQuantity} vé</td>
+            <td class="px-5 py-4">${totalQty} vé</td>
             <td class="px-5 py-4">
                 <div class="flex items-center gap-2">
                     <div class="w-20 bg-gray-150 h-2 rounded-full overflow-hidden relative border border-gray-100">
                         <div class="bg-emerald-500 h-full rounded-full" style="width: ${Math.min(100, rate)}%"></div>
                     </div>
-                    <span class="text-xs text-gray-500">${soldQty}/${t.totalQuantity} (${rate}%)</span>
+                    <span class="text-xs text-gray-500">${soldQty}/${totalQty} (${rate}%)</span>
                 </div>
             </td>
-            <td class="px-5 py-4">
-                <div class="flex items-center justify-center gap-1.5">
-                    <button onclick="editTicketTypeLocal(${t.ticketTypeId})" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-indigo-600 transition" title="Sửa hạng vé">
-                        <i class="fa-solid fa-pen text-xs"></i>
-                    </button>
-                    <button onclick="deleteTicketType(${t.ticketTypeId})" class="w-8 h-8 rounded-lg hover:bg-rose-50 flex items-center justify-center text-gray-400 hover:text-rose-600 transition" title="Xóa hạng vé">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                </div>
+            <td class="px-5 py-4 text-center">
+                <button onclick="editTicketTypeLocal(${t.ticketTypeId || t.g8_ticket_type_id})" class="text-indigo-600 hover:text-indigo-800 mr-2"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteTicketType(${t.ticketTypeId || t.g8_ticket_type_id})" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -450,11 +492,11 @@ async function handleTicketTypeSubmit(e) {
     try {
         if (ticketTypeId) {
             // Cập nhật hạng vé
-            await window.apiClient.put(`/api/lpth/admin/ticket-types/update/${ticketTypeId}`, payload);
+            await window.apiClient.put(`/api/ttb/ticket-types/update/${ticketTypeId}`, payload);
             alert('🎉 Đã cập nhật hạng vé thành công!');
         } else {
             // Thêm mới hạng vé
-            await window.apiClient.post(`/api/lpth/admin/ticket-types/add?eventId=${eventId}`, payload);
+            await window.apiClient.post(`/api/ttb/ticket-types/add?eventId=${eventId}`, payload);
             alert('🎉 Đã thêm hạng vé mới thành công!');
         }
 
@@ -470,7 +512,7 @@ async function handleTicketTypeSubmit(e) {
 async function deleteTicketType(id) {
     if (confirm('Bạn thực sự muốn xóa hạng vé này? Hành động này có thể ảnh hưởng đến các đơn đặt chỗ chưa thanh toán!')) {
         try {
-            await window.apiClient.delete(`/api/lpth/admin/ticket-types/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/ticket-types/delete/${id}`);
             alert('🗑️ Đã xóa hạng vé thành công!');
             loadTicketTypes(activeEventId);
         } catch (err) {

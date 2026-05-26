@@ -39,13 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Role trong JWT: nếu không có API đọc role trong JwtUtil thì fallback
             // ROLE_USER
-            String role = jwtUtil.getRoleFromToken(jwt);
-            String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+            String role = "ROLE_USER";
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     email,
                     null,
-                    Collections.singletonList(new SimpleGrantedAuthority(authority)));
+                    Collections.singletonList(new SimpleGrantedAuthority(role)));
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "G8_event_images")
 @Data
@@ -20,6 +22,7 @@ public class G8_event_image {
 
     @ManyToOne
     @JoinColumn(name = "G8_event_id", nullable = false)
+    @JsonIgnore
     private G8_event event;
 
     @Column(name = "G8_image_url", nullable = false, length = 500)

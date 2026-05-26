@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sự Kiện - EventTicket</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <main class="container">
+        <div class="card">
+            <div id="event-detail"></div>
+            <div id="ticket-types"></div>
+            <button class="btn" onclick="bookTickets()" style="margin-top:1rem;">Đặt Vé</button>
+        </div>
+    </main>
+
+    <script>
+        // Load header
+        document.getElementById('header-placeholder').innerHTML = fetch('../../components/header.html').then(r => r.text());
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+        loadEventDetail(eventId);
+        
+        async function loadEventDetail(id) {
+            // TODO: Fetch from /api/public/events/{id}
+            document.getElementById('event-detail').innerHTML = `
+                <h2>Sự Kiện ID: ${id}</h2>
+                <p>Backend chưa implement endpoint này.</p>
+            `;
+        }
+        
+        function bookTickets() {
+            window.location.href = 'checkout.html';
+        }
+    </script>
+</body>
+</html>
+

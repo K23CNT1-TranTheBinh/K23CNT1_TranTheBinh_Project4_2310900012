@@ -1,0 +1,19 @@
+<header>
+    <nav class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 style="margin:0;"><a href="../index.html" style="color:white; text-decoration:none;">🎟️ EventTicket</a></h1>
+            <div>
+                <a href="../pages/user/profile.html" style="color:white; margin-right:1rem; text-decoration:none;">Hồ Sơ</a>
+                <button class="btn" onclick="logout()" style="padding:0.5rem 1rem;">Đăng Xuất</button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = '../index.html';
+}
+</script>
+

@@ -24,10 +24,10 @@ public interface PromotionRepository extends JpaRepository<G8_promotion, Integer
     @Query("SELECT p FROM G8_promotion p WHERE p.validTo >= :date AND p.isActive = true")
     List<G8_promotion> findValidPromotionsAt(@Param("date") LocalDateTime date);
 
-    // Dành cho Admin: - Tìm kiếm theo keyword (code) và lọc theo trạng thái
+    // Dành cho Admin:  - Tìm kiếm theo keyword (code) và lọc theo trạng thái
     @Query("SELECT p FROM G8_promotion p WHERE " +
-            "(:keyword IS NULL OR LOWER(p.code) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-            "(:isActive IS NULL OR p.isActive = :isActive) " +
-            "ORDER BY p.promotionId DESC")
+           "(:keyword IS NULL OR LOWER(p.code) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+           "(:isActive IS NULL OR p.isActive = :isActive) " +
+           "ORDER BY p.promotionId DESC")
     List<G8_promotion> searchAndFilterAdmin(@Param("keyword") String keyword, @Param("isActive") Boolean isActive);
 }

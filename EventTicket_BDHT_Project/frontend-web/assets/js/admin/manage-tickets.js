@@ -19,12 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadTickets();
 
-    const searchInput = document.getElementById('searchInput');
+    // Xử lý cho ô tìm kiếm QR CODE (Ở giữa màn hình)
+    const qrSearchInput = document.getElementById('qrSearchInput');
 
-    if (searchInput) {
-        searchInput.addEventListener(
+    if (qrSearchInput) {
+        qrSearchInput.addEventListener(
             'input',
             debounce(handleSearchInput, 300)
+        );
+    }
+
+    // Xử lý cho ô tìm kiếm TÊN / EMAIL (Ở trên Header)
+    const headerSearchInput = document.getElementById('searchInput');
+
+    if (headerSearchInput) {
+        headerSearchInput.addEventListener(
+            'input',
+            debounce(handleGeneralSearch, 300)
         );
     }
 
@@ -37,7 +48,7 @@ async function loadTickets() {
     const tableBody = document.getElementById('ticketsTableBody');
     try {
         const tickets =
-            await window.apiClient.get('/api/lpth/admin/tickets/all');
+            await window.apiClient.get('/api/ttb/tickets/all');
 
         if (tickets) {
             allTickets = tickets;
@@ -173,6 +184,32 @@ function renderTicketsTable(tickets) {
     });
 }
 
+// HÀM MỚI: XỬ LÝ LỌC TÊN / SỰ KIỆN TỪ HEADER
+function handleGeneralSearch(e) {
+    const keyword = e.target.value.toLowerCase().trim();
+
+    if (!keyword) {
+        loadFilteredTickets();
+        return;
+    }
+
+    if (!allTickets || allTickets.length === 0) return;
+
+    const filteredTickets = allTickets.filter(t => {
+        const customerName = (t.order?.user?.fullName || '').toLowerCase();
+        
+        const eventName = (t.ticketType?.event?.title || '').toLowerCase();
+        
+        const qrCode = (t.qrCode || '').toLowerCase();
+
+        return customerName.includes(keyword) || 
+               eventName.includes(keyword) || 
+               qrCode.includes(keyword);
+    });
+
+    renderTicketsTable(filteredTickets);
+}
+
 async function handleSearchInput(e) {
 
     const qr = e.target.value.trim();
@@ -185,7 +222,7 @@ async function handleSearchInput(e) {
     try {
 
         const ticket =
-            await window.apiClient.get(`/api/lpth/admin/tickets/qr/${qr}`);
+            await window.apiClient.get(`/api/ttb/tickets/qr/${qr}`);
 
         renderTicketsTable(ticket ? [ticket] : []);
 
@@ -209,7 +246,7 @@ async function loadFilteredTickets() {
 
         const tickets =
             await window.apiClient.get(
-                `/api/lpth/admin/tickets/status/${status}`
+                `/api/ttb/tickets/status/${status}`
             );
 
         renderTicketsTable(tickets);
@@ -244,7 +281,7 @@ async function checkInNow(qrCode) {
     try {
 
         await window.apiClient.post(
-            `/api/lpth/admin/tickets/process-checkin/${qrCode}`
+            `/api/ttb/tickets/process-checkin/${qrCode}`
         );
 
         alert('Check-in vé thành công!');
@@ -271,7 +308,7 @@ async function processCheckin(e) {
 
         const res =
             await window.apiClient.post(
-                `/api/lpth/admin/tickets/process-checkin/${qrCode}`
+                `/api/ttb/tickets/process-checkin/${qrCode}`
             );
 
         resultBox.className =
