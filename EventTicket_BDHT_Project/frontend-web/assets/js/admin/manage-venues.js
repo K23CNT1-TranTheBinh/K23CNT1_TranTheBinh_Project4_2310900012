@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadVenues() {
     const tableBody = document.getElementById('venuesTableBody');
     try {
-        const venues = await window.apiClient.get('/api/admin/venues');
+        const venues = await window.apiClient.get('/api/ttb/venues');
         if (venues) {
             allVenues = venues;
             renderVenuesTable(venues);
@@ -178,11 +178,11 @@ async function handleFormSubmit(e) {
     try {
         if (activeVenueId === null) {
             // Thêm mới
-            await window.apiClient.post('/api/admin/venues/add', payload);
+            await window.apiClient.post('/api/ttb/venues/add', payload);
             alert('🎉 Đăng ký địa điểm mới thành công!');
         } else {
             // Chỉnh sửa
-            await window.apiClient.put(`/api/admin/venues/update/${activeVenueId}`, payload);
+            await window.apiClient.put(`/api/ttb/venues/update/${activeVenueId}`, payload);
             alert('🎉 Đã cập nhật thông tin địa điểm thành công!');
         }
         
@@ -201,7 +201,7 @@ async function deleteVenueSubmit(id) {
     
     if (confirm(`⚠️ Bạn thực sự muốn XÓA địa điểm "${vName}"? Điều này có thể ảnh hưởng đến các sự kiện đang được tổ chức tại đây.`)) {
         try {
-            await window.apiClient.delete(`/api/admin/venues/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/venues/delete/${id}`);
             alert('🗑️ Đã xóa địa điểm thành công!');
             loadVenues();
         } catch(err) {

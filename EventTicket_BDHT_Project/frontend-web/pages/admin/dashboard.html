@@ -340,7 +340,7 @@
             };
 
             try {
-                const response = await window.apiClient.get('/api/admin/dashboard/stats');
+                const response = await window.apiClient.get('/api/ttb/dashboard/stats');
                 if (response) {
                     statsData = response;
 
@@ -372,7 +372,7 @@
                 const endDateStr = now.toISOString().split('.')[0];
                 const startDateStr = sixMonthsAgo.toISOString().split('.')[0];
 
-                const revResponse = await window.apiClient.get(`/api/admin/dashboard/revenue?startDate=${startDateStr}&endDate=${endDateStr}`);
+                const revResponse = await window.apiClient.get(`/api/ttb/dashboard/revenue?startDate=${startDateStr}&endDate=${endDateStr}`);
                 if (revResponse) {
                     totalRevenueSum = revResponse.totalRevenue || 0;
 

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 async function loadVenues() {
     try {
-        const venues = await window.apiClient.get('/api/admin/venues');
+        const venues = await window.apiClient.get('/api/ttb/venues');
         if (venues) {
             allVenues = venues;
             const select = document.getElementById('venueInput');
@@ -75,7 +75,7 @@ async function loadVenues() {
 async function loadEvents() {
     const tableBody = document.getElementById('eventsTableBody');
     try {
-        const events = await window.apiClient.get('/api/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
         if (events) {
             allEvents = events.filter(e => e.deletedAt === null);
             renderEventsTable(allEvents);
@@ -202,7 +202,7 @@ function openCreateModal() {
 
 async function loadCategories() {
     try {
-        const events = await window.apiClient.get('/api/admin/events');
+        const events = await window.apiClient.get('/api/ttb/events');
 
         if (!events) return;
         const categories = [...new Set(
@@ -295,7 +295,7 @@ async function handleEventSubmit(e) {
             formData.append('file', fileInput.files[0]);
 
             const token = window.apiClient.getToken();
-            const uploadRes = await fetch('http://localhost:8080/api/admin/events/upload', {
+            const uploadRes = await fetch('http://localhost:8080/api/ttb/events/upload', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }, // Bắt buộc không set Content-Type
                 body: formData
@@ -327,10 +327,10 @@ async function handleEventSubmit(e) {
 
     try {
         if (id) {
-            await window.apiClient.put(`/api/admin/events/update/${id}?venueId=${venueId}`, eventPayload);
+            await window.apiClient.put(`/api/ttb/events/update/${id}?venueId=${venueId}`, eventPayload);
             alert('🎉 Cập nhật thông tin sự kiện thành công!');
         } else {
-            await window.apiClient.post(`/api/admin/events/add?venueId=${venueId}`, eventPayload);
+            await window.apiClient.post(`/api/ttb/events/add?venueId=${venueId}`, eventPayload);
             alert('🎉 Tạo mới sự kiện thành công!');
         }
 
@@ -346,7 +346,7 @@ async function handleEventSubmit(e) {
 async function deleteEvent(id) {
     if (confirm('Bạn thực sự muốn xóa sự kiện này? Hành động này sẽ đánh dấu xóa và không hiển thị phía người dùng.')) {
         try {
-            await window.apiClient.delete(`/api/admin/events/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/events/delete/${id}`);
             alert('🗑️ Đã xóa sự kiện thành công!');
             loadEvents();
         } catch (err) {
@@ -388,7 +388,7 @@ async function loadTicketTypes(eventId) {
     `;
 
     try {
-        const list = await window.apiClient.get(`/api/admin/ticket-types/event/${eventId}`);
+        const list = await window.apiClient.get(`/api/ttb/ticket-types/event/${eventId}`);
         if (list) {
             currentTicketTypes = list;
             renderTicketTypesTable(list);
@@ -492,11 +492,11 @@ async function handleTicketTypeSubmit(e) {
     try {
         if (ticketTypeId) {
             // Cập nhật hạng vé
-            await window.apiClient.put(`/api/admin/ticket-types/update/${ticketTypeId}`, payload);
+            await window.apiClient.put(`/api/ttb/ticket-types/update/${ticketTypeId}`, payload);
             alert('🎉 Đã cập nhật hạng vé thành công!');
         } else {
             // Thêm mới hạng vé
-            await window.apiClient.post(`/api/admin/ticket-types/add?eventId=${eventId}`, payload);
+            await window.apiClient.post(`/api/ttb/ticket-types/add?eventId=${eventId}`, payload);
             alert('🎉 Đã thêm hạng vé mới thành công!');
         }
 
@@ -512,7 +512,7 @@ async function handleTicketTypeSubmit(e) {
 async function deleteTicketType(id) {
     if (confirm('Bạn thực sự muốn xóa hạng vé này? Hành động này có thể ảnh hưởng đến các đơn đặt chỗ chưa thanh toán!')) {
         try {
-            await window.apiClient.delete(`/api/admin/ticket-types/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/ticket-types/delete/${id}`);
             alert('🗑️ Đã xóa hạng vé thành công!');
             loadTicketTypes(activeEventId);
         } catch (err) {

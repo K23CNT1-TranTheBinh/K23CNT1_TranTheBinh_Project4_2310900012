@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập - BDHT Premium Ticketing</title>
-    <script>
-        // Tự động chuyển hướng 127.0.0.1 sang localhost để Facebook Login chạy không lỗi
-        if (window.location.hostname === '127.0.0.1') {
-            window.location.hostname = 'localhost';
-        }
-    </script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -37,7 +31,6 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
-    <div id="header-container"></div>
 
     <main class="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 to-purple-50">
         <div class="max-w-md w-full bg-white rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100">
@@ -64,7 +57,10 @@
                         <input type="checkbox" class="w-4 h-4 text-brand-purple rounded border-gray-300 focus:ring-brand-purple cursor-pointer">
                         <span class="text-xs font-semibold text-gray-600 group-hover:text-gray-900 transition">Ghi nhớ đăng nhập</span>
                     </label>
-                    <a href="reset-password.html" class="text-xs font-bold text-brand-orange hover:text-brand-orangeHover transition-colors">Quên mật khẩu?</a>
+                    <div class="flex flex-col items-end gap-1">
+                        <a href="reset-password.html" class="text-[10px] font-bold text-gray-400 hover:text-gray-600 transition-colors">Quên mật khẩu (OTP)?</a>
+                        <a href="forgot-password-link.html" class="text-xs font-bold text-brand-orange hover:text-brand-orangeHover transition-colors">Quên mật khẩu (Link)?</a>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full bg-brand-purple hover:bg-brand-purpleHover text-white font-extrabold px-6 py-3.5 rounded-xl text-sm uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 mt-2">

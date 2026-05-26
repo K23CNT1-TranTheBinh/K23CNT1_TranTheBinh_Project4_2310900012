@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadUsers() {
     const tableBody = document.getElementById('usersTableBody');
     try {
-        const users = await window.apiClient.get('/api/admin/users');
+        const users = await window.apiClient.get('/api/ttb/users');
         if (users) {
             allUsers = users;
             renderUsersTable(users);
@@ -151,7 +151,7 @@ async function handleSearchInput(e) {
     }
     
     try {
-        const results = await window.apiClient.get(`/api/admin/users?keyword=${encodeURIComponent(val)}`);
+        const results = await window.apiClient.get(`/api/ttb/users?keyword=${encodeURIComponent(val)}`);
         if (results) {
             renderUsersTable(results);
         }
@@ -171,7 +171,7 @@ async function loadFilteredUsers() {
     const queryString = query.length > 0 ? `?${query.join('&')}` : '';
 
     try {
-        const filtered = await window.apiClient.get(`/api/admin/users${queryString}`);
+        const filtered = await window.apiClient.get(`/api/ttb/users${queryString}`);
         if (filtered) {
             renderUsersTable(filtered);
         }
@@ -186,7 +186,7 @@ async function loadFilteredUsers() {
 async function blockUser(id) {
     if (confirm('🔒 Bạn chắc chắn muốn KHÓA tài khoản người dùng này? Người dùng sẽ không thể đăng nhập hoặc thanh toán vé.')) {
         try {
-            await window.apiClient.put(`/api/admin/users/block/${id}`);
+            await window.apiClient.put(`/api/ttb/users/block/${id}`);
             alert('🔒 Đã khóa tài khoản thành viên thành công.');
             loadFilteredUsers();
         } catch (err) {
@@ -198,7 +198,7 @@ async function blockUser(id) {
 
 async function unblockUser(id) {
     try {
-        await window.apiClient.put(`/api/admin/users/unblock/${id}`);
+        await window.apiClient.put(`/api/ttb/users/unblock/${id}`);
         alert('🔓 Đã mở khóa tài khoản thành viên thành công.');
         loadFilteredUsers();
     } catch (err) {
@@ -210,7 +210,7 @@ async function unblockUser(id) {
 async function deleteUser(id) {
     if (confirm('⚠️ CẢNH BÁO: Bạn thực sự muốn XÓA VĨNH VIỄN tài khoản người dùng này khỏi cơ sở dữ liệu? Hành động này không thể hoàn tác!')) {
         try {
-            await window.apiClient.delete(`/api/admin/users/delete/${id}`);
+            await window.apiClient.delete(`/api/ttb/users/delete/${id}`);
             alert('🗑️ Xóa người dùng vĩnh viễn thành công!');
             loadFilteredUsers();
         } catch (err) {
@@ -245,7 +245,7 @@ async function handleCreateUserSubmit(e) {
     };
 
     try {
-        await window.apiClient.post('/api/admin/users/add', payload);
+        await window.apiClient.post('/api/ttb/users/add', payload);
         alert('🎉 Đã khởi tạo và đăng ký tài khoản thành viên thành công!');
         closeCreateUserModal();
         loadFilteredUsers(); // Tải lại bảng dữ liệu

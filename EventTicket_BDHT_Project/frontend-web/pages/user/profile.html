@@ -135,7 +135,6 @@
                         <label class="w-full sm:w-1/4 text-xs font-bold text-slate-500">Số điện thoại *</label>
                         <div class="w-full sm:w-3/4 flex flex-col gap-1">
                             <input type="tel" id="acc-phone" required placeholder="Nhập số điện thoại" class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg text-xs font-semibold focus:border-brand-orange outline-none bg-white" />
-                            <span class="text-[9px] font-bold text-red-500">*Vui lòng bổ sung thông tin</span>
                         </div>
                     </div>
 
@@ -183,6 +182,27 @@
                     <h2 class="text-base font-extrabold text-slate-800 uppercase tracking-wider">LỊCH SỬ GIAO DỊCH</h2>
                     <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Lịch sử giao dịch mua vé sự kiện của bạn</p>
                 </div>
+
+                <!-- ====== BỘ LỌC TRẠNG THÁI ĐƠN HÀNG ====== -->
+                <div id="order-filter-bar" class="flex items-center gap-2 flex-wrap">
+                    <button type="button" data-filter="ALL"
+                        class="order-filter-btn active-filter px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-200 border-2 bg-brand-orange text-white border-brand-orange shadow-md shadow-brand-orange/20">
+                        <i class="fas fa-layer-group mr-1"></i> Tất cả
+                    </button>
+                    <button type="button" data-filter="PENDING"
+                        class="order-filter-btn px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-200 border-2 bg-white text-slate-500 border-gray-200 hover:border-amber-400 hover:text-amber-600">
+                        <i class="far fa-clock mr-1"></i> Chờ TT
+                    </button>
+                    <button type="button" data-filter="CONFIRMED"
+                        class="order-filter-btn px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-200 border-2 bg-white text-slate-500 border-gray-200 hover:border-emerald-400 hover:text-emerald-600">
+                        <i class="fas fa-check-circle mr-1"></i> Đã TT
+                    </button>
+                    <button type="button" data-filter="CANCELLED"
+                        class="order-filter-btn px-4 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all duration-200 border-2 bg-white text-slate-500 border-gray-200 hover:border-red-400 hover:text-red-600">
+                        <i class="fas fa-ban mr-1"></i> Đã hủy
+                    </button>
+                </div>
+                <!-- ====== KẾT THÚC BỘ LỌC ====== -->
 
                 <!-- Transaction card lists container -->
                 <div id="history-list" class="flex flex-col gap-4">
@@ -346,6 +366,73 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ==================== CANCEL ORDER CONFIRM MODAL ==================== -->
+    <div id="cancel-order-modal" class="hidden fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-8 shadow-2xl transform scale-95 transition-transform duration-300 mx-4 cancel-modal-content">
+            <!-- Icon cảnh báo -->
+            <div class="flex justify-center mb-5">
+                <div class="w-16 h-16 rounded-full bg-red-50 border-2 border-red-100 flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-500"></i>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-extrabold text-gray-900 text-center mb-2">Xác nhận hủy đơn hàng</h3>
+            <p class="text-sm text-gray-500 font-medium text-center leading-relaxed mb-2">
+                Bạn có chắc chắn muốn hủy đơn hàng <strong id="cancel-order-id-display" class="text-brand-orange font-extrabold">#BDHT---</strong> không?
+            </p>
+            <p class="text-[10px] text-red-500 font-bold text-center mb-6">
+                <i class="fas fa-info-circle mr-1"></i> Thao tác này không thể hoàn tác sau khi xác nhận.
+            </p>
+
+            <div class="flex gap-3">
+                <button type="button" id="btn-cancel-dismiss"
+                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-full transition-colors text-sm">
+                    Quay lại
+                </button>
+                <button type="button" id="btn-cancel-confirm"
+                    class="flex-1 bg-red-500 hover:bg-red-600 hover:-translate-y-0.5 text-white font-bold py-3.5 rounded-full transition-all duration-300 shadow-lg shadow-red-500/30 text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-ban"></i> Hủy đơn hàng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PAYMENT STATUS INFO MODAL ==================== -->
+    <div id="payment-status-modal" class="hidden fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm flex items-center justify-center transition-opacity opacity-0">
+        <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 mx-4 payment-modal-content overflow-hidden">
+            <!-- Header gradient -->
+            <div class="bg-gradient-to-r from-brand-purple to-indigo-600 p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+                <div class="flex items-center gap-3 relative z-10">
+                    <div class="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                        <i class="fas fa-credit-card text-lg"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-extrabold">Trạng thái thanh toán</span>
+                        <span id="ps-modal-order-id" class="text-[10px] font-bold text-indigo-200 uppercase tracking-wider">#BDHT---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body: Loading / Content -->
+            <div id="ps-modal-body" class="p-6 flex flex-col gap-4">
+                <!-- Loading state (sẽ được JS thay thế) -->
+                <div class="flex flex-col items-center gap-3 py-6">
+                    <i class="fas fa-spinner fa-spin text-2xl text-brand-orange"></i>
+                    <span class="text-xs font-bold text-slate-400">Đang truy vấn trạng thái...</span>
+                </div>
+            </div>
+
+            <!-- Footer: Nút đóng -->
+            <div class="px-6 pb-6">
+                <button type="button" id="btn-close-payment-status"
+                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-full transition-colors text-sm">
+                    Đóng
+                </button>
+            </div>
         </div>
     </div>
 

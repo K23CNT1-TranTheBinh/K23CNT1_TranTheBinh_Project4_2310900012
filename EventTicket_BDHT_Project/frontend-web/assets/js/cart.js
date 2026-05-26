@@ -28,27 +28,25 @@ function bindCartActions() {
             if (currentOrderDetails && currentOrderDetails.items && currentOrderDetails.items.length > 0) {
                 const order = currentOrderDetails.order;
                 const items = currentOrderDetails.items;
-                
-                const totalAmount = order.totalAmount || items.reduce((sum, item) => {
+
+                const totalAmount = Number(order.totalAmount || items.reduce((sum, item) => {
                     const price = item.priceAtTime || item.price || item.unitPrice || 0;
                     return sum + Number(price) * Number(item.quantity || 0);
-                }, 0);
-                
-                // Trích xuất thông tin sự kiện an toàn
+                }, 0));
+
                 const firstItem = items[0];
                 const eventName = (firstItem.ticketType && firstItem.ticketType.event && firstItem.ticketType.event.title)
-                    || firstItem.ticketTypeName 
-                    || firstItem.typeName 
+                    || firstItem.ticketTypeName
+                    || firstItem.typeName
                     || 'Sự kiện BDHT';
-                
+
                 const eventId = (firstItem.ticketType && firstItem.ticketType.event && firstItem.ticketType.event.id)
                     || '1';
 
-                // Đóng gói checkoutData tạm để cổng thanh toán payment.html nhận diện
                 const checkoutData = {
                     eventId: String(eventId),
-                    selectedPayment: 'vietqr', // Cổng mặc định
-                    totalAmount: totalAmount.toLocaleString('vi-VN') + ' VNĐ',
+                    selectedPayment: 'VNPAY',
+                    totalAmount: totalAmount,
                     eventName: eventName,
                     orderId: String(order.orderId || order.id || getCurrentOrderId()),
                     customer: {
@@ -57,9 +55,18 @@ function bindCartActions() {
                         email: '',
                         idcard: '',
                         address: ''
-                    }
+                    },
+                    items: items.map(item => ({
+                        ticketTypeId: item.ticketType?.ticketTypeId || item.ticketTypeId || null,
+                        quantity: Number(item.quantity || 1),
+                        typeName: item.ticketType?.typeName || item.ticketTypeName || item.typeName || 'Vé',
+                        subtotal: Number(item.priceAtTime || item.price || item.unitPrice || 0) * Number(item.quantity || 1),
+                        price: Number(item.priceAtTime || item.price || item.unitPrice || 0)
+                    }))
                 };
+
                 localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+                localStorage.setItem('pendingCheckout', JSON.stringify(checkoutData));
             }
             window.location.href = 'payment.html';
         });
@@ -90,8 +97,8 @@ async function loadCart() {
     cartDetails.style.display = 'none';
 
     try {
-        const order = await window.apiClient.get(`/api/ttb/member/orders/${orderId}`);
-        const items = await window.apiClient.get(`/api/ttb/member/orders/${orderId}/items`);
+        const order = await window.apiClient.get(`/api/vtd/member/orders/${orderId}`);
+        const items = await window.apiClient.get(`/api/vtd/member/orders/${orderId}/items`);
 
         if (!order || !items) {
             throw new Error('Không thể tải dữ liệu đơn hàng.');
@@ -165,7 +172,7 @@ async function loadCart() {
 
 async function updateCartItem(orderId, itemId, quantity) {
     try {
-        await window.apiClient.put(`/api/ttb/member/orders/${orderId}/items/${itemId}`, { quantity });
+        await window.apiClient.put(`/api/vtd/member/orders/${orderId}/items/${itemId}`, { quantity });
         await loadCart();
     } catch (error) {
         alert('Không thể cập nhật số lượng: ' + error.message);
@@ -174,7 +181,7 @@ async function updateCartItem(orderId, itemId, quantity) {
 
 async function removeCartItem(orderId, itemId) {
     try {
-        await window.apiClient.delete(`/api/ttb/member/orders/${orderId}/items/${itemId}`);
+        await window.apiClient.delete(`/api/vtd/member/orders/${orderId}/items/${itemId}`);
         await loadCart();
     } catch (error) {
         alert('Không thể xóa mục: ' + error.message);
@@ -188,7 +195,7 @@ async function confirmCurrentOrder() {
         return;
     }
     try {
-        const order = await window.apiClient.post(`/api/ttb/member/orders/${orderId}/confirm`, {});
+        const order = await window.apiClient.post(`/api/vtd/member/orders/${orderId}/confirm`, {});
         localStorage.setItem('currentOrderId', orderId);
         alert('Đơn hàng đã được xác nhận. Bạn có thể tiếp tục thanh toán.');
         await loadCart();

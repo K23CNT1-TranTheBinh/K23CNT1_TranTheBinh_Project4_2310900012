@@ -1,248 +1,296 @@
+let pollInterval = null;
+let timerInterval = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Tải Header dynamic nếu có tiện ích
     if (window.pageUtils && typeof window.pageUtils.loadHeader === 'function') {
         window.pageUtils.loadHeader();
     }
 
-    loadOrderAndPaymentInfo();
-    startCountdown();
-    setupBackButton();
-    setupConfirmPayment();
+    const submitButton = document.getElementById('btn-submit');
+    if (submitButton) {
+        submitButton.addEventListener('click', submitPayment);
+    }
+
+    loadPaymentData();
 });
 
-// ==========================================
-// 1. TẢI VÀ ĐỒNG BỘ DỮ LIỆU THANH TOÁN TỪ LOCALSTORAGE
-// ==========================================
-function loadOrderAndPaymentInfo() {
-    const checkoutDataStr = localStorage.getItem('checkoutData');
-    
-    // Nếu không có dữ liệu đơn hàng hợp lệ, tự động trả về trang chi tiết sự kiện để tránh lỗi
-    if (!checkoutDataStr) {
-        alert("Không tìm thấy thông tin thanh toán hợp lệ! Đang chuyển hướng bạn quay lại Trang chủ.");
-        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('index.html') : '../../index.html';
+function appUrl(path) {
+    return window.pageUtils && typeof window.pageUtils.resolveUrl === 'function'
+        ? window.pageUtils.resolveUrl(path)
+        : `../../${path}`;
+}
+
+async function loadPaymentData() {
+    const paymentInfo = document.getElementById('payment-info');
+    const paymentFormSection = document.getElementById('payment-form-section');
+
+    if (!paymentInfo || !paymentFormSection) return;
+
+    try {
+        const orderId = await getOrCreatePaymentOrder();
+
+        if (!orderId) {
+            paymentInfo.innerHTML = `
+                <p style="color:var(--danger); font-size:14px;">
+                    Khong tim thay don hang.<br>
+                    <a href="${appUrl('pages/user/cart.html')}" style="color:var(--accent);">Quay lai gio hang</a>
+                </p>`;
+            return;
+        }
+
+        let order = await fetchOrderOrRecover(orderId);
+        if (!order) {
+            paymentInfo.innerHTML = `
+                <p style="color:var(--danger); font-size:14px;">
+                    Khong the khoi phuc don hang thanh toan.<br>
+                    <a href="${appUrl('pages/user/cart.html')}" style="color:var(--accent);">Quay lai gio hang</a>
+                </p>`;
+            return;
+        }
+
+        paymentInfo.innerHTML = `
+            <div class="order-row">
+                <span class="label">Ma don hang</span>
+                <span class="value">#${order.orderId || orderId}</span>
+            </div>
+            <div class="order-row">
+                <span class="label">Trang thai</span>
+                <span class="value" style="color:var(--warning);">${order.status || 'PENDING'}</span>
+            </div>
+            <div class="order-row">
+                <span class="label">Tong gia tri</span>
+                <span class="value">${formatCurrency(order.totalAmount || 0)}</span>
+            </div>
+            ${order.promotion ? `
+            <div class="order-row">
+                <span class="label">Giam gia</span>
+                <span class="value" style="color:var(--success);">
+                    -${formatCurrency((order.totalAmount || 0) - (order.finalAmount || 0))}
+                </span>
+            </div>` : ''}
+            <div class="order-row total">
+                <span class="label">Can thanh toan</span>
+                <span class="value">${formatCurrency(order.finalAmount ?? order.totalAmount ?? 0)}</span>
+            </div>
+        `;
+
+        paymentFormSection.style.display = 'block';
+    } catch (error) {
+        paymentInfo.innerHTML = `<p style="color:var(--danger); font-size:14px;">
+            Khong the tai don hang: ${error.message}</p>`;
+    }
+}
+
+async function fetchOrderOrRecover(orderId) {
+    try {
+        return await window.apiClient.get(`/api/vtd/member/orders/${orderId}`);
+    } catch (error) {
+        console.warn('Order hien tai khong tai duoc, thu tao lai tu checkoutData:', error);
+        localStorage.removeItem('currentOrderId');
+
+        const recoveredOrderId = await getOrCreatePaymentOrder();
+        if (!recoveredOrderId || recoveredOrderId === String(orderId)) {
+            throw error;
+        }
+
+        return window.apiClient.get(`/api/vtd/member/orders/${recoveredOrderId}`);
+    }
+}
+
+function readStoredCheckoutData() {
+    const keys = ['checkoutData', 'pendingCheckout'];
+    const stores = [localStorage, sessionStorage];
+
+    for (const store of stores) {
+        for (const key of keys) {
+            const raw = store.getItem(key);
+            if (!raw) continue;
+
+            try {
+                const data = JSON.parse(raw);
+                if (data && Array.isArray(data.items) && data.items.length > 0) {
+                    return data;
+                }
+            } catch (error) {
+                console.warn(`Khong doc duoc ${key}:`, error);
+            }
+        }
+    }
+
+    return null;
+}
+
+async function getOrCreatePaymentOrder() {
+    const existingOrderId = localStorage.getItem('currentOrderId');
+    if (existingOrderId) return existingOrderId;
+
+    const checkoutData = readStoredCheckoutData();
+    if (!checkoutData) return null;
+
+    const createdOrder = await window.apiClient.post('/api/vtd/member/orders', {});
+    if (!createdOrder || !createdOrder.orderId) {
+        throw new Error('Khong tao duoc don hang thanh toan.');
+    }
+
+    const orderId = createdOrder.orderId;
+    const items = checkoutData.items.filter((item) => item.ticketTypeId && Number(item.quantity || 0) > 0);
+    if (items.length === 0) {
+        throw new Error('Du lieu thanh toan khong co hang ve hop le.');
+    }
+
+    for (const item of items) {
+        await window.apiClient.post(`/api/vtd/member/orders/${orderId}/items`, {
+            ticketTypeId: Number(item.ticketTypeId),
+            quantity: Number(item.quantity || 1)
+        });
+    }
+
+    localStorage.setItem('currentOrderId', orderId);
+    return String(orderId);
+}
+
+async function submitPayment() {
+    const orderId = localStorage.getItem('currentOrderId');
+    const methodInput = document.querySelector('input[name="payment-method"]:checked');
+    const btn = document.getElementById('btn-submit');
+    const result = document.getElementById('payment-result');
+
+    if (!orderId) {
+        if (result) {
+            result.style.color = 'var(--danger)';
+            result.textContent = 'Khong tim thay don hang de thanh toan.';
+        }
         return;
     }
 
-    try {
-        const checkoutData = JSON.parse(checkoutDataStr);
-        const orderId = checkoutData.orderId || '42357';
-        const eventName = checkoutData.eventName || 'Sự kiện đặc sắc';
-        const totalAmount = checkoutData.totalAmount || '3.100.000đ';
-        const selectedPayment = checkoutData.selectedPayment || 'vietqr';
-
-        // Cập nhật giao diện bên trái
-        const orderIdEl = document.getElementById('payment-order-id');
-        if (orderIdEl) orderIdEl.innerText = `BDHT${orderId}`;
-
-        const eventNameEl = document.getElementById('payment-event-name');
-        if (eventNameEl) eventNameEl.innerText = eventName;
-
-        const amountEl = document.getElementById('payment-amount');
-        if (amountEl) amountEl.innerText = totalAmount;
-
-        // Cập nhật hiển thị View thanh toán bên phải
-        const momoView = document.getElementById('momo-view');
-        const bankView = document.getElementById('bank-view');
-
-        if (momoView && bankView) {
-            const numericAmount = parseInt(totalAmount.replace(/[^0-9]/g, '')) || 3100000;
-
-            if (selectedPayment === 'momo') {
-                momoView.classList.remove('hidden');
-                bankView.classList.add('hidden');
-
-                // Cập nhật mã QR MoMo động
-                const momoQrImg = document.getElementById('momo-qr-img');
-                if (momoQrImg) {
-                    momoQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MoMoPayment_BDHT${orderId}_${numericAmount}`;
-                }
-            } else {
-                bankView.classList.remove('hidden');
-                momoView.classList.add('hidden');
-
-                // Cập nhật text bank details
-                const bankMemo = document.getElementById('bank-memo');
-                if (bankMemo) bankMemo.innerText = `BDHT${orderId}`;
-
-                // Cập nhật mã QR VietQR động (Sử dụng MB Bank)
-                const bankQrImg = document.getElementById('bank-qr-img');
-                if (bankQrImg) {
-                    bankQrImg.src = `https://img.vietqr.io/image/MB-123456789-print.png?amount=${numericAmount}&addInfo=BDHT${orderId}&accountName=CONG%20TY%20ALADDIN`;
-                }
-            }
+    if (!methodInput) {
+        if (result) {
+            result.style.color = 'var(--danger)';
+            result.textContent = 'Vui long chon phuong thuc thanh toan.';
         }
-    } catch (e) {
-        console.error("Lỗi phân tích dữ liệu checkoutData:", e);
-        alert("Dữ liệu thanh toán bị hỏng! Quay lại trang chủ.");
-        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('index.html') : '../../index.html';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Dang xu ly...';
+
+    if (methodInput.value === 'BANK_TRANSFER') {
+        await handleBankTransfer(orderId, btn);
+    } else {
+        await handleOtherPayment(orderId, methodInput.value, btn);
     }
 }
 
-// ==========================================
-// 2. CHỨC NĂNG SAO CHÉP (COPY TO CLIPBOARD)
-// ==========================================
-window.copyText = function(elementId) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
+async function handleBankTransfer(orderId, btn) {
+    const result = document.getElementById('payment-result');
+    const paymentFormSection = document.getElementById('payment-form-section');
+    const qrSection = document.getElementById('qr-section');
 
-    const text = el.innerText || el.textContent;
-    
-    navigator.clipboard.writeText(text.trim()).then(() => {
-        showToastNotification();
-    }).catch(err => {
-        console.error('Không thể sao chép văn bản:', err);
-    });
-};
+    if (result) {
+        result.style.color = 'var(--text-muted)';
+        result.textContent = 'Dang tao ma QR...';
+    }
 
-function showToastNotification() {
-    const toast = document.getElementById('copy-toast');
-    if (!toast) return;
+    try {
+        const payment = await window.apiClient.post('/api/vtd/member/payments', {
+            orderId: Number(orderId),
+            paymentMethod: 'BANK_TRANSFER'
+        });
 
-    toast.classList.remove('opacity-0', 'pointer-events-none');
-    toast.classList.add('opacity-100');
+        const qrData = await window.apiClient.get(`/api/vtd/member/payments/${payment.paymentId}/qr`);
 
-    setTimeout(() => {
-        toast.classList.add('opacity-0', 'pointer-events-none');
-        toast.classList.remove('opacity-100');
-    }, 2000);
+        if (result) result.textContent = '';
+        paymentFormSection.style.display = 'none';
+        qrSection.style.display = 'block';
+
+        document.getElementById('qr-image').src = qrData.qrUrl;
+        document.getElementById('qr-amount').textContent = formatCurrency(qrData.amount);
+        document.getElementById('btn-view-tickets').href = appUrl('pages/user/profile.html');
+
+        startQrCountdown(btn, paymentFormSection, qrSection);
+        startPaymentPolling(payment.paymentId);
+    } catch (error) {
+        if (result) {
+            result.style.color = 'var(--danger)';
+            result.textContent = 'Khong the tao QR: ' + error.message;
+        }
+        resetSubmitButton(btn);
+    }
 }
 
-// ==========================================
-// 3. BỘ ĐẾM NGƯỢC THỜI GIAN (COUNTDOWN TIMER - 10:00)
-// ==========================================
-function startCountdown() {
-    let minutes = 10;
-    let seconds = 0;
+function startQrCountdown(btn, paymentFormSection, qrSection) {
+    clearInterval(timerInterval);
 
-    const timerMinEl = document.getElementById('timer-min');
-    const timerSecEl = document.getElementById('timer-sec');
+    let countdown = 900;
+    timerInterval = setInterval(() => {
+        countdown--;
+        const minutes = String(Math.floor(countdown / 60)).padStart(2, '0');
+        const seconds = String(countdown % 60).padStart(2, '0');
+        document.getElementById('qr-timer').textContent = `Het han sau: ${minutes}:${seconds}`;
 
-    if (!timerMinEl || !timerSecEl) return;
-
-    const interval = setInterval(() => {
-        if (seconds === 0) {
-            if (minutes === 0) {
-                clearInterval(interval);
-                handlePaymentExpiration();
-                return;
-            }
-            minutes--;
-            seconds = 59;
-        } else {
-            seconds--;
+        if (countdown <= 0) {
+            clearInterval(timerInterval);
+            clearInterval(pollInterval);
+            document.getElementById('qr-timer').textContent = 'QR het han. Vui long thu lai.';
+            qrSection.style.display = 'none';
+            paymentFormSection.style.display = 'block';
+            resetSubmitButton(btn);
         }
-
-        // Cập nhật số hiển thị
-        timerMinEl.innerText = String(minutes).padStart(2, '0');
-        timerSecEl.innerText = String(seconds).padStart(2, '0');
     }, 1000);
 }
 
-function handlePaymentExpiration() {
-    alert('Đơn hàng của bạn đã hết hạn thanh toán! Bạn sẽ được chuyển hướng về trang Chi tiết sự kiện.');
-    
-    // Tìm URL trang chi tiết sự kiện từ dữ liệu lưu trữ
-    let eventId = '1';
-    const checkoutDataStr = localStorage.getItem('checkoutData');
-    if (checkoutDataStr) {
+function startPaymentPolling(paymentId) {
+    clearInterval(pollInterval);
+
+    pollInterval = setInterval(async () => {
         try {
-            const data = JSON.parse(checkoutDataStr);
-            if (data.eventId) {
-                eventId = data.eventId;
-            } else if (data.orderId) {
-                // Hạn chế fallback nhầm orderId nếu không khớp, nhưng giữ an toàn chống sập
-                eventId = data.orderId;
+            const status = await window.apiClient.get(`/api/vtd/member/payments/${paymentId}`);
+            if (status.status === 'SUCCESS') {
+                clearInterval(pollInterval);
+                clearInterval(timerInterval);
+                localStorage.removeItem('currentOrderId');
+                window.location.href = appUrl('pages/user/profile.html');
             }
-        } catch (e) {}
-    }
-    
-    // Khôi phục bộ nhớ tạm
-    localStorage.removeItem('checkoutData');
-    window.location.href = `event-detail.html?id=${eventId}`;
-}
-
-// ==========================================
-// 4. THIẾT LẬP NÚT QUAY VỀ
-// ==========================================
-function setupBackButton() {
-    const backBtn = document.getElementById('back-btn');
-    if (!backBtn) return;
-
-    backBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.history.back();
-    });
-}
-
-// ==========================================
-// 5. XÁC NHẬN THANH TOÁN LÊN BACKEND
-// ==========================================
-function setupConfirmPayment() {
-    const btnConfirm = document.getElementById('btn-confirm-payment');
-    if (!btnConfirm) return;
-
-    btnConfirm.addEventListener('click', async (e) => {
-        e.preventDefault();
-        
-        const checkoutDataStr = localStorage.getItem('checkoutData');
-        if (!checkoutDataStr) {
-            alert("Lỗi: Không có dữ liệu đơn hàng.");
-            return;
-        }
-
-        let orderId, paymentMethod;
-        try {
-            const data = JSON.parse(checkoutDataStr);
-            orderId = parseInt(data.orderId);
-            // Chuẩn hóa paymentMethod (MOMO, VNPAY, ZALOPAY, CASH)
-            paymentMethod = (data.selectedPayment || 'CASH').toUpperCase();
-            if (paymentMethod === 'VIETQR' || paymentMethod === 'BANK') paymentMethod = 'CASH'; // Mapping temporary
-        } catch (err) {
-            alert("Lỗi dữ liệu đơn hàng.");
-            return;
-        }
-
-        // Loading state
-        const originalText = btnConfirm.innerHTML;
-        btnConfirm.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-        btnConfirm.classList.add('pointer-events-none', 'opacity-70');
-
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error("Bạn chưa đăng nhập.");
-
-            const response = await fetch('http://localhost:8080/api/ttb/member/payments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    orderId: orderId,
-                    paymentMethod: paymentMethod
-                })
-            });
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Lỗi khi khởi tạo thanh toán.');
-            }
-
-            // Gọi API thành công, backend đã ghi nhận payment cho orderId này
-            alert('Giao dịch đã được ghi nhận trên hệ thống! Vui lòng chờ nhân viên xác nhận.');
-            
-            // Xóa bộ nhớ đệm giỏ hàng/thanh toán
-            localStorage.removeItem('checkoutData');
-            localStorage.removeItem('currentOrderId');
-
-            // Chuyển hướng sang trang hồ sơ > lịch sử giao dịch
-            window.location.href = 'profile.html';
         } catch (error) {
-            console.error("Payment API Error:", error);
-            alert("Lỗi: " + error.message);
-        } finally {
-            btnConfirm.innerHTML = originalText;
-            btnConfirm.classList.remove('pointer-events-none', 'opacity-70');
+            console.error('Polling loi:', error);
         }
-    });
+    }, 5000);
+}
+
+async function handleOtherPayment(orderId, method, btn) {
+    const result = document.getElementById('payment-result');
+    result.style.color = 'var(--text-muted)';
+    result.textContent = 'Dang xu ly...';
+
+    try {
+        const payment = await window.apiClient.post('/api/vtd/member/payments', {
+            orderId: Number(orderId),
+            paymentMethod: method
+        });
+
+        await window.apiClient.post(`/api/vtd/public/payments/${payment.paymentId}/webhook`, {
+            status: 'SUCCESS',
+            transactionId: `${method}-${Date.now()}`
+        });
+
+        document.getElementById('payment-form-section').style.display = 'none';
+        document.getElementById('success-section').style.display = 'block';
+        document.getElementById('btn-view-tickets').href = appUrl('pages/user/profile.html');
+        localStorage.removeItem('currentOrderId');
+    } catch (error) {
+        result.style.color = 'var(--danger)';
+        result.textContent = 'Thanh toan that bai: ' + error.message;
+        resetSubmitButton(btn);
+    }
+}
+
+function resetSubmitButton(btn) {
+    if (!btn) return;
+    btn.disabled = false;
+    btn.textContent = 'Tien hanh thanh toan';
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+        .format(Number(amount || 0));
 }

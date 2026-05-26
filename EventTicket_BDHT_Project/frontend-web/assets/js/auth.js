@@ -23,9 +23,9 @@ function setLoginMessage(message, color = 'red') {
 function redirectAfterLogin(user) {
     const userRole = user.role || 'USER';
     if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
-        window.location.href = '../admin/dashboard.html';
+        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/admin/dashboard.html') : '../admin/dashboard.html';
     } else {
-        window.location.href = '../../index.html';
+        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/index.html') : '../../index.html';
     }
 }
 
@@ -60,7 +60,7 @@ function setupLogin() {
         errorMsg.innerHTML = '<span style="color: blue;">Dang kiem tra thong tin xac thuc...</span>';
 
         try {
-            const response = await window.apiClient.post('/api/ttb/public/auth/login', {
+            const response = await window.apiClient.post('/api/vtd/public/auth/login', {
                 email: emailInput.value,
                 password: passwordInput.value
             });
@@ -115,7 +115,7 @@ function setupRegister() {
         msgBox.innerHTML = '<span style="color: blue;">Dang tao tai khoan...</span>';
 
         try {
-            const response = await window.apiClient.post('/api/ttb/public/auth/register', {
+            const response = await window.apiClient.post('/api/vtd/public/auth/register', {
                 fullName: fullName,
                 email: email,
                 phoneNumber: phoneNumber,
@@ -172,7 +172,7 @@ function loginWithGoogle() {
             }
 
             try {
-                const response = await window.apiClient.post('/api/ttb/public/auth/social-login', {
+                const response = await window.apiClient.post('/api/vtd/public/auth/social-login', {
                     provider: 'google',
                     accessToken: tokenResponse.access_token
                 });
@@ -197,7 +197,10 @@ function loginWithFacebook() {
     }
 
     const appId = SOCIAL_AUTH_CONFIG.facebookAppId;
-    const redirectUri = window.location.href.split('#')[0]; // URL trang hiện tại
+    let redirectUri = window.location.href.split('#')[0]; // URL trang hiện tại
+    if (redirectUri.includes('127.0.0.1')) {
+        redirectUri = redirectUri.replace('127.0.0.1', 'localhost');
+    }
 
     // [GIẢI PHÁP ĐẶC BIỆT CHO LOCAL DEV] 
     // Nếu chạy qua giao thức HTTP thường ở localhost/127.0.0.1, sử dụng phương thức Direct Redirect để không bị SDK chặn HTTPS
@@ -222,7 +225,8 @@ function loginWithFacebook() {
 
         const accessToken = fbResponse.authResponse.accessToken;
         try {
-            const response = await window.apiClient.post('/api/auth/facebook', {
+            const response = await window.apiClient.post('/api/vtd/public/auth/social-login', {
+                provider: 'facebook',
                 accessToken
             });
             setLoginMessage(response.message || 'Đăng nhập Facebook thành công! Đang chuyển hướng...', 'green');
@@ -248,7 +252,8 @@ async function checkFacebookCallback() {
             
             setLoginMessage('Đang xác thực thông tin đăng nhập từ Facebook...', 'blue');
             try {
-                const response = await window.apiClient.post('/api/auth/facebook', {
+                const response = await window.apiClient.post('/api/vtd/public/auth/social-login', {
+                    provider: 'facebook',
                     accessToken
                 });
                 setLoginMessage(response.message || 'Đăng nhập Facebook thành công! Đang chuyển hướng...', 'green');
@@ -273,7 +278,7 @@ function setupGlobalLogout() {
             e.preventDefault();
             
             // Tùy chọn: Gọi API backend để blacklist token nếu Backend có hỗ trợ chức năng này
-            // try { await window.apiClient.post('/api/ttb/public/auth/logout', {}); } catch(err) {}
+            // try { await window.apiClient.post('/api/vtd/public/auth/logout', {}); } catch(err) {}
 
             // 1. Dọn dẹp toàn bộ dữ liệu xác thực khỏi bộ nhớ cục bộ
             localStorage.removeItem('token');
@@ -283,7 +288,7 @@ function setupGlobalLogout() {
             alert('👋 Bạn đã đăng xuất thành công!');
             
             // 2. Chuyển hướng người dùng về trang chủ
-            window.location.href = '../../index.html';
+            window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/index.html') : './pages/index.html';
         }
     });
 }

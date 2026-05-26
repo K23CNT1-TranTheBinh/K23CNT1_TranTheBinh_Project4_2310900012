@@ -3,212 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Thanh Toán - EventTicket</title>
-    <link rel="stylesheet" href="../../assets/css/style.css?v=1.3">
-    <!-- Tailwind CSS CDN -->
+    <title>Thanh Toán - EventTicket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            purple: '#5f1082',
-                            orange: '#f26f21',
-                            orangeHover: '#d95a12',
-                        }
-                    }
+                        brand: { purple: '#5f1082', orange: '#f26f21', orangeHover: '#e05c15' }
+                    },
+                    fontFamily: { sans: ['Be Vietnam Pro', 'sans-serif'] }
                 }
             }
         }
     </script>
-    <!-- Google Font Outfit & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --surface2: #1c1c27;
+            --border: #2a2a3a;
+            --accent: #6c63ff;
+            --accent2: #ff6584;
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff4757;
+            --text: #e8e8f0;
+            --text-muted: #7878a0;
+            --text-dim: #4a4a6a;
+            --glow: rgba(108, 99, 255, 0.25);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
         }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.45; }
+
+        /* ── Background grid ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
-        .pulse-timer {
-            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px; left: 50%;
+            transform: translateX(-50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #header-container { position: relative; z-index: 10; }
+
+        /* ── Layout ── */
+        .payment-page {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 680px) {
+            .payment-page { grid-template-columns: 1fr; }
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.6;
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* ── Order info ── */
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .order-row:last-child { border-bottom: none; }
+
+        .order-row .label { color: var(--text-muted); }
+        .order-row .value { font-weight: 600; color: var(--text); }
+
+        .order-row.total .label { color: var(--text); font-weight: 600; }
+        .order-row.total .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent2);
+        }
+
+        #payment-info-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ── Method selector ── */
+        .method-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .method-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .method-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .method-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface2);
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .method-label .icon { font-size: 22px; }
+
+        .method-option input:checked + .method-label {
+            border-color: var(--accent);
+            background: rgba(108,99,255,0.1);
+            color: var(--text);
+            box-shadow: 0 0 0 1px var(--accent), inset 0 0 20px rgba(108,99,255,0.05);
+        }
+
+        .method-option.highlight input:checked + .method-label {
+            border-color: var(--success);
+            background: rgba(0,214,143,0.08);
+            box-shadow: 0 0 0 1px var(--success), inset 0 0 20px rgba(0,214,143,0.05);
+            color: var(--success);
+        }
+
+        .method-label:hover {
+            border-color: var(--text-dim);
+            color: var(--text);
+        }
+
+        .badge-new {
+            position: absolute;
+            top: -6px; right: -6px;
+            background: var(--success);
+            color: #000;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Button ── */
+        .btn-pay {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-pay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn-pay:hover { transform: translateY(-1px); box-shadow: 0 8px 24px var(--glow); }
+        .btn-pay:hover::before { opacity: 1; }
+        .btn-pay:active { transform: translateY(0); }
+        .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── QR Section ── */
+        #qr-section { display: none; }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .qr-frame {
+            position: relative;
+            padding: 12px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(108,99,255,0.3);
+        }
+
+        .qr-frame img {
+            width: 220px;
+            height: 220px;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .qr-pulse {
+            position: absolute;
+            inset: -3px;
+            border-radius: 18px;
+            border: 2px solid var(--accent);
+            animation: pulse-border 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.01); }
+        }
+
+        .qr-amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent2);
+        }
+
+        .qr-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .qr-timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--warning);
+            background: rgba(255,170,0,0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,170,0,0.2);
+        }
+
+        .qr-steps {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .step-num {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* ── Success ── */
+        #success-section {
+            display: none;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px; height: 80px;
+            background: rgba(0,214,143,0.1);
+            border: 2px solid var(--success);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop-in {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 8px;
+        }
+
+        .success-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 28px;
+            background: rgba(0,214,143,0.1);
+            border: 1.5px solid var(--success);
+            color: var(--success);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0,214,143,0.2);
+            transform: translateY(-1px);
+        }
+
+        /* ── Status message ── */
+        #payment-result {
+            margin-top: 16px;
+            font-size: 13px;
+            min-height: 20px;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Page title ── */
+        .page-header {
+            grid-column: 1 / -1;
+            margin-bottom: 8px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header h1 span { color: var(--accent); }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        /* ── Fade in animation ── */
+        .card {
+            animation: fade-up 0.4s ease both;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.08s; }
+        .card:nth-child(3) { animation-delay: 0.16s; }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-slate-800 pb-20">
-
-    <!-- 1. Header & Navigation (Placeholder tags) -->
+<body>
     <div id="header-container"></div>
-    <div id="header-placeholder"></div>
 
-    <!-- Main Payment Container Layout -->
-    <main class="max-w-5xl mx-auto px-4 mt-10">
-        
-        <!-- Toast Notification Alert for Copying -->
-        <div id="copy-toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-full shadow-lg z-50 opacity-0 pointer-events-none transition-all duration-300">
-            <i class="fas fa-check-circle mr-1.5"></i> Đã sao chép vào bộ nhớ tạm!
+    <main class="payment-page">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Thanh toán <span>đơn hàng</span></h1>
+            <p>Hoàn tất thanh toán để nhận vé điện tử của bạn</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-150">
-            
-            <!-- Left Column (Thông tin đơn hàng) -->
-            <div class="p-6 md:p-8 flex flex-col justify-between gap-6 border-b md:border-b-0 md:border-r border-gray-200">
-                <div class="flex flex-col gap-5">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs bg-purple-100 text-brand-purple font-extrabold px-3 py-1 rounded-full uppercase">
-                            Thanh toán đơn hàng
+        <!-- Card 1: Thông tin đơn hàng -->
+        <div class="card">
+            <div class="card-title">Thông tin đơn hàng</div>
+
+            <div id="payment-info">
+                <div id="payment-info-loading">
+                    <span class="spinner" style="border-color: rgba(108,99,255,0.3); border-top-color: var(--accent);"></span>
+                    Đang tải thông tin...
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Phương thức + QR + Success -->
+        <div class="card">
+
+            <!-- Form chọn phương thức -->
+            <div id="payment-form-section" style="display:none;">
+                <div class="card-title">Phương thức thanh toán</div>
+
+                <div class="method-grid">
+                    <label class="method-option highlight">
+                        <input type="radio" name="payment-method" value="BANK_TRANSFER" checked>
+                        <span class="method-label">
+                            <span class="icon">🏦</span>
+                            QR Ngân hàng
                         </span>
-                    </div>
+                        <span class="badge-new">MỚI</span>
+                    </label>
 
-                    <div class="flex flex-col gap-2">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mã đơn hàng / Order ID</span>
-                        <h2 id="payment-order-id" class="text-lg font-black text-slate-900 tracking-wide uppercase">
-                            BDHT42357
-                        </h2>
-                    </div>
+                    <label class="method-option">
+                        <input type="radio" name="payment-method" value="MOMO">
+                        <span class="method-label">
+                            <span class="icon">💜</span>
+                            MoMo
+                        </span>
+                    </label>
 
-                    <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tên sự kiện / Event Name</span>
-                        <p id="payment-event-name" class="text-base font-extrabold text-slate-800 leading-snug">
-                            Show diễn xiếc tre nghệ thuật Teh Dar | Bản sắc Tây Nguyên 2026
-                        </p>
-                    </div>
+                    <label class="method-option">
+                        <input type="radio" name="payment-method" value="VNPAY">
+                        <span class="method-label">
+                            <span class="icon">💳</span>
+                            VNPay
+                        </span>
+                    </label>
 
-                    <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Số tiền cần thanh toán / Amount</span>
-                        <div id="payment-amount" class="text-2xl md:text-3xl font-black text-brand-orange">
-                            3.100.000đ
-                        </div>
-                    </div>
+                    <label class="method-option">
+                        <input type="radio" name="payment-method" value="CASH">
+                        <span class="method-label">
+                            <span class="icon">💵</span>
+                            Tiền mặt
+                        </span>
+                    </label>
                 </div>
 
-                <!-- Khối đếm ngược (Countdown timer) -->
-                <div class="bg-red-50 border border-red-100 rounded-xl p-5 flex flex-col gap-3 mt-6">
-                    <div class="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-wider">
-                        <i class="far fa-clock text-base pulse-timer"></i>
-                        <span>Đơn hàng sẽ hết hạn sau:</span>
-                    </div>
-                    
-                    <div class="flex gap-2.5 items-center">
-                        <div class="flex flex-col items-center bg-white border border-red-200 rounded-lg w-14 py-2.5 shadow-sm">
-                            <span id="timer-min" class="text-xl font-black text-slate-850">10</span>
-                            <span class="text-[8px] font-bold text-slate-400 uppercase">Phút</span>
-                        </div>
-                        <span class="text-xl font-black text-red-400">:</span>
-                        <div class="flex flex-col items-center bg-white border border-red-200 rounded-lg w-14 py-2.5 shadow-sm">
-                            <span id="timer-sec" class="text-xl font-black text-slate-850">00</span>
-                            <span class="text-[8px] font-bold text-slate-400 uppercase">Giây</span>
-                        </div>
-                    </div>
-                </div>
+                <button class="btn-pay" id="btn-submit" type="button">
+                    Tiến hành thanh toán
+                </button>
 
-                <!-- Nút Quay Về & Xác Nhận -->
-                <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <a href="#" id="back-btn" class="inline-flex items-center gap-2 text-xs font-extrabold text-gray-400 hover:text-brand-purple uppercase tracking-widest transition">
-                        <i class="fas fa-arrow-left"></i> Quay về
-                    </a>
-                    <button type="button" id="btn-confirm-payment" class="bg-brand-orange hover:bg-brand-orangeHover hover:-translate-y-1 active:scale-95 text-white font-extrabold px-6 py-3 rounded-full text-sm transition-all duration-300 shadow-md shadow-brand-orange/30 flex items-center gap-2">
-                        Xác nhận đã thanh toán <i class="fas fa-check-circle"></i>
-                    </button>
+                <div id="payment-result"></div>
+            </div>
+
+            <!-- QR Section -->
+            <div id="qr-section">
+                <div class="card-title">Quét mã để thanh toán</div>
+                <div class="qr-container">
+                    <div class="qr-frame">
+                        <div class="qr-pulse"></div>
+                        <img id="qr-image" src="" alt="QR Code"/>
+                    </div>
+
+                    <div class="qr-amount" id="qr-amount"></div>
+
+                    <div class="qr-timer" id="qr-timer">
+                        ⏱ Đang tải...
+                    </div>
+
+                    <div class="qr-steps">
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            Mở app ngân hàng bất kỳ
+                        </div>
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            Chọn "Quét mã QR" hoặc "Chuyển tiền"
+                        </div>
+                        <div class="step">
+                            <span class="step-num">3</span>
+                            Số tiền & nội dung tự động điền
+                        </div>
+                        <div class="step">
+                            <span class="step-num">4</span>
+                            Xác nhận giao dịch — vé sẽ được phát ngay
+                        </div>
+                    </div>
+
+                    <div class="qr-note">
+                        Hệ thống tự động xác nhận sau khi nhận được tiền
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Column (Khu vực QR Code động) -->
-            <div class="flex flex-col justify-center">
-
-                <!-- 1. Giao Diện MoMo (id="momo-view") -->
-                <div id="momo-view" class="bg-[#a50064] text-white p-6 md:p-8 flex flex-col items-center justify-center gap-6 h-full min-h-[460px]">
-                    <div class="flex flex-col items-center gap-2">
-                        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo Logo" class="w-16 h-16 rounded-xl shadow-lg border border-[#c30076]" />
-                        <span class="text-xs font-black uppercase tracking-wider text-pink-100">Thanh toán qua Ví MoMo</span>
-                    </div>
-
-                    <!-- Square QR code in white backdrop -->
-                    <div class="bg-white p-4 rounded-xl shadow-2xl flex items-center justify-center border-4 border-pink-700/30">
-                        <img id="momo-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MoMoPaymentDemo_BDHT42357_3100000" alt="MoMo QR Code" class="w-48 h-48 object-contain" />
-                    </div>
-
-                    <div class="text-center flex flex-col gap-2 max-w-xs">
-                        <p class="text-xs font-extrabold leading-normal text-white">
-                            Sử dụng App MoMo hoặc ứng dụng camera hỗ trợ QR code để quét mã thanh toán.
-                        </p>
-                        <span class="text-[9px] font-bold text-pink-200 tracking-wide">Giao dịch được mã hóa và bảo mật an toàn 100%.</span>
-                    </div>
-                </div>
-
-                <!-- 2. Giao Diện Chuyển khoản Ngân hàng VietQR (id="bank-view" hidden) -->
-                <div id="bank-view" class="bg-[#f0f4ff] border-l-0 md:border-l border-gray-200 p-6 md:p-8 flex flex-col gap-6 h-full min-h-[460px] hidden">
-                    
-                    <div class="flex justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-gray-150">
-                        <img src="https://img.vietqr.io/assets/images/vietqr.png" alt="VietQR Logo" class="h-8 object-contain" />
-                        <!-- Bank Logo (MB Bank) -->
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_MB_new.png" alt="MB Bank Logo" class="h-6 object-contain" />
-                    </div>
-
-                    <!-- Split container: Left QR, Right bank texts -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-center bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                        <!-- Left QR -->
-                        <div class="flex flex-col items-center justify-center bg-slate-50 p-2.5 rounded-lg border border-gray-100">
-                            <img id="bank-qr-img" src="https://img.vietqr.io/image/MB-123456789-print.png?amount=3100000&addInfo=BDHT42357&accountName=CONG%20TY%20ALADDIN" alt="VietQR Bank Code" class="w-full max-w-[170px] h-auto object-contain rounded" />
-                        </div>
-
-                        <!-- Right Text inputs with Copy triggers -->
-                        <div class="flex flex-col gap-3 text-xs">
-                            <div class="flex flex-col gap-0.5">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Ngân hàng</span>
-                                <span class="font-extrabold text-slate-800">MB BANK (Ngân hàng Quân Đội)</span>
-                            </div>
-
-                            <div class="flex flex-col gap-0.5">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Chủ tài khoản</span>
-                                <span class="font-extrabold text-slate-800">CONG TY ALADDIN</span>
-                            </div>
-
-                            <div class="flex flex-col gap-0.5 relative group">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Số tài khoản</span>
-                                <div class="flex items-center justify-between bg-slate-50 border border-gray-200 rounded px-2.5 py-1.5 mt-0.5">
-                                    <span id="bank-acc-no" class="font-black text-slate-900 font-mono">123456789</span>
-                                    <button type="button" onclick="copyText('bank-acc-no')" class="text-brand-purple hover:text-indigo-650 hover:scale-110 active:scale-95 transition ml-1" title="Sao chép số tài khoản">
-                                        <i class="far fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col gap-0.5 relative group">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Nội dung chuyển khoản</span>
-                                <div class="flex items-center justify-between bg-slate-50 border border-gray-200 rounded px-2.5 py-1.5 mt-0.5">
-                                    <span id="bank-memo" class="font-black text-slate-900 font-mono uppercase">BDHT42357</span>
-                                    <button type="button" onclick="copyText('bank-memo')" class="text-brand-purple hover:text-indigo-650 hover:scale-110 active:scale-95 transition ml-1" title="Sao chép nội dung">
-                                        <i class="far fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center flex flex-col gap-1.5 max-w-sm mx-auto">
-                        <p class="text-xs font-extrabold leading-normal text-slate-650">
-                            Mở app ngân hàng để quét mã VietQR hoặc chuyển khoản thủ công.
-                        </p>
-                        <span class="text-[9px] font-bold text-slate-400 tracking-wide">Lưu ý: Chuyển khoản đúng số tiền và nội dung chuyển khoản ở trên để hệ thống tự động xác nhận đơn hàng.</span>
-                    </div>
-
-                </div>
-
+            <!-- Success Section -->
+            <div id="success-section">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Thanh toán thành công!</div>
+                <p class="success-sub">
+                    Đơn hàng của bạn đã được xác nhận.<br>
+                    Vé điện tử đã được cấp vào tài khoản.
+                </p>
+                <a id="btn-view-tickets" href="#" class="btn-secondary">
+                    🎫 Xem vé của tôi
+                </a>
             </div>
 
         </div>
+
     </main>
 
-    <!-- Footer Dynamic Container Placeholder -->
-    <div id="footer-container"></div>
-    <div id="footer-placeholder"></div>
-
-    <!-- Dynamic scripts -->
     <script src="../../assets/js/core/api-client.js"></script>
-    <script src="../../assets/js/payment.js?v=1.2"></script>
+    <script src="../../assets/js/payment.js"></script>
 </body>
 </html>

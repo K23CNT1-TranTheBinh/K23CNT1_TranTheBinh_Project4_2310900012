@@ -6,7 +6,7 @@
     <title>Chi Tiết Sự Kiện - EventTicket</title>
     <link rel="stylesheet" href="../../assets/css/style.css?v=1.3">
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -95,10 +95,10 @@
                 </div>
 
                 <!-- Two Column Layout: Description Left, Booking Form Right -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
                     
                     <!-- Left column: Event Details -->
-                    <div class="lg:col-span-2 flex flex-col gap-8">
+                    <div class="lg:col-span-8 flex flex-col gap-8">
                         <div class="bg-white rounded-2xl shadow-md border border-gray-150 p-6 md:p-8">
                             
                             <!-- Tiêu đề "GIỚI THIỆU VỀ SỰ KIỆN" màu đỏ, border bottom -->
@@ -109,7 +109,7 @@
                             </div>
 
                             <!-- Description detail context text -->
-                            <div id="detail-desc" class="text-slate-650 text-[15px] leading-relaxed space-y-4">
+                            <div id="detail-desc" class="prose prose-lg prose-slate max-w-none text-slate-650 leading-relaxed">
                                 Chưa có thông tin giới thiệu chi tiết cho sự kiện này.
                             </div>
 
@@ -154,8 +154,8 @@
                     </div>
 
                     <!-- Right Column Sidebar: Dynamic Selection form -->
-                    <div class="lg:col-span-1">
-                        <div id="booking-block" class="lg:sticky lg:top-24 bg-white rounded-2xl shadow-md border border-gray-150 p-6 flex flex-col gap-6">
+                    <div class="lg:col-span-4 relative">
+                        <div id="booking-block" class="lg:sticky lg:top-28 bg-white rounded-3xl shadow-2xl border border-gray-100 p-7 flex flex-col gap-6 relative z-30">
                             
                             <div class="border-b border-gray-100 pb-3 flex justify-between items-center">
                                 <h3 class="text-base font-extrabold text-brand-purple uppercase">ĐẶT VÉ ONLINE</h3>
@@ -172,12 +172,15 @@
 
                                 <div class="flex flex-col gap-2">
                                     <span class="text-xs font-bold uppercase text-slate-400">2. Số lượng vé</span>
-                                    <div class="flex gap-3 items-center">
-                                        <input type="number" id="ticket-qty" min="1" max="10" value="1" class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center font-bold text-slate-800 bg-gray-50 focus:border-brand-orange outline-none" />
-                                        <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm tracking-wider uppercase py-3 rounded-lg shadow transition">
-                                            ĐẶT VÉ
-                                        </button>
+                                    <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-1 mb-2">
+                                        <button type="button" onclick="updateTicketQty(-1)" class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm hover:text-brand-orange transition-all font-bold text-lg"><i class="fas fa-minus"></i></button>
+                                        <span id="ticket-qty-display" class="font-extrabold text-lg text-slate-800 w-12 text-center">1</span>
+                                        <button type="button" onclick="updateTicketQty(1)" class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm hover:text-brand-orange transition-all font-bold text-lg"><i class="fas fa-plus"></i></button>
+                                        <input type="hidden" id="ticket-qty" value="1" />
                                     </div>
+                                    <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-red-500 hover:from-brand-orangeHover hover:to-red-600 text-white font-black text-sm tracking-widest uppercase py-4 rounded-xl shadow-xl shadow-orange-500/30 hover:-translate-y-1 transition-all duration-300">
+                                        MUA VÉ NGAY
+                                    </button>
                                 </div>
                             </form>
 
@@ -201,6 +204,159 @@
                     <!-- Grid layout chia 4 cột (grid-cols-1 md:grid-cols-4) -->
                     <div id="related-events-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         <!-- Loaded dynamically via JS renderRelatedEvents() -->
+                    </div>
+                </section>
+
+                <!-- ===== REVIEW / RATING SECTION (Hệ thống đánh giá) ===== -->
+                <section class="mt-14 pt-10 border-t border-gray-250">
+                    <div class="bg-white rounded-2xl shadow-md border border-gray-150 p-6 md:p-8">
+                        
+                        <!-- Header -->
+                        <div class="flex flex-col items-center mb-10">
+                            <h2 class="text-2xl md:text-3xl font-black text-brand-purple tracking-widest relative pb-3">
+                                ⭐ ĐÁNH GIÁ & NHẬN XÉT
+                            </h2>
+                            <p class="text-xs font-semibold text-slate-500 mt-2 uppercase tracking-wider">Chia sẻ trải nghiệm của bạn với cộng đồng</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            
+                            <!-- Left Column: Thống kê đánh giá -->
+                            <div class="flex flex-col gap-6">
+                                <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-150 shadow-sm">
+                                    <div class="text-center mb-4">
+                                        <div id="avg-rating" class="text-5xl font-black text-brand-orange mb-1">0.0</div>
+                                        <div class="flex items-center justify-center gap-1 text-sm">
+                                            <span class="text-yellow-400">★★★★★</span>
+                                        </div>
+                                        <p id="total-reviews-count" class="text-xs text-slate-500 mt-2">Đang tải đánh giá...</p>
+                                    </div>
+                                    
+                                    <!-- Rating Distribution -->
+                                    <div class="flex flex-col gap-3 mt-5 text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 text-slate-600 font-bold">★★★★★</span>
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="star-5-bar" class="h-full bg-yellow-400 transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="star-5-count" class="text-slate-500 w-12 text-right">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 text-slate-600 font-bold">★★★★</span>
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="star-4-bar" class="h-full bg-yellow-300 transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="star-4-count" class="text-slate-500 w-12 text-right">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 text-slate-600 font-bold">★★★</span>
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="star-3-bar" class="h-full bg-yellow-200 transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="star-3-count" class="text-slate-500 w-12 text-right">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 text-slate-600 font-bold">★★</span>
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="star-2-bar" class="h-full bg-orange-300 transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="star-2-count" class="text-slate-500 w-12 text-right">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 text-slate-600 font-bold">★</span>
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="star-1-bar" class="h-full bg-red-300 transition-all duration-500" style="width: 0%"></div>
+                                            </div>
+                                            <span id="star-1-count" class="text-slate-500 w-12 text-right">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Middle/Right Column: Form đánh giá + Danh sách reviews -->
+                            <div class="lg:col-span-2 flex flex-col gap-6">
+                                
+                                <!-- Form Đánh Giá -->
+                                <div id="review-form-container" class="bg-slate-50 rounded-2xl p-6 border border-gray-200">
+                                    <h3 class="text-base font-extrabold text-slate-800 mb-5 flex items-center gap-2">
+                                        <i class="fas fa-edit text-brand-orange"></i> Để lại đánh giá của bạn
+                                    </h3>
+                                    
+                                    <!-- Điều kiện hiển thị Form -->
+                                    <div id="review-login-prompt" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                                        <p class="text-sm font-semibold text-blue-700">
+                                            <i class="fas fa-lock mr-2"></i> Vui lòng <a href="./login.html" class="underline font-extrabold text-brand-purple">đăng nhập</a> để đánh giá sự kiện này.
+                                        </p>
+                                    </div>
+
+                                    <div id="review-not-purchased-prompt" class="hidden p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                                        <p class="text-sm font-semibold text-yellow-800">
+                                            <i class="fas fa-info-circle mr-2"></i> Bạn cần mua vé tham gia sự kiện này để có thể để lại đánh giá.
+                                        </p>
+                                    </div>
+
+                                    <div id="review-already-reviewed-prompt" class="hidden p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-center">
+                                        <p class="text-sm font-semibold text-emerald-700">
+                                            <i class="fas fa-check-circle mr-2"></i> Cảm ơn bạn! Bạn đã đánh giá sự kiện này rồi.
+                                        </p>
+                                    </div>
+
+                                    <form id="review-form" class="hidden flex flex-col gap-4">
+                                        
+                                        <!-- Rating Stars (1-5) -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-bold uppercase text-slate-600">Xếp hạng *</label>
+                                            <div class="flex gap-2 items-center" id="star-rating">
+                                                <button type="button" class="text-4xl text-gray-300 hover:text-yellow-400 transition cursor-pointer" data-rating="1">★</button>
+                                                <button type="button" class="text-4xl text-gray-300 hover:text-yellow-400 transition cursor-pointer" data-rating="2">★</button>
+                                                <button type="button" class="text-4xl text-gray-300 hover:text-yellow-400 transition cursor-pointer" data-rating="3">★</button>
+                                                <button type="button" class="text-4xl text-gray-300 hover:text-yellow-400 transition cursor-pointer" data-rating="4">★</button>
+                                                <button type="button" class="text-4xl text-gray-300 hover:text-yellow-400 transition cursor-pointer" data-rating="5">★</button>
+                                            </div>
+                                            <input type="hidden" id="review-rating" value="5" />
+                                            <span id="rating-display" class="text-sm font-bold text-slate-600">Bạn xếp hạng: 5 sao ⭐⭐⭐⭐⭐</span>
+                                        </div>
+
+                                        <!-- Review Content -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-bold uppercase text-slate-600">Chia sẻ nhận xét của bạn *</label>
+                                            <textarea 
+                                                id="review-content" 
+                                                required
+                                                placeholder="Trải nghiệm của bạn như thế nào? Điều gì ấn tượng nhất? Có gì cần cải thiện?"
+                                                class="w-full h-28 px-4 py-3 border border-gray-300 rounded-lg text-sm resize-none focus:border-brand-orange focus:outline-none bg-white"
+                                            ></textarea>
+                                            <span class="text-xs text-slate-500">Tối thiểu 10 ký tự, tối đa 500 ký tự</span>
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <button 
+                                            type="submit" 
+                                            class="w-full bg-brand-orange hover:bg-brand-orangeHover active:scale-97 text-white font-extrabold py-3 rounded-lg uppercase text-sm tracking-wider transition shadow"
+                                        >
+                                            <i class="fas fa-paper-plane mr-2"></i> Gửi đánh giá
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Danh sách Reviews -->
+                                <div class="flex flex-col gap-4">
+                                    <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                        <i class="fas fa-comments text-brand-purple"></i> Các nhận xét từ cộng đồng
+                                    </h3>
+                                    
+                                    <div id="reviews-list" class="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-2">
+                                        <!-- Reviews loaded dynamically via JS -->
+                                        <div class="text-center py-6 text-slate-400">
+                                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                            <p class="text-sm font-semibold">Đang tải bình luận...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
@@ -326,7 +482,7 @@
                 <div class="flex flex-col gap-6 justify-between bg-slate-50 rounded-xl p-5 border border-gray-250">
                     <!-- Ảnh sự kiện -->
                     <div class="w-full h-40 overflow-hidden rounded-xl bg-slate-900 border border-gray-150 relative">
-                        <img id="modal-event-image" src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80" alt="Event Banner Thumbnail" class="w-full h-full object-cover" />
+                        <img id="modal-event-image" src="" alt="Event Banner Thumbnail" class="w-full h-full object-cover" />
                         <div class="absolute bottom-3 left-3 bg-brand-purple text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase shadow">
                             EventTicket Checkout
                         </div>
@@ -373,9 +529,16 @@
                             </span>
                         </label>
                         
-                        <button type="button" onclick="submitModalCheckout()" class="w-full bg-brand-orange hover:bg-brand-orangeHover active:scale-[0.98] text-white py-3 px-6 rounded-xl font-extrabold uppercase text-xs tracking-widest shadow transition">
-                            Tiếp tục thanh toán / Continue
-                        </button>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="addToCartModal()" class="w-1/2 bg-brand-purple hover:bg-purple-700 active:scale-[0.98] text-white py-3 px-4 rounded-xl font-extrabold uppercase text-xs tracking-widest shadow transition flex flex-col items-center justify-center text-center gap-1">
+                                <span>Thêm vào giỏ</span>
+                                <span class="text-[9px] opacity-80 normal-case">Add to Cart</span>
+                            </button>
+                            <button type="button" onclick="submitModalCheckout()" class="w-1/2 bg-brand-orange hover:bg-brand-orangeHover active:scale-[0.98] text-white py-3 px-4 rounded-xl font-extrabold uppercase text-xs tracking-widest shadow transition flex flex-col items-center justify-center text-center gap-1">
+                                <span>Thanh toán ngay</span>
+                                <span class="text-[9px] opacity-80 normal-case">Checkout Now</span>
+                            </button>
+                        </div>
                         
                         <button id="close-modal-btn" type="button" class="w-full bg-gray-250 hover:bg-gray-300 text-slate-800 py-2.5 px-6 rounded-xl font-bold uppercase text-xs tracking-wider transition">
                             Đóng / Close

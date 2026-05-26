@@ -27,4 +27,17 @@ public interface PaymentRepository extends JpaRepository<G8_payment, Integer> {
     @Query("SELECT p FROM G8_payment p WHERE p.paidAt BETWEEN :startDate AND :endDate")
     List<G8_payment> findPaymentsByDateRange(@Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    @Query("""
+            SELECT COUNT(p) FROM G8_payment p
+            WHERE p.order.user.userId = :userId
+              AND p.order.status = 'COMPLETED'
+              AND p.status = 'SUCCESS'
+              AND EXISTS (
+                  SELECT oi FROM G8_order_item oi
+                  WHERE oi.order.orderId = p.order.orderId
+                    AND oi.ticketType.event.eventId = :eventId
+              )
+            """)
+    long countSuccessfulPaymentsByUserAndEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
 }

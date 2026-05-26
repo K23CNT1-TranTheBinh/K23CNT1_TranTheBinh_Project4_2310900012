@@ -48,7 +48,7 @@ async function loadTickets() {
     const tableBody = document.getElementById('ticketsTableBody');
     try {
         const tickets =
-            await window.apiClient.get('/api/admin/tickets/all');
+            await window.apiClient.get('/api/ttb/tickets/all');
 
         if (tickets) {
             allTickets = tickets;
@@ -222,7 +222,7 @@ async function handleSearchInput(e) {
     try {
 
         const ticket =
-            await window.apiClient.get(`/api/admin/tickets/qr/${qr}`);
+            await window.apiClient.get(`/api/ttb/tickets/qr/${qr}`);
 
         renderTicketsTable(ticket ? [ticket] : []);
 
@@ -246,7 +246,7 @@ async function loadFilteredTickets() {
 
         const tickets =
             await window.apiClient.get(
-                `/api/admin/tickets/status/${status}`
+                `/api/ttb/tickets/status/${status}`
             );
 
         renderTicketsTable(tickets);
@@ -281,7 +281,7 @@ async function checkInNow(qrCode) {
     try {
 
         await window.apiClient.post(
-            `/api/admin/tickets/process-checkin/${qrCode}`
+            `/api/ttb/tickets/process-checkin/${qrCode}`
         );
 
         alert('Check-in vé thành công!');
@@ -308,7 +308,7 @@ async function processCheckin(e) {
 
         const res =
             await window.apiClient.post(
-                `/api/admin/tickets/process-checkin/${qrCode}`
+                `/api/ttb/tickets/process-checkin/${qrCode}`
             );
 
         resultBox.className =

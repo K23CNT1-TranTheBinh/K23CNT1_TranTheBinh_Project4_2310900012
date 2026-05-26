@@ -3,7 +3,8 @@ package com.eventticket.controller.user;
 import com.eventticket.entity.G8_AiChatLog;
 import com.eventticket.entity.G8_users;
 import com.eventticket.repository.UserRepository;
-import com.eventticket.service.AiChatService;
+import com.eventticket.service.user.AiChatService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,9 +35,7 @@ public class AiChatController {
         if (auth == null || auth.getName() == null || auth.getName().isBlank()) {
             return null;
         }
-
         String email = auth.getName();
-
         return userRepository.findByEmail(email)
                 .map(G8_users::getUserId)
                 .orElse(null);
@@ -45,42 +44,31 @@ public class AiChatController {
     /**
      * GUEST/MEMBER: Tạo session code mới
      */
-    @GetMapping("/api/ttb/public/ai-chat/generate-session")
+    @GetMapping("/api/vtd/public/ai-chat/generate-session")
     public ResponseEntity<Map<String, String>> generateSession() {
-
         String sessionCode = aiChatService.generateSessionCode();
-
         Map<String, String> response = new HashMap<>();
         response.put("sessionCode", sessionCode);
-
         return ResponseEntity.ok(response);
     }
 
     /**
      * GUEST/MEMBER: Gửi tin nhắn đến AI
+     * Session code có thể là guest session hoặc member session
      */
-    @PostMapping("/api/ttb/public/ai-chat/message")
-    public ResponseEntity<ChatMessageResponse> sendMessage(
-            @RequestBody SendMessageRequest request) {
-
+    @PostMapping("/api/vtd/public/ai-chat/message")
+    public ResponseEntity<ChatMessageResponse> sendMessage(@RequestBody SendMessageRequest request) {
         Integer userId = getCurrentUserId();
 
-        // Lưu tin nhắn user
         G8_AiChatLog userMessage = aiChatService.saveUserMessage(
-                userId != null
-                        ? userRepository.findById(userId).orElse(null)
-                        : null,
+                userId != null ? userRepository.findById(userId).orElse(null) : null,
                 request.getSessionCode(),
                 request.getMessage());
 
-        // Response AI giả lập
-        String aiResponse = generateAiResponse(request.getMessage());
+        String aiResponse = aiChatService.generateAiResponse(request.getMessage());
 
-        // Lưu phản hồi AI
         G8_AiChatLog aiMessage = aiChatService.saveAiResponse(
-                userId != null
-                        ? userRepository.findById(userId).orElse(null)
-                        : null,
+                userId != null ? userRepository.findById(userId).orElse(null) : null,
                 request.getSessionCode(),
                 aiResponse);
 
@@ -91,71 +79,56 @@ public class AiChatController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/api/vtd/public/ai-chat/status")
+    public ResponseEntity<Map<String, Object>> getAiStatus() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("provider", aiChatService.getProviderName());
+        response.put("configured", aiChatService.isConfigured());
+        response.put("model", aiChatService.getResolvedModel());
+        response.put("statusText", aiChatService.getStatusText());
+        return ResponseEntity.ok(response);
+    }
+
     /**
-     * MEMBER: Lấy lịch sử chat theo session
+     * MEMBER: Lấy lịch sử chat theo session code
      */
-    @GetMapping("/api/ttb/member/ai-chat/history/{sessionCode}")
-    public ResponseEntity<List<G8_AiChatLog>> getChatHistory(
-            @PathVariable String sessionCode) {
-
-        List<G8_AiChatLog> history =
-                aiChatService.getChatHistory(sessionCode);
-
+    @GetMapping("/api/vtd/member/ai-chat/history/{sessionCode}")
+    public ResponseEntity<List<G8_AiChatLog>> getChatHistory(@PathVariable String sessionCode) {
+        List<G8_AiChatLog> history = aiChatService.getChatHistory(sessionCode);
         return ResponseEntity.ok(history);
     }
 
     /**
-     * MEMBER: Lấy toàn bộ lịch sử chat của user hiện tại
+     * MEMBER: Lấy lịch sử chat của user hiện tại
      */
-    @GetMapping("/api/ttb/member/ai-chat/my-history")
+    @GetMapping("/api/vtd/member/ai-chat/my-history")
     public ResponseEntity<List<G8_AiChatLog>> getUserChatHistory() {
-
         Integer userId = getCurrentUserId();
-
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        List<G8_AiChatLog> history =
-                aiChatService.getUserChatHistory(userId);
-
+        List<G8_AiChatLog> history = aiChatService.getUserChatHistory(userId);
         return ResponseEntity.ok(history);
     }
 
     /**
-     * MEMBER: Lấy danh sách session của user
+     * MEMBER: Lấy danh sách các session của user
      */
-    @GetMapping("/api/ttb/member/ai-chat/sessions")
+    @GetMapping("/api/vtd/member/ai-chat/sessions")
     public ResponseEntity<List<String>> getUserSessions() {
-
         Integer userId = getCurrentUserId();
-
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
-
-        List<String> sessions =
-                aiChatService.getUserSessions(userId);
-
+        List<String> sessions = aiChatService.getUserSessions(userId);
         return ResponseEntity.ok(sessions);
     }
 
     /**
-     * Giả lập phản hồi AI
-     */
-    private String generateAiResponse(String userMessage) {
-
-        // TODO: Thay bằng OpenAI/Gemini API thật
-        return "Xin cảm ơn câu hỏi của bạn. Tôi đang xử lý yêu cầu của bạn: "
-                + userMessage;
-    }
-
-    /**
-     * DTO: Request gửi tin nhắn
+     * DTO: Yêu cầu gửi tin nhắn
      */
     @Data
     public static class SendMessageRequest {
-
         private String sessionCode;
         private String message;
 
@@ -181,7 +154,6 @@ public class AiChatController {
      */
     @Data
     public static class ChatMessageResponse {
-
         private G8_AiChatLog userMessage;
         private G8_AiChatLog aiResponse;
 

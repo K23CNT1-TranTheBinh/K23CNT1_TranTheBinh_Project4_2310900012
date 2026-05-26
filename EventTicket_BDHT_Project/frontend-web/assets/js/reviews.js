@@ -1,9 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    window.pageUtils.loadHeader();
-    window.pageUtils.loadFooter();
+    if (window.pageUtils && typeof window.pageUtils.loadHeader === 'function') {
+        window.pageUtils.loadHeader();
+    }
+    if (window.pageUtils && typeof window.pageUtils.loadFooter === 'function') {
+        window.pageUtils.loadFooter();
+    }
     attachModalEvents();
     await renderReviews();
 });
+
+const REVIEW_CACHE_KEY = 'bdht_review_cache';
 
 const reviewState = {
     data: [],
@@ -20,6 +26,51 @@ function getCurrentUser() {
     }
 }
 
+function getReviewCache() {
+    try {
+        const raw = localStorage.getItem(REVIEW_CACHE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveReviewCache(items) {
+    localStorage.setItem(REVIEW_CACHE_KEY, JSON.stringify(items));
+}
+
+function getCachedReviewsForCurrentUser() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return [];
+
+    const userId = String(currentUser.userId || currentUser.id || '');
+    if (!userId) return [];
+
+    return getReviewCache()
+        .filter(item => String(item.userId || '') === userId)
+        .map(item => ({
+            reviewId: String(item.reviewId || item.id || ''),
+            eventId: String(item.eventId || ''),
+            eventTitle: item.eventTitle || 'Sự kiện',
+            rating: Number(item.rating || 0),
+            comment: item.comment || item.content || '',
+            updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
+            userId,
+            userName: item.userName || currentUser.fullName || 'Bạn'
+        }))
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+}
+
+function buildReviewDetailUrl(eventId) {
+    if (!eventId) return '#';
+    if (window.pageUtils && typeof window.pageUtils.resolveUrl === 'function') {
+        return window.pageUtils.resolveUrl(`pages/user/event-detail.html?id=${encodeURIComponent(eventId)}`);
+    }
+    return `event-detail.html?id=${encodeURIComponent(eventId)}`;
+}
+
 async function renderReviews() {
     const container = document.getElementById('reviews-container');
     if (!container) return;
@@ -30,16 +81,15 @@ async function renderReviews() {
         return;
     }
 
-    try {
-        const reviews = await window.apiClient.get('/api/ttb/member/reviews');
-        reviewState.data = Array.isArray(reviews) ? reviews : [];
-        reviewState.editingId = null;
-        renderReviewItems();
-    } catch (error) {
-        console.error('Lỗi tải đánh giá:', error);
-        const message = getReviewErrorMessage(error);
-        container.innerHTML = `<div class="empty-state">${message}</div>`;
+    reviewState.data = getCachedReviewsForCurrentUser();
+    reviewState.editingId = null;
+
+    if (!reviewState.data.length) {
+        container.innerHTML = '<div class="empty-state">Bạn chưa gửi đánh giá nào. Hãy vào trang chi tiết sự kiện để thêm đánh giá đầu tiên.</div>';
+        return;
     }
+
+    renderReviewItems();
 }
 
 function renderReviewItems() {
@@ -96,11 +146,10 @@ function renderReviewCard(review, isEditing) {
 
 function renderReviewDisplayCard(review) {
     const reviewId = getReviewId(review);
-    const rating = review.rating || review.star || 0;
-    const eventName = (review.event && (review.event.title || review.event.name)) || review.eventName || 'Sự kiện chưa xác định';
-    const comment = review.comment || review.content || 'Không có nhận xét.';
-    const createdAt = review.createdAt ? new Date(review.createdAt).toLocaleString('vi-VN') : 'Không rõ';
-    const hasEvent = review.event && (review.event.id || review.eventId || review.event._id);
+    const rating = review.rating || 0;
+    const eventName = review.eventTitle || 'Sự kiện chưa xác định';
+    const comment = review.comment || 'Không có nhận xét.';
+    const updatedAt = review.updatedAt ? new Date(review.updatedAt).toLocaleString('vi-VN') : 'Không rõ';
 
     return `
         <div class="review-card">
@@ -108,7 +157,7 @@ function renderReviewDisplayCard(review) {
             <p class="review-meta"><strong>Mã đánh giá:</strong> ${escapeHtml(reviewId)}</p>
             <p class="review-meta"><strong>Đánh giá:</strong> ${renderStars(rating)} <span>(${rating}/5)</span></p>
             <p class="review-comment"><strong>Bình luận:</strong> ${escapeHtml(comment)}</p>
-            <p class="review-meta"><strong>Ngày gửi:</strong> ${createdAt}</p>
+            <p class="review-meta"><strong>Cập nhật gần nhất:</strong> ${updatedAt}</p>
             <div class="review-actions">
                 <button type="button" class="btn" data-action="edit" data-review-id="${escapeHtml(reviewId)}">Chỉnh sửa</button>
                 <button type="button" class="btn btn-secondary" data-action="view-event" data-review-id="${escapeHtml(reviewId)}">Xem chi tiết sự kiện</button>
@@ -121,9 +170,9 @@ function renderReviewDisplayCard(review) {
 function renderReviewEditCard(review) {
     const reviewId = getReviewId(review);
     const reviewKey = sanitizeId(reviewId);
-    const rating = review.rating || review.star || 0;
-    const comment = review.comment || review.content || '';
-    const eventName = (review.event && (review.event.title || review.event.name)) || review.eventName || 'Sự kiện chưa xác định';
+    const rating = review.rating || 0;
+    const comment = review.comment || '';
+    const eventName = review.eventTitle || 'Sự kiện chưa xác định';
 
     return `
         <div class="review-card">
@@ -170,15 +219,20 @@ async function saveReviewEdit(reviewId) {
     const comment = commentField.value.trim();
 
     try {
-        await window.apiClient.put(`/api/ttb/member/reviews/${encodeURIComponent(reviewId)}`, {
+        await window.apiClient.put(`/api/vtd/member/reviews/${encodeURIComponent(reviewId)}`, {
             rating,
             comment,
         });
+
+        const items = getReviewCache().map(item => String(item.reviewId || item.id || '') === String(reviewId)
+            ? { ...item, rating, comment, updatedAt: new Date().toISOString() }
+            : item
+        );
+        saveReviewCache(items);
         await renderReviews();
     } catch (error) {
         console.error('Lỗi lưu đánh giá:', error);
-        const message = getReviewErrorMessage(error);
-        alert(message);
+        alert(getReviewErrorMessage(error));
     }
 }
 
@@ -186,35 +240,26 @@ function openEventDetailModal(reviewId) {
     const review = reviewState.data.find(item => getReviewId(item) === reviewId);
     if (!review) return;
 
-    const eventData = review.event || {
-        id: review.eventId,
-        title: review.eventName,
-        description: review.eventDescription,
-    };
-
-    const eventName = (eventData && (eventData.title || eventData.name)) || 'Sự kiện chưa xác định';
-    const description = eventData.description || eventData.detail || 'Không có mô tả chi tiết.';
-    const eventId = eventData.id || eventData.eventId || eventData._id;
-
     const body = `
-        <h3>${escapeHtml(eventName)}</h3>
-        <p>${escapeHtml(description)}</p>
+        <h3>${escapeHtml(review.eventTitle || 'Sự kiện chưa xác định')}</h3>
+        <p>${escapeHtml(review.comment || 'Không có nhận xét.')}</p>
     `;
 
-    const actions = [];
-    actions.push({
-        text: 'Chỉnh sửa ngay',
-        action: () => {
-            closeModal();
-            openReviewEditor(reviewId);
+    const actions = [
+        {
+            text: 'Chỉnh sửa ngay',
+            action: () => {
+                closeModal();
+                openReviewEditor(reviewId);
+            },
+            className: 'btn'
         },
-        className: 'btn'
-    });
-    if (eventId) {
-        const url = `/pages/user/event-detail.html?eventId=${encodeURIComponent(eventId)}`;
-        actions.push({ text: 'Mở trang chi tiết', action: () => window.open(url, '_blank') });
-    }
-    actions.push({ text: 'Đóng', action: closeModal, className: 'btn-secondary' });
+        {
+            text: 'Mở trang chi tiết',
+            action: () => window.open(buildReviewDetailUrl(review.eventId), '_blank')
+        },
+        { text: 'Đóng', action: closeModal, className: 'btn-secondary' }
+    ];
 
     showModal('Chi tiết sự kiện', body, actions);
 }
@@ -276,12 +321,12 @@ function closeModal() {
 
 async function deleteReview(reviewId) {
     try {
-        await window.apiClient.delete(`/api/ttb/member/reviews/${encodeURIComponent(reviewId)}`);
+        await window.apiClient.delete(`/api/vtd/member/reviews/${encodeURIComponent(reviewId)}`);
+        saveReviewCache(getReviewCache().filter(item => String(item.reviewId || item.id || '') !== String(reviewId)));
         await renderReviews();
     } catch (error) {
         console.error('Lỗi xóa đánh giá:', error);
-        const message = getReviewErrorMessage(error);
-        alert(message);
+        alert(getReviewErrorMessage(error));
     }
 }
 

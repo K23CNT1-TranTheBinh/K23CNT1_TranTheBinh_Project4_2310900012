@@ -147,80 +147,104 @@ function setupCustomizationViews() {
 // ==========================================
 // 4. ĐỒNG BỘ DỮ LIỆU THỐNG KÊ DOANH THU & VÉ ĐÃ BÁN
 // ==========================================
-function loadDashboardMetrics() {
-    // Đọc từ LocalStorage (checkoutData) để cập nhật động các khối số liệu thống kê
-    const checkoutDataStr = localStorage.getItem('checkoutData');
-    if (!checkoutDataStr) return;
-
+async function loadDashboardMetrics() {
     try {
-        const checkoutData = JSON.parse(checkoutDataStr);
-        const totalAmountStr = checkoutData.totalAmount || "3.100.000 VNĐ";
+        const ordersResponse = await window.apiClient.get('/api/vtd/member/orders');
+        const orders = Array.isArray(ordersResponse) ? ordersResponse : (ordersResponse?.content || []);
+        
+        let totalEvents = 0;
+        let totalTickets = 0;
+        let totalRevenue = 0;
+        
+        const validOrders = orders.filter(o => o.status === 'COMPLETED' || o.status === 'CONFIRMED');
+        const eventIds = new Set();
+
+        validOrders.forEach(order => {
+            totalRevenue += Number(order.totalAmount || 0);
+            if (order.items && Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    totalTickets += item.quantity || 1;
+                    if (item.eventId) eventIds.add(item.eventId);
+                });
+            } else {
+                totalTickets += 1;
+                eventIds.add(`mock-event-${order.orderId}`);
+            }
+        });
+        
+        totalEvents = eventIds.size;
 
         // Cập nhật Tab 1 Dashboard Metrics
         const metricCards = document.querySelectorAll('#tab-dashboard .text-3xl, #tab-dashboard .text-2xl');
         if (metricCards.length >= 3) {
-            metricCards[0].innerText = "1"; // Tổng số sự kiện
-            metricCards[1].innerText = "1"; // Tổng số vé đã bán
-            metricCards[2].innerText = totalAmountStr; // Tổng doanh thu
+            metricCards[0].innerText = totalEvents.toString();
+            metricCards[1].innerText = totalTickets.toString();
+            metricCards[2].innerText = totalRevenue.toLocaleString('vi-VN') + " VNĐ";
         }
 
-        // Cập nhật bảng Tab 2 Vé đã đặt (nếu có dữ liệu thực tế)
+        // Cập nhật bảng Tab 2 Vé đã đặt
         const activeTableBody = document.querySelector('#sub-tab-active-content tbody');
-        if (activeTableBody && checkoutData.eventName) {
-            const cleanPrice = totalAmountStr;
-            activeTableBody.innerHTML = `
-                <tr class="border-b border-gray-150 hover:bg-slate-50 transition text-slate-700">
-                    <td class="p-4">
-                        <div class="flex flex-col gap-0.5">
-                            <span class="font-extrabold text-slate-900">${checkoutData.eventName}</span>
-                            <span class="text-[10px] text-slate-400">📅 Sự kiện tương lai | Địa điểm tổ chức</span>
-                        </div>
-                    </td>
-                    <td class="p-4 text-slate-900 font-mono">26052${checkoutData.orderId}</td>
-                    <td class="p-4 text-center"><span class="bg-purple-100 text-brand-purple px-2 py-0.5 rounded text-[10px]">VIP</span></td>
-                    <td class="p-4 text-center">1</td>
-                    <td class="p-4 text-right">${cleanPrice}</td>
-                    <td class="p-4 text-right text-slate-900">${cleanPrice}</td>
-                </tr>
-                <!-- Dòng tổng cộng -->
-                <tr class="bg-theme-brandBlue text-white font-extrabold text-xs">
-                    <td colspan="4" class="p-4 text-right uppercase">Tổng cộng:</td>
-                    <td colspan="2" class="p-4 text-right text-sm">${cleanPrice}</td>
-                </tr>
-            `;
+        if (activeTableBody) {
+            if (validOrders.length === 0) {
+                activeTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 font-bold">Chưa có giao dịch thành công nào.</td></tr>`;
+            } else {
+                activeTableBody.innerHTML = validOrders.map(order => {
+                    const dateStr = new Date(order.orderDate).toLocaleDateString('vi-VN');
+                    return `
+                        <tr class="border-b border-gray-150 hover:bg-slate-50 transition text-slate-700">
+                            <td class="p-4">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="font-extrabold text-slate-900">Đơn hàng #BDHT${order.orderId}</span>
+                                    <span class="text-[10px] text-slate-400">📅 ${dateStr}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-slate-900 font-mono">BDHT${order.orderId}</td>
+                            <td class="p-4 text-center"><span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-[10px]">Đã thanh toán</span></td>
+                            <td class="p-4 text-center">${order.items ? order.items.length : 1}</td>
+                            <td class="p-4 text-right">${Number(order.totalAmount || 0).toLocaleString('vi-VN')}</td>
+                            <td class="p-4 text-right text-slate-900">${Number(order.totalAmount || 0).toLocaleString('vi-VN')} đ</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
         }
 
         // Cập nhật bảng Tab 4 Thống kê hóa đơn
         const reportsTableBody = document.querySelector('#tab-reports tbody');
-        if (reportsTableBody && checkoutData.eventName) {
-            const cleanPrice = totalAmountStr;
-            reportsTableBody.innerHTML = `
-                <tr class="border-b border-gray-150 hover:bg-slate-50 transition text-slate-700">
-                    <td class="p-4 font-extrabold text-slate-900 max-w-xs truncate">
-                        ${checkoutData.eventName}
-                    </td>
-                    <td class="p-4 text-center">1,245</td>
-                    <td class="p-4 text-center text-emerald-600">1</td>
-                    <td class="p-4 text-center text-amber-500">0</td>
-                    <td class="p-4 text-center">0</td>
-                    <td class="p-4 text-right text-slate-900 font-extrabold">${cleanPrice}</td>
-                    <td class="p-4 text-center">
-                        <button type="button" class="text-theme-brandBlue hover:text-indigo-650 transition" title="Xem chi tiết báo cáo">
-                            <i class="far fa-eye text-base"></i>
-                        </button>
-                    </td>
-                </tr>
-                <!-- Dòng tổng doanh thu -->
-                <tr class="bg-slate-50 border-t border-gray-200 font-extrabold text-xs">
-                    <td class="p-4 text-theme-brandOrange uppercase text-sm">Tổng doanh thu</td>
-                    <td class="p-4 text-center text-slate-400">-</td>
-                    <td class="p-4 text-center text-slate-400">-</td>
-                    <td class="p-4 text-center text-slate-400">-</td>
-                    <td class="p-4 text-center text-slate-400">-</td>
-                    <td class="p-4 text-right text-theme-brandOrange text-sm">${cleanPrice}</td>
-                    <td class="p-4 text-center text-slate-400">-</td>
-                </tr>
-            `;
+        if (reportsTableBody) {
+            if (validOrders.length === 0) {
+                reportsTableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 font-bold">Chưa có dữ liệu báo cáo doanh thu.</td></tr>`;
+            } else {
+                reportsTableBody.innerHTML = validOrders.map(order => {
+                    return `
+                        <tr class="border-b border-gray-150 hover:bg-slate-50 transition text-slate-700">
+                            <td class="p-4 font-extrabold text-slate-900 max-w-xs truncate">
+                                Đơn hàng #BDHT${order.orderId}
+                            </td>
+                            <td class="p-4 text-center">-</td>
+                            <td class="p-4 text-center text-emerald-600">1</td>
+                            <td class="p-4 text-center text-amber-500">0</td>
+                            <td class="p-4 text-center">0</td>
+                            <td class="p-4 text-right text-slate-900 font-extrabold">${Number(order.totalAmount || 0).toLocaleString('vi-VN')} đ</td>
+                            <td class="p-4 text-center">
+                                <button type="button" class="text-theme-brandBlue hover:text-indigo-650 transition" title="Xem chi tiết báo cáo">
+                                    <i class="far fa-eye text-base"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('') + `
+                    <tr class="bg-slate-50 border-t border-gray-200 font-extrabold text-xs">
+                        <td class="p-4 text-theme-brandOrange uppercase text-sm">Tổng doanh thu</td>
+                        <td class="p-4 text-center text-slate-400">-</td>
+                        <td class="p-4 text-center text-slate-400">-</td>
+                        <td class="p-4 text-center text-slate-400">-</td>
+                        <td class="p-4 text-center text-slate-400">-</td>
+                        <td class="p-4 text-right text-theme-brandOrange text-sm">${totalRevenue.toLocaleString('vi-VN')} đ</td>
+                        <td class="p-4 text-center text-slate-400">-</td>
+                    </tr>
+                `;
+            }
         }
 
     } catch (e) {

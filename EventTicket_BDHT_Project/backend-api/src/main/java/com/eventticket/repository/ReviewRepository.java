@@ -28,4 +28,7 @@ public interface ReviewRepository extends JpaRepository<G8_review, Integer> {
 
     Optional<G8_review> findByUserAndEvent(G8_users userId, G8_event eventId);
 
+    @Query("SELECT r FROM G8_review r WHERE r.user.userId = :userId AND r.event.eventId = :eventId")
+    Optional<G8_review> findByUserIdAndEventId(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
+
 }

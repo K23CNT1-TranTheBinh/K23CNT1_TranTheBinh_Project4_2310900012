@@ -12,6 +12,8 @@ function getFrontendBasePath() {
         return path.substring(0, markerIndex + marker.length - 1);
     }
 
+    // Khi Live Server root = /frontend-web, pathname sẽ là /pages/index.html
+    // (không chứa /frontend-web/). Trong trường hợp này, root chính là '/'
     return '';
 }
 
@@ -23,8 +25,19 @@ function resolveAppUrl(path) {
     const cleanPath = path.startsWith('./') ? path.slice(2) : path;
     const appRootRelative = cleanPath.startsWith('pages/') || cleanPath.startsWith('components/') || cleanPath.startsWith('assets/') || cleanPath === 'index.html';
 
+    if (cleanPath === 'index.html') {
+        const base = getFrontendBasePath();
+        return `${base}/pages/index.html`;
+    }
+
     if (appRootRelative) {
-        return `${getFrontendBasePath()}/${cleanPath}`;
+        const base = getFrontendBasePath();
+        // QUAN TRỌNG: Luôn trả về đường dẫn tuyệt đối (bắt đầu bằng /)
+        // để tránh bị resolve tương đối theo vị trí trang hiện tại.
+        // Ví dụ: trang ở /pages/index.html, nếu trả về 'components/header.html'
+        // trình duyệt sẽ fetch /pages/components/header.html (SAI).
+        // Phải trả về '/components/header.html' để fetch đúng.
+        return base ? `${base}/${cleanPath}` : `/${cleanPath}`;
     }
 
     return new URL(cleanPath, window.location.href).href;
@@ -40,7 +53,106 @@ function rewriteInternalUrls(html) {
     });
 }
 
+function extractCityFromAddress(address) {
+    if (!address) return '';
+    const parts = String(address).split(',');
+    if (parts.length > 1) {
+        const city = parts[parts.length - 1].trim();
+        return city;
+    }
+    return '';
+}
+
+function parseStoredUser(rawUser) {
+    if (!rawUser) return null;
+
+    if (typeof rawUser === 'string') {
+        try {
+            rawUser = JSON.parse(rawUser);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    if (!rawUser || typeof rawUser !== 'object') return null;
+    return rawUser;
+}
+
+function getFallbackStoredUser() {
+    const storedUser = parseStoredUser(localStorage.getItem('currentUser'));
+    if (storedUser && (storedUser.fullName || storedUser.name || storedUser.email)) {
+        return storedUser;
+    }
+
+    const checkoutDataStr = localStorage.getItem('checkoutData');
+    if (!checkoutDataStr) return null;
+
+    try {
+        const checkoutData = JSON.parse(checkoutDataStr);
+        const customer = checkoutData?.customer;
+        if (customer?.name) {
+            return { fullName: customer.name };
+        }
+    } catch (error) {
+        console.warn('Không thể đọc dữ liệu checkoutData:', error);
+    }
+
+    return null;
+}
+
+async function fetchHeaderEvents() {
+    try {
+        const response = await window.apiClient.getPublicEvents({ page: 0, size: 100 });
+        if (Array.isArray(response)) return response;
+        if (response && Array.isArray(response.content)) return response.content;
+        return [];
+    } catch (error) {
+        console.warn('Không thể lấy danh sách sự kiện cho header/footer:', error);
+        return [];
+    }
+}
+
+function normalizeHeaderCategories(categories, events = []) {
+    const values = [];
+
+    const appendUnique = (value) => {
+        const normalized = String(value || '').trim();
+        if (!normalized) return;
+        if (values.includes(normalized)) return;
+        values.push(normalized);
+    };
+
+    if (Array.isArray(categories)) {
+        categories.forEach(appendUnique);
+    }
+
+    events.forEach((event) => appendUnique(event?.categoryName));
+
+    return values;
+}
+
+function normalizeHeaderLocations(events = []) {
+    const values = [];
+
+    const appendUnique = (value) => {
+        const normalized = String(value || '').trim();
+        if (!normalized || values.includes(normalized)) return;
+        values.push(normalized);
+    };
+
+    events.forEach((event) => {
+        appendUnique(event?.venue?.city || extractCityFromAddress(event?.venue?.address));
+    });
+
+    return values;
+}
+
 class ApiClient {
+    constructor() {
+        this._responseCache = new Map();
+        this._cacheTtl = 5 * 60 * 1000;
+    }
+
     // Lấy JWT token từ localStorage
     getToken() {
         return localStorage.getItem('token');
@@ -57,8 +169,44 @@ class ApiClient {
         localStorage.removeItem('currentUser');
     }
 
+    getCachedResponse(key) {
+        const cached = this._responseCache.get(key);
+        if (!cached) return null;
+
+        if (Date.now() - cached.timestamp > this._cacheTtl) {
+            this._responseCache.delete(key);
+            return null;
+        }
+
+        return cached.value;
+    }
+
+    setCachedResponse(key, value) {
+        this._responseCache.set(key, {
+            value,
+            timestamp: Date.now()
+        });
+    }
+
+    async getPublicEvents({ page = 0, size = 100, ttl = this._cacheTtl } = {}) {
+        const endpoint = `/api/vtd/public/events?page=${page}&size=${size}`;
+        const cached = this._responseCache.get(endpoint);
+
+        if (cached && Date.now() - cached.timestamp <= ttl) {
+            return cached.value;
+        }
+
+        const response = await this.get(endpoint);
+        this._responseCache.set(endpoint, {
+            value: response,
+            timestamp: Date.now()
+        });
+        return response;
+    }
+
     // Make authenticated request
     async request(endpoint, options = {}) {
+
         const token = this.getToken();
         const url = `${API_BASE_URL}${endpoint}`;
         
@@ -70,8 +218,9 @@ class ApiClient {
             ...options
         };
 
-        // Gắn token vào header nếu có
-        if (token) {
+        // Gắn token vào header nếu có và không phải là endpoint công khai (public/auth/translations)
+        const isPublic = endpoint.includes('/public/') || endpoint.includes('/auth/') || endpoint.includes('/translations/');
+        if (token && !isPublic) {
             config.headers.Authorization = `Bearer ${token}`;
         }
 
@@ -153,64 +302,91 @@ window.pageUtils = {
     resolveUrl: resolveAppUrl,
     rewriteInternalUrls,
 
-    async initI18n() {
-        if (window.i18n) {
-            window.i18n.init();
-            return;
-        }
-
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = this.resolveUrl('assets/js/core/i18n.js');
-            script.onload = () => {
-                if (window.i18n) {
-                    window.i18n.init();
-                }
-                resolve();
-            };
-            script.onerror = () => {
-                console.error('Lỗi khi tải động i18n.js');
-                resolve();
-            };
-            document.body.appendChild(script);
-        });
-    },
+    _headerPromise: null,
+    _footerPromise: null,
 
     async loadHeader() {
-        try {
-            const response = await fetch(this.resolveUrl('components/header.html'));
-            let headerHTML = rewriteInternalUrls(await response.text());
-            const headerContainer = document.getElementById('header-container');
-            if (headerContainer) {
+        if (this._headerPromise) return this._headerPromise;
+
+        this._headerPromise = (async () => {
+            try {
+                const response = await fetch(this.resolveUrl('components/header.html'));
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const headerHTML = rewriteInternalUrls(await response.text());
+                const headerContainer = document.getElementById('header-container');
+                if (!headerContainer) {
+                    return;
+                }
+
                 headerContainer.innerHTML = headerHTML;
-                this.setupAuthMenu();
-                // Tự động load và khởi tạo i18n
-                await this.initI18n();
+                await this.setupAuthMenu();
+                await Promise.all([
+                    this.populateHeaderNavigation(),
+                    this.populateHeaderLocationFilter()
+                ]);
+            } catch (error) {
+                console.error('Lỗi khi load header:', error);
+                this._headerPromise = null;
             }
-        } catch (error) {
-            console.error('Lỗi khi load header:', error);
-        }
+        })();
+
+        return this._headerPromise;
     },
 
- 
     async loadFooter() {
+        if (this._footerPromise) return this._footerPromise;
+
+        this._footerPromise = (async () => {
             try {
                 const response = await fetch(this.resolveUrl('components/footer.html'));
-                let footerHTML = rewriteInternalUrls(await response.text());
-                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const footerHTML = rewriteInternalUrls(await response.text());
                 const footerContainer = document.getElementById('footer-container');
-                if (footerContainer) {
-                    footerContainer.innerHTML = footerHTML;
-                    this.setupFooterEvents();
-                    // Rerender language for footer after it's loaded
-                    if (window.i18n && typeof window.i18n.renderLanguage === 'function') {
-                        window.i18n.renderLanguage();
-                    }
+                if (!footerContainer) {
+                    return;
+                }
+
+                footerContainer.innerHTML = footerHTML;
+                this.setupFooterEvents();
+                await this.syncFooterAddress();
+
+                if (!document.querySelector('script[src*="ai-chat.js"]')) {
+                    const script = document.createElement('script');
+                    script.src = this.resolveUrl('assets/js/ai-chat.js');
+                    document.body.appendChild(script);
                 }
             } catch (error) {
                 console.error('Lỗi khi load footer:', error);
+                this._footerPromise = null;
             }
-        },
+        })();
+
+        return this._footerPromise;
+    },
+
+    async syncFooterAddress() {
+        const addressEl = document.getElementById('footer-address-value');
+        if (!addressEl) return;
+
+        const fallbackText = 'Địa chỉ: Chưa có dữ liệu địa điểm cập nhật từ hệ thống.';
+
+        try {
+            const events = await fetchHeaderEvents();
+            const address = events
+                .filter((event) => event?.status === 'PUBLISHED')
+                .map((event) => event?.venue?.address || event?.location || event?.venue?.venueName)
+                .find((value) => typeof value === 'string' && value.trim().length > 0);
+
+            addressEl.textContent = address
+                ? `Địa chỉ: ${address}`
+                : fallbackText;
+        } catch (error) {
+            console.warn('Không thể đồng bộ địa chỉ footer:', error);
+            addressEl.textContent = fallbackText;
+        }
+    },
 
     setupFooterEvents() {
         const subscribeBtn = document.getElementById('subscribe-btn');
@@ -223,86 +399,165 @@ window.pageUtils = {
                     alert('Vui lòng nhập địa chỉ email hợp lệ để nhận bản tin!');
                     return;
                 }
+
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(email)) {
                     alert('Email không đúng định dạng. Vui lòng kiểm tra lại!');
                     return;
                 }
+
                 alert(`🎉 Đăng ký nhận bản tin thành công!\nEmail: ${email}\n\nBDHT sẽ gửi các thông tin sự kiện & ưu đãi mới nhất tới hòm thư của bạn.`);
                 emailInput.value = '';
             });
         }
     },
-        
-    setupAuthMenu() {
+
+    async setupAuthMenu() {
         const token = window.apiClient ? window.apiClient.getToken() : null;
-        const storedUser = localStorage.getItem('currentUser');
-        const isLoggedIn = token || storedUser;
+        const isLoggedIn = token || !!localStorage.getItem('currentUser');
 
         const guestMenu = document.getElementById('guest-menu');
         const userMenu = document.getElementById('user-menu');
         const btnLogout = document.getElementById('btn-logout');
 
-        if (isLoggedIn) {
-            if (guestMenu) guestMenu.style.display = 'none';
-            if (userMenu) userMenu.style.display = 'flex';
-
-            // Cập nhật thông tin User động trong Header nếu có dữ liệu lưu trữ
-            const userDisplayName = document.getElementById('header-user-display-name');
-            const userAvatarChar = document.getElementById('header-user-avatar-char');
-            let userObj = null;
-            if (storedUser) {
-                try { userObj = JSON.parse(storedUser); } catch(e) {}
-            }
-            // Fallback sang dữ liệu checkout
-            if (!userObj) {
-                const checkoutDataStr = localStorage.getItem('checkoutData');
-                if (checkoutDataStr) {
-                    try {
-                        const checkoutData = JSON.parse(checkoutDataStr);
-                        if (checkoutData.customer) {
-                            userObj = { fullName: checkoutData.customer.name };
-                        }
-                    } catch(e) {}
-                }
-            }
-            if (userObj && userObj.fullName) {
-                if (userDisplayName) userDisplayName.innerText = userObj.fullName;
-                if (userAvatarChar) userAvatarChar.innerText = userObj.fullName.charAt(0).toUpperCase();
-            }
-
-            // Gắn sự kiện click mở Dropdown
-            const trigger = document.getElementById('user-dropdown-trigger');
-            const menu = document.getElementById('user-dropdown-menu');
-            if (trigger && menu) {
-                trigger.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    menu.classList.toggle('hidden');
-                });
-
-                // Đóng dropdown khi click ra bên ngoài
-                window.addEventListener('click', () => {
-                    if (!menu.classList.contains('hidden')) {
-                        menu.classList.add('hidden');
-                    }
-                });
-
-                // Ngăn sự kiện nổi bong bóng khi click trong menu
-                menu.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
-            }
-
-            if (btnLogout) {
-                btnLogout.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.apiClient.clearToken();
-                    window.location.href = window.pageUtils.resolveUrl('index.html');
-                });
-            }
-        } else {
+        if (!isLoggedIn) {
             if (guestMenu) guestMenu.style.display = 'flex';
             if (userMenu) userMenu.style.display = 'none';
+            return;
         }
+
+        if (guestMenu) guestMenu.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'flex';
+
+        const userDisplayName = document.getElementById('header-user-display-name');
+        const userAvatarChar = document.getElementById('header-user-avatar-char');
+
+        let userObj = getFallbackStoredUser();
+
+        if (token) {
+            try {
+                const profile = await window.apiClient.get('/api/vtd/member/profile');
+                if (profile) {
+                    userObj = {
+                        fullName: profile.fullName || profile.name || profile.email,
+                        email: profile.email,
+                        phoneNumber: profile.phoneNumber,
+                        ...profile
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userObj));
+                }
+            } catch (error) {
+                console.warn('Không thể đồng bộ thông tin người dùng từ backend:', error);
+            }
+        }
+
+        const displayName = userObj?.fullName || userObj?.name || userObj?.email || 'User';
+        if (userDisplayName) {
+            userDisplayName.innerText = displayName;
+        }
+        if (userAvatarChar) {
+            userAvatarChar.innerText = String(displayName).trim().charAt(0).toUpperCase() || 'U';
+        }
+
+        const trigger = document.getElementById('user-dropdown-trigger');
+        const menu = document.getElementById('user-dropdown-menu');
+        if (trigger && menu) {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+
+            window.addEventListener('click', () => {
+                if (!menu.classList.contains('hidden')) {
+                    menu.classList.add('hidden');
+                }
+            });
+
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.apiClient.clearToken();
+                window.location.href = window.pageUtils.resolveUrl('index.html');
+            });
+        }
+    },
+
+    async populateHeaderNavigation() {
+        const container = document.getElementById('header-category-nav');
+        if (!container) return;
+
+        const events = await fetchHeaderEvents();
+        const categories = normalizeHeaderCategories([], events);
+
+        const fallbackCategories = ['Vé ca nhạc', 'Văn hóa nghệ thuật', 'Tham quan - Du lịch', 'Workshop', 'Vé xem phim', 'Thể thao'];
+        const finalCategories = categories.length ? categories : fallbackCategories;
+
+        container.innerHTML = '';
+
+        const allLink = document.createElement('a');
+        allLink.href = this.resolveUrl('pages/user/all-events.html');
+        allLink.textContent = 'Tất cả sự kiện';
+        allLink.className = 'text-sm font-bold text-white/90 hover:text-white whitespace-nowrap transition-colors relative after:content-[\'\'] after:absolute after:-bottom-4 after:left-0 after:w-0 after:h-1 after:bg-white after:transition-all hover:after:w-full rounded-full after:rounded-t-md';
+        container.appendChild(allLink);
+
+        finalCategories.forEach((category) => {
+            const link = document.createElement('a');
+            link.href = `${this.resolveUrl('pages/user/all-events.html')}?category=${encodeURIComponent(category)}`;
+            link.textContent = category;
+            link.className = 'text-sm font-bold text-white/90 hover:text-white whitespace-nowrap transition-colors relative after:content-[\'\'] after:absolute after:-bottom-4 after:left-0 after:w-0 after:h-1 after:bg-white after:transition-all hover:after:w-full rounded-full after:rounded-t-md';
+            container.appendChild(link);
+        });
+
+        const newsLink = document.createElement('a');
+        newsLink.href = this.resolveUrl('pages/user/news.html');
+        newsLink.textContent = 'Tin tức';
+        newsLink.className = 'text-sm font-bold text-white/90 hover:text-white whitespace-nowrap transition-colors relative after:content-[\'\'] after:absolute after:-bottom-4 after:left-0 after:w-0 after:h-1 after:bg-white after:transition-all hover:after:w-full rounded-full after:rounded-t-md';
+        container.appendChild(newsLink);
+    },
+
+    async populateHeaderLocationFilter() {
+        const select = document.getElementById('header-location-filter');
+        if (!select) return;
+
+        const events = await fetchHeaderEvents();
+        const locations = normalizeHeaderLocations(events);
+
+        const currentLocation = new URLSearchParams(window.location.search).get('location');
+        select.innerHTML = '<option value="">Mọi địa điểm</option>';
+
+        locations.forEach((location) => {
+            const option = document.createElement('option');
+            option.value = location;
+            option.textContent = location;
+            select.appendChild(option);
+        });
+
+        if (currentLocation) {
+            select.value = currentLocation;
+        }
+
+        if (select.dataset.bound === 'true') return;
+        select.dataset.bound = 'true';
+
+        select.addEventListener('change', () => {
+            const isAllEventsPage = window.location.pathname.includes('/pages/user/all-events.html');
+            const params = isAllEventsPage ? new URLSearchParams(window.location.search) : new URLSearchParams();
+
+            if (select.value) {
+                params.set('location', select.value);
+            } else {
+                params.delete('location');
+            }
+
+            const targetPath = isAllEventsPage ? 'pages/user/all-events.html' : 'pages/index.html';
+            const targetUrl = this.resolveUrl(targetPath);
+            const search = params.toString();
+            window.location.href = search ? `${targetUrl}?${search}` : targetUrl;
+        });
     }
 };

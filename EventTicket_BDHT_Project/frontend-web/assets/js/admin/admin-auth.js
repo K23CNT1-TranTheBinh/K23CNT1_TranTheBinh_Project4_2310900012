@@ -32,7 +32,7 @@
         try {
             // Tận dụng địa chỉ API cơ sở từ apiClient hoặc dùng mặc định
             const apiBase = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://localhost:8080';
-            const response = await fetch(`${apiBase}/api/ttb/member/profile`, {
+            const response = await fetch(`${apiBase}/api/vtd/member/profile`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
