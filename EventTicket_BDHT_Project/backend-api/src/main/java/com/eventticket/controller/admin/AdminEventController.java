@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/ttb/events")
+@RequestMapping("/api/admin/events")
 @RequiredArgsConstructor
 
 public class AdminEventController {
@@ -33,7 +33,7 @@ public class AdminEventController {
 
     // ========================================================
     // API MỚI THÊM: XỬ LÝ UPLOAD ẢNH ĐỂ LẤY URL
-    // Endpoint: POST /api/ttb/events/upload
+    // Endpoint: POST /api/admin/events/upload
     // ========================================================
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {

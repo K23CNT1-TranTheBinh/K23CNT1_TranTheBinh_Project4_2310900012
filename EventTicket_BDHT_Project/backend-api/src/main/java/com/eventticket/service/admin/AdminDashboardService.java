@@ -1,4 +1,4 @@
-package com.eventticket.service;
+package com.eventticket.service.admin;
 
 import com.eventticket.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;

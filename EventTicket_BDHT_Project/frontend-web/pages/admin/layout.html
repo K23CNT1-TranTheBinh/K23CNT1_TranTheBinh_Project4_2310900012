@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -160,7 +160,7 @@
                         <div class="px-4 py-2.5 border-b border-gray-100">
                             <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Hành động</p>
                         </div>
-                        <a href="../user/profile.html"
+                        <a href="../user/nat-profile.html"
                             class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                             <i class="fa-solid fa-user-gear text-gray-400 text-base"></i>
                             Hồ sơ cá nhân
@@ -291,7 +291,7 @@
     </div>
 
     <!-- Tải Core API client và các script điều khiển -->
-    <script src="../../assets/js/core/api-client.js"></script>
+    <script src="../../assets/js/core/nat-api-client.js"></script>
     <script>
         // Cập nhật thông tin Admin hiển thị trên header/avatar
         document.addEventListener('DOMContentLoaded', () => {
@@ -314,7 +314,7 @@
                     e.preventDefault();
                     if (confirm('Bạn thực sự muốn đăng xuất khỏi cổng Quản trị?')) {
                         window.apiClient.clearToken();
-                        window.location.href = '../user/login.html';
+                        window.location.href = '../user/nat-login.html';
                     }
                 });
             }

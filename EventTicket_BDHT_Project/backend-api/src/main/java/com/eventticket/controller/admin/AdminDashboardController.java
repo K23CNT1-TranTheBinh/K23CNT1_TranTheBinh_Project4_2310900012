@@ -1,6 +1,6 @@
 package com.eventticket.controller.admin;
 
-import com.eventticket.service.AdminDashboardService;
+import com.eventticket.service.admin.AdminDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/ttb/dashboard")
+@RequestMapping("/api/admin/dashboard")
 @RequiredArgsConstructor
 public class AdminDashboardController {
 
@@ -17,7 +17,7 @@ public class AdminDashboardController {
 
     // ==========================================
     // 1. Lấy thống kê tổng quan cho trang chủ (Tổng đơn, Tổng vé, Tổng User...)
-    // API: GET /api/ttb/dashboard/stats
+    // API: GET /api/admin/dashboard/stats
     // ==========================================
     @GetMapping("/stats")
     public ResponseEntity<AdminDashboardService.DashboardStats> getDashboardStats() {
@@ -26,7 +26,7 @@ public class AdminDashboardController {
 
     // ==========================================
     // 2. Thống kê doanh thu theo khoảng thời gian (Vẽ biểu đồ đường/cột)
-    // API: GET /api/ttb/dashboard/revenue?startDate=...&endDate=...
+    // API: GET /api/admin/dashboard/revenue?startDate=...&endDate=...
     // ==========================================
     @GetMapping("/revenue")
     public ResponseEntity<AdminDashboardService.RevenueStats> getRevenueStats(
@@ -38,7 +38,7 @@ public class AdminDashboardController {
 
     // ==========================================
     // 3. Thống kê tỷ lệ bán vé của một sự kiện cụ thể (Vẽ biểu đồ tròn)
-    // API: GET /api/ttb/dashboard/ticket-sales/{eventId}
+    // API: GET /api/admin/dashboard/ticket-sales/{eventId}
     // ==========================================
     @GetMapping("/ticket-sales/{eventId}")
     public ResponseEntity<AdminDashboardService.TicketSalesStats> getTicketSalesStats(

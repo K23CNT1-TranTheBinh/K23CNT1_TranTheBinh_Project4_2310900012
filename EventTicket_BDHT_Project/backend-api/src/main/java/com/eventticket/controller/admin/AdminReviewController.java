@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ttb/reviews")
+@RequestMapping("/api/admin/reviews")
 @RequiredArgsConstructor
 public class AdminReviewController {
 
@@ -24,9 +24,9 @@ public class AdminReviewController {
     /**
      * API: Lấy danh sách đánh giá & Lọc
      * URL ví dụ:
-     * - Lấy tất cả: GET /api/ttb/reviews
-     * - Xem đánh giá của sự kiện 1: GET /api/ttb/reviews?eventId=1
-     * - Xem các đánh giá ĐANG BỊ ẨN (vi phạm): GET /api/ttb/reviews?isHidden=true
+     * - Lấy tất cả: GET /api/admin/reviews
+     * - Xem đánh giá của sự kiện 1: GET /api/admin/reviews?eventId=1
+     * - Xem các đánh giá ĐANG BỊ ẨN (vi phạm): GET /api/admin/reviews?isHidden=true
      */
     @GetMapping
     public ResponseEntity<List<G8_review>> getAllReviews(
@@ -38,7 +38,7 @@ public class AdminReviewController {
 
     /**
      * API: Lấy danh sách đánh giá của 1 User cụ thể
-     * URL: GET /api/ttb/reviews/user/5
+     * URL: GET /api/admin/reviews/user/5
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<G8_review>> getReviewsByUser(@PathVariable Integer userId) {
@@ -52,7 +52,7 @@ public class AdminReviewController {
 
     /**
      * API: ẨN một đánh giá (Vi phạm)
-     * URL: PUT /api/ttb/reviews/10/hide
+     * URL: PUT /api/admin/reviews/10/hide
      */
     @PutMapping("/{id}/hide")
     public ResponseEntity<Map<String, String>> hideReview(@PathVariable Integer id) {
@@ -65,7 +65,7 @@ public class AdminReviewController {
 
     /**
      * API: HIỂN THỊ LẠI một đánh giá (Khôi phục nếu nhầm)
-     * URL: PUT /api/ttb/reviews/10/show
+     * URL: PUT /api/admin/reviews/10/show
      */
     @PutMapping("/{id}/show")
     public ResponseEntity<Map<String, String>> showReview(@PathVariable Integer id) {
@@ -78,7 +78,7 @@ public class AdminReviewController {
 
     /**
      * API: XÓA VĨNH VIỄN một đánh giá
-     * URL: DELETE /api/ttb/reviews/10
+     * URL: DELETE /api/admin/reviews/10
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteReviewPermanently(@PathVariable Integer id) {
@@ -96,7 +96,7 @@ public class AdminReviewController {
 
     /**
      * API: Xem tóm tắt thống kê đánh giá của 1 sự kiện (Dành cho biểu đồ Admin)
-     * URL: GET /api/ttb/reviews/stats/event/1
+     * URL: GET /api/admin/reviews/stats/event/1
      */
     @GetMapping("/stats/event/{eventId}")
     public ResponseEntity<Map<String, Object>> getEventReviewStats(@PathVariable Integer eventId) {

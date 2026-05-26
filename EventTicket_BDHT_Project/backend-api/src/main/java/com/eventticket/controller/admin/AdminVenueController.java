@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ttb/venues")
+@RequestMapping("/api/admin/venues")
 @RequiredArgsConstructor
 public class AdminVenueController {
 
@@ -18,10 +18,10 @@ public class AdminVenueController {
     /**
      * API: Lấy danh sách kết hợp tìm kiếm và lọc
      * URL ví dụ: 
-     * - Lấy tất cả: GET /api/ttb/venues
-     * - Tìm theo tên: GET /api/ttb/venues?keyword=Hà Nội
-     * - Lọc sức chứa: GET /api/ttb/venues?minCapacity=500&maxCapacity=2000
-     * - Kết hợp: GET /api/ttb/venues?keyword=Sân&minCapacity=1000
+     * - Lấy tất cả: GET /api/admin/venues
+     * - Tìm theo tên: GET /api/admin/venues?keyword=Hà Nội
+     * - Lọc sức chứa: GET /api/admin/venues?minCapacity=500&maxCapacity=2000
+     * - Kết hợp: GET /api/admin/venues?keyword=Sân&minCapacity=1000
      */
     @GetMapping
     public ResponseEntity<List<G8_venue>> getAll(

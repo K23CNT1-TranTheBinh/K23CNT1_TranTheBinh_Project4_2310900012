@@ -23,8 +23,8 @@ public class G8_ticketType {
     @JoinColumn(name = "G8_event_id", nullable = false)
     private G8_event event;
 
-   @Column(name = "G8_type_name", nullable = false, columnDefinition = "NVARCHAR(100)")
-    private String typeName;
+    @Column(name = "G8_type_name", nullable = false, length = 100)
+    private String typeName; // VIP, Standard, Early Bird
 
     @Column(name = "G8_price", nullable = false)
     private BigDecimal price;

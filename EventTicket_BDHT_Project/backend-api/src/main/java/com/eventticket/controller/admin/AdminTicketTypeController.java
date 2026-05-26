@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ttb/ticket-types")
+@RequestMapping("/api/admin/ticket-types")
 @RequiredArgsConstructor
 public class AdminTicketTypeController {
 
     private final AdminTicketTypeService adminTicketTypeService;
 
-    // Lấy danh sách loại vé theo sự kiện (Ví dụ: /api/ttb/ticket-types/event/1)
+    // Lấy danh sách loại vé theo sự kiện (Ví dụ: /api/admin/ticket-types/event/1)
     @GetMapping("/event/{eventId}")
     public ResponseEntity<List<G8_ticketType>> getByEvent(@PathVariable Integer eventId) {
         return ResponseEntity.ok(adminTicketTypeService.getTicketTypesByEvent(eventId));
     }
 
-    // Thêm loại vé mới (Ví dụ: /api/ttb/ticket-types/add?eventId=1)
+    // Thêm loại vé mới (Ví dụ: /api/admin/ticket-types/add?eventId=1)
     @PostMapping("/add")
     public ResponseEntity<G8_ticketType> create(@RequestBody G8_ticketType type, @RequestParam Integer eventId) {
         return ResponseEntity.ok(adminTicketTypeService.createTicketType(type, eventId));

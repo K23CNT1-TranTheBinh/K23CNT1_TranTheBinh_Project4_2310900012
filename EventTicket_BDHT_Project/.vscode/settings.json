@@ -1,0 +1,6 @@
+﻿{
+    "liveServer.settings.donotShowInfoMsg":  true,
+    "liveServer.settings.root":  "/frontend-web",
+    "liveServer.settings.port":  5500,
+    "liveServer.settings.CustomBrowser":  "chrome"
+}

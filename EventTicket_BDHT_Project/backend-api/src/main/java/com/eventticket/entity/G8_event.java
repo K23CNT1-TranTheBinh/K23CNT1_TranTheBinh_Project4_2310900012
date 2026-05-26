@@ -22,21 +22,17 @@ public class G8_event {
     @JoinColumn(name = "G8_venue_id", nullable = false)
     private G8_venue venue;
 
-    // 1. Tên sự kiện (Chắc chắn có tiếng Việt)
-    @Column(name = "G8_title", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(name = "G8_title", nullable = false, length = 255)
     private String title;
 
-    // 2. Tên nghệ sĩ (Ví dụ: Sơn Tùng M-TP, Đen Vâu...)
-    @Column(name = "G8_artist_names", columnDefinition = "NVARCHAR(500)")
+    @Column(name = "G8_artist_names", length = 500)
     private String artistNames;
-
-    // 3. Tên thể loại (Ví dụ: Nhạc Trẻ, Hội thảo...)
-    @Column(name = "G8_category_name", columnDefinition = "NVARCHAR(100)")
-    private String categoryName;
 
     @Column(name = "G8_description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
+    @Column(name = "G8_category_name", length = 100)
+    private String categoryName;
 
     @Column(name = "G8_banner_image_url", length = 500)
     private String bannerImageUrl;

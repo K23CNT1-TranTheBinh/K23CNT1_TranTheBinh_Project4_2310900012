@@ -34,7 +34,7 @@ async function loadReviews() {
     try {
 
         const reviews =
-            await window.apiClient.get('/api/ttb/reviews');
+            await window.apiClient.get('/api/lpth/admin/reviews');
 
         allReviews = reviews || [];
 
@@ -73,7 +73,7 @@ async function loadFilteredReviews() {
 
         const reviews =
             await window.apiClient.get(
-                `/api/ttb/reviews${query}`
+                `/api/lpth/admin/reviews${query}`
             );
 
         renderReviewsTable(reviews);
@@ -222,7 +222,7 @@ async function hideReview(id) {
     try {
 
         await window.apiClient.put(
-            `/api/ttb/reviews/${id}/hide`
+            `/api/lpth/admin/reviews/${id}/hide`
         );
 
         alert('Đã ẩn đánh giá!');
@@ -242,7 +242,7 @@ async function showReview(id) {
     try {
 
         await window.apiClient.put(
-            `/api/ttb/reviews/${id}/show`
+            `/api/lpth/admin/reviews/${id}/show`
         );
 
         alert('Đã hiển thị lại đánh giá!');
@@ -268,7 +268,7 @@ async function deleteReview(id) {
     try {
 
         await window.apiClient.delete(
-            `/api/ttb/reviews/${id}`
+            `/api/lpth/admin/reviews/${id}`
         );
 
         alert('Đã xóa đánh giá!');
