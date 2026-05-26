@@ -18,7 +18,7 @@ public class G8_venue {
     @Column(name = "G8_venue_id")
     private Integer venueId;
 
-    @Column(name = "G8_venue_name", nullable = false, length = 200)
+    @Column(name = "G8_venue_name", nullable = false, columnDefinition = "nvarchar(200)")
     private String venueName;
 
     @Column(name = "G8_address", nullable = false, columnDefinition = "NVARCHAR(500)")

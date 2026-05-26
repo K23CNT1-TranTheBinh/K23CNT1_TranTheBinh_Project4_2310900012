@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDHT - Chi tiết bài viết</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            orange: '#f26f21',
+                            orangeHover: '#d95d16'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50/50 text-slate-800 flex flex-col min-h-screen font-sans">
+    <!-- Dynamic Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8 text-xs font-semibold text-slate-400 gap-2 items-center">
+            <a href="../../index.html" class="hover:text-brand-orange transition">Trang chủ</a>
+            <i class="fas fa-chevron-right text-[9px]"></i>
+            <a href="news.html" class="hover:text-brand-orange transition">Tin tức</a>
+            <i class="fas fa-chevron-right text-[9px]"></i>
+            <span class="text-slate-600 truncate max-w-xs md:max-w-md">Sự kiện Văn hóa Hàn Quốc 2026</span>
+        </nav>
+
+        <!-- Layout Grid: 2/3 Content & 1/3 Sidebar -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <!-- 1. CỘT TRÁI: CHI TIẾT BÀI VIẾT (col-span-2) -->
+            <article class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 p-6 sm:p-10 shadow-sm">
+                <!-- Tiêu đề H1 -->
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 leading-snug font-outfit uppercase tracking-tight">
+                    SỰ KIỆN VĂN HÓA HÀN QUỐC LỚN NHẤT DO SINH VIÊN TỔ CHỨC ĐÃ QUAY TRỞ LẠI VỚI DIỆN MẠO HOÀN TOÀN MỚI NĂM 2026
+                </h1>
+
+                <!-- Meta data -->
+                <div class="mt-6 flex flex-wrap gap-5 text-xs font-bold text-slate-400 border-b border-slate-100 pb-6 mb-8">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fas fa-user-edit text-brand-purple"></i>
+                        <span>Tác giả: <span class="text-slate-700 font-extrabold">Giáp Hải Yến</span></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="far fa-calendar-alt text-brand-purple"></i>
+                        <span>Đăng ngày: <span class="text-slate-700 font-extrabold">20/05/2026</span></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <i class="far fa-folder-open text-brand-purple"></i>
+                        <span>Chuyên mục: <span class="text-brand-orange font-extrabold">Sự Kiện & Lễ Hội</span></span>
+                    </div>
+                    <div class="flex items-center gap-1.5 ml-auto">
+                        <i class="far fa-eye text-brand-purple"></i>
+                        <span>1,245 lượt xem</span>
+                    </div>
+                </div>
+
+                <!-- Body Content -->
+                <div class="space-y-6 leading-relaxed font-semibold text-slate-600 text-sm">
+                    <p>
+                        Sau hơn một năm vắng bóng, tuần lễ sự kiện giao lưu văn hóa Hàn Quốc quy mô lớn hàng đầu được tổ chức bởi các câu lạc bộ sinh viên tài năng đã chính thức ấn định ngày trở lại. Với chủ đề mang tên <span class="text-brand-purple font-extrabold">"K-Wave Sparkle 2026"</span>, chương trình hứa hẹn mang lại những màn trình diễn sôi động cùng loạt không gian trải nghiệm văn hóa truyền thống xen lẫn hiện đại đặc trưng của xứ sở Kim Chi.
+                    </p>
+
+                    <!-- Image 1 -->
+                    <div class="my-8">
+                        <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=1000&auto=format&fit=crop&q=80" alt="Sự kiện K-Wave" class="w-full h-auto object-cover rounded-2xl shadow-md border border-gray-100" />
+                        <span class="block text-center text-xs font-bold text-slate-400 mt-3.5 italic">Không khí sôi động và rực rỡ sắc màu được dự kiến tại Lễ hội văn hóa năm nay.</span>
+                    </div>
+
+                    <h2 class="text-lg font-black text-slate-900 pt-4 font-outfit uppercase border-l-3 border-brand-orange pl-3">
+                        Không gian trải nghiệm ẩm thực Hanbok và nghệ thuật đường phố
+                    </h2>
+
+                    <p>
+                        Một trong những điểm nhấn đặc biệt nhất của K-Wave Sparkle 2026 chính là khu phố ẩm thực quy tụ hơn 50 gian hàng chuẩn vị Hàn Quốc do chính các bạn sinh viên tự tay chế biến. Khách tham quan không chỉ được thưởng thức Tokbokki, Kimbap nóng hổi mà còn có cơ hội hóa thân thành các quý tộc thời Joseon trong trang phục Hanbok truyền thống lộng lẫy để lưu lại những khoảnh khắc tuyệt đẹp.
+                    </p>
+
+                    <p>
+                        Bên cạnh đó, BTC cũng đã xác nhận về sự góp mặt của dàn nghệ sĩ trẻ indie đình đám cùng các nhóm nhảy K-Pop dance cover xuất sắc nhất thủ đô, sẵn sàng làm bùng nổ bầu không khí đêm gala bằng những vũ đạo điêu luyện và mãn nhãn.
+                    </p>
+
+                    <!-- Image 2 -->
+                    <div class="my-8">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1000&auto=format&fit=crop&q=80" alt="Dance cover stage" class="w-full h-auto object-cover rounded-2xl shadow-md border border-gray-100" />
+                        <span class="block text-center text-xs font-bold text-slate-400 mt-3.5 italic">Sân khấu ca nhạc giao lưu nghệ thuật được đầu tư hoành tráng bằng công nghệ ánh sáng tiên tiến.</span>
+                    </div>
+
+                    <h3 class="text-base font-extrabold text-slate-950 pt-2 font-outfit">
+                        Mở bán vé độc quyền thông qua nền tảng công nghệ BDHT
+                    </h3>
+
+                    <p>
+                        Để đảm bảo tính minh bạch, hạn chế vé giả và tối ưu hóa quy trình soát vé của hàng ngàn khán giả, Ban tổ chức K-Wave Sparkle 2026 đã chính thức công bố đối tác phân phối vé độc quyền duy nhất là hệ thống <span class="text-brand-orange font-extrabold">BDHT</span>. Người mua vé chỉ cần thực hiện vài thao tác đơn giản trên ứng dụng hoặc website của BDHT để sở hữu ngay vé điện tử QR Code hiện đại, tiện lợi.
+                    </p>
+
+                    <p>
+                        Đại diện BDHT chia sẻ: "Chúng tôi vô cùng tự hào khi đồng hành cùng một sự kiện đầy khát vọng và năng lượng trẻ trung như K-Wave Sparkle. BDHT cam kết vận hành hệ thống thanh toán an toàn, bảo mật tuyệt đối và hỗ trợ tối đa cho khán giả trong suốt hành trình mua vé đến khi vào cửa sự kiện."
+                    </p>
+                </div>
+
+                <!-- HashTags -->
+                <div class="mt-10 pt-6 border-t border-slate-100 flex flex-wrap gap-2.5">
+                    <span class="text-xs font-extrabold text-slate-400 mr-2 self-center">Hashtags:</span>
+                    <a href="#" class="bg-slate-100 hover:bg-brand-purple hover:text-white text-slate-500 font-bold px-3 py-1.5 rounded-lg text-xs transition duration-200">#tuần lễ văn hóa hàn quốc 2026</a>
+                    <a href="#" class="bg-slate-100 hover:bg-brand-purple hover:text-white text-slate-500 font-bold px-3 py-1.5 rounded-lg text-xs transition duration-200">#sinh viên tổ chức</a>
+                    <a href="#" class="bg-slate-100 hover:bg-brand-purple hover:text-white text-slate-500 font-bold px-3 py-1.5 rounded-lg text-xs transition duration-200">#BDHT event</a>
+                    <a href="#" class="bg-slate-100 hover:bg-brand-purple hover:text-white text-slate-500 font-bold px-3 py-1.5 rounded-lg text-xs transition duration-200">#văn hóa hàn quốc</a>
+                </div>
+
+                <!-- Author Bio Section -->
+                <div class="mt-8 p-6 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-brand-orange text-white font-black flex items-center justify-center flex-shrink-0 text-lg shadow-sm">
+                        Y
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider">Giáp Hải Yến</h4>
+                        <p class="text-[11px] font-semibold text-slate-450 mt-1 leading-relaxed">
+                            Biên tập viên ban tin tức sự kiện giải trí của BDHT. Đam mê nghiên cứu xu hướng nghệ thuật đương đại, lễ hội âm nhạc và trải nghiệm văn hóa đa quốc gia.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. CỘT PHẢI: SIDEBAR (col-span-1) -->
+            <aside class="lg:col-span-1 space-y-10">
+                <!-- Tin liên quan Block -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                    <!-- Title -->
+                    <div class="flex items-center gap-2 border-l-4 border-brand-orange pl-3.5 mb-6">
+                        <h3 class="text-sm font-black text-slate-900 uppercase font-outfit tracking-wider">TIN LIÊN QUAN</h3>
+                    </div>
+
+                    <!-- List of articles -->
+                    <div class="space-y-5">
+                        <!-- Article 1 -->
+                        <a href="news-detail.html" class="group flex gap-3 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <div class="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=200&auto=format&fit=crop&q=80" alt="Ký kết BDHT" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                            </div>
+                            <div class="flex flex-col justify-between py-0.5">
+                                <h4 class="text-xs font-black text-slate-800 leading-snug group-hover:text-brand-orange transition duration-200 line-clamp-2">
+                                    BDHT ký kết hợp tác chiến lược cùng đối tác Hàn Quốc hàng đầu
+                                </h4>
+                                <span class="text-[9px] font-bold text-slate-400">📅 19/05/2026</span>
+                            </div>
+                        </a>
+
+                        <!-- Article 2 -->
+                        <a href="news-detail.html" class="group flex gap-3 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <div class="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=200&auto=format&fit=crop&q=80" alt="Tech Expo" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                            </div>
+                            <div class="flex flex-col justify-between py-0.5">
+                                <h4 class="text-xs font-black text-slate-800 leading-snug group-hover:text-brand-orange transition duration-200 line-clamp-2">
+                                    Tech Expo 2026: Trải nghiệm không gian thực tế ảo tại TP.HCM
+                                </h4>
+                                <span class="text-[9px] font-bold text-slate-400">📅 18/05/2026</span>
+                            </div>
+                        </a>
+
+                        <!-- Article 3 -->
+                        <a href="news-detail.html" class="group flex gap-3 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                            <div class="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=200&auto=format&fit=crop&q=80" alt="Van Gogh Art" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                            </div>
+                            <div class="flex flex-col justify-between py-0.5">
+                                <h4 class="text-xs font-black text-slate-800 leading-snug group-hover:text-brand-orange transition duration-200 line-clamp-2">
+                                    Triển lãm Nghệ thuật Đa giác quan 'Van Gogh Art' lần đầu tại Hà Nội
+                                </h4>
+                                <span class="text-[9px] font-bold text-slate-400">📅 17/05/2026</span>
+                            </div>
+                        </a>
+
+                        <!-- Article 4 -->
+                        <a href="news-detail.html" class="group flex gap-3">
+                            <div class="w-20 h-16 rounded-xl overflow-hidden bg-slate-900 flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=200&auto=format&fit=crop&q=80" alt="BDHT Music Concert" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                            </div>
+                            <div class="flex flex-col justify-between py-0.5">
+                                <h4 class="text-xs font-black text-slate-800 leading-snug group-hover:text-brand-orange transition duration-200 line-clamp-2">
+                                    BDHT Music Concert 2026: Đêm nhạc indie 'Dưới Ánh Hoàng Hôn'
+                                </h4>
+                                <span class="text-[9px] font-bold text-slate-400">📅 16/05/2026</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quảng cáo/Khuyến mãi Mini Block -->
+                <div class="bg-gradient-to-br from-brand-purple to-indigo-900 rounded-3xl p-6 text-white text-center shadow-md relative overflow-hidden group">
+                    <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full group-hover:scale-110 transition duration-500"></div>
+                    <span class="bg-brand-orange text-white text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full inline-block mb-3">Ưu đãi BDHT</span>
+                    <h4 class="text-sm font-black font-outfit uppercase">Nhập mã: <span class="text-yellow-350">BDHT2026</span></h4>
+                    <p class="text-[10px] font-semibold opacity-85 mt-1.5 leading-relaxed">Giảm ngay 10% giá trị hóa đơn khi đặt mua vé bất kỳ trên hệ thống</p>
+                    <a href="../../index.html" class="mt-4 bg-white hover:bg-brand-orange hover:text-white text-brand-purple text-[10px] font-black uppercase px-4 py-2 rounded-xl transition duration-200 inline-block shadow">Đặt vé ngay</a>
+                </div>
+            </aside>
+        </div>
+
+        <!-- ==========================================
+             3. KHỐI DƯỚI CÙNG: ĐỀ XUẤT SỰ KIỆN (Grid 4 cột)
+             ========================================== -->
+        <section class="mt-20">
+            <!-- Title -->
+            <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-8">
+                <div class="flex items-center gap-3 border-l-4 border-brand-orange pl-3.5">
+                    <h3 class="text-lg font-black text-slate-950 uppercase font-outfit tracking-wide">SỰ KIỆN BÁN CHẠY NHẤT HÔM NAY</h3>
+                </div>
+                <a href="../../index.html" class="text-xs font-extrabold text-brand-purple hover:text-brand-orange uppercase flex items-center gap-1.5 transition">
+                    Xem tất cả <i class="fas fa-angle-right"></i>
+                </a>
+            </div>
+
+            <!-- Event Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Hà Nhi Concert -->
+                <div onclick="window.location.href='event-detail.html?id=1'" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer">
+                    <div class="relative h-44 overflow-hidden bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&auto=format&fit=crop&q=80" alt="Hà Nhi Concert" class="w-full h-full object-cover group-hover:scale-103 transition duration-500" />
+                        <span class="absolute top-3 left-3 text-[10px] font-extrabold bg-brand-purple text-white px-2.5 py-1 rounded shadow-md">
+                            25.07.2026
+                        </span>
+                        <span class="absolute top-3 right-3 text-[9px] font-extrabold bg-brand-orange text-white px-2 py-0.5 rounded shadow uppercase">
+                            Hà Nội
+                        </span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <h4 class="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-brand-orange transition duration-200">
+                            Liveshow HÀ NHI - Người yêu cũ là Tri kỷ | Sky Melody Concert
+                        </h4>
+                        <div class="text-[11px] text-slate-500 font-semibold truncate">📍 Sky Melody Ecopark, Hà Nội</div>
+                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 uppercase font-black">Giá vé từ</span>
+                            <span class="text-xs font-black text-brand-orange">1.200.000 VND</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: The Eras Tour -->
+                <div onclick="window.location.href='event-detail.html?id=2'" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer">
+                    <div class="relative h-44 overflow-hidden bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?w=500&auto=format&fit=crop&q=80" alt="The Eras Tour" class="w-full h-full object-cover group-hover:scale-103 transition duration-500" />
+                        <span class="absolute top-3 left-3 text-[10px] font-extrabold bg-brand-purple text-white px-2.5 py-1 rounded shadow-md">
+                            15.07.2026
+                        </span>
+                        <span class="absolute top-3 right-3 text-[9px] font-extrabold bg-brand-orange text-white px-2 py-0.5 rounded shadow uppercase">
+                            Hà Nội
+                        </span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <h4 class="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-brand-orange transition duration-200">
+                            The Eras Tour - Vietnam Edition | Sân vận động Quốc gia Mỹ Đình
+                        </h4>
+                        <div class="text-[11px] text-slate-500 font-semibold truncate">📍 SVĐ Quốc gia Mỹ Đình</div>
+                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 uppercase font-black">Giá vé từ</span>
+                            <span class="text-xs font-black text-brand-orange">5.800.000 VND</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Tech Impact Summit -->
+                <div onclick="window.location.href='event-detail.html?id=1'" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer">
+                    <div class="relative h-44 overflow-hidden bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=500&auto=format&fit=crop&q=80" alt="Tech Summit" class="w-full h-full object-cover group-hover:scale-103 transition duration-500" />
+                        <span class="absolute top-3 left-3 text-[10px] font-extrabold bg-brand-purple text-white px-2.5 py-1 rounded shadow-md">
+                            25.07.2026
+                        </span>
+                        <span class="absolute top-3 right-3 text-[9px] font-extrabold bg-brand-orange text-white px-2 py-0.5 rounded shadow uppercase">
+                            Hà Nội
+                        </span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <h4 class="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-brand-orange transition duration-200">
+                            Vietnam Tech Impact Summit 2026 | Trung tâm Hội nghị Quốc gia
+                        </h4>
+                        <div class="text-[11px] text-slate-500 font-semibold truncate">📍 TT Hội nghị Quốc gia, Hà Nội</div>
+                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 uppercase font-black">Giá vé từ</span>
+                            <span class="text-xs font-black text-brand-orange">1.500.000 VND</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Ký Ức Hội An -->
+                <div onclick="window.location.href='event-detail.html?id=6'" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 flex flex-col hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer">
+                    <div class="relative h-44 overflow-hidden bg-slate-900">
+                        <img src="https://images.unsplash.com/photo-1470229722913-7c092fb6224d?w=500&auto=format&fit=crop&q=80" alt="Ký ức Hội An" class="w-full h-full object-cover group-hover:scale-103 transition duration-500" />
+                        <span class="absolute top-3 left-3 text-[10px] font-extrabold bg-brand-purple text-white px-2.5 py-1 rounded shadow-md">
+                            20.08.2026
+                        </span>
+                        <span class="absolute top-3 right-3 text-[9px] font-extrabold bg-brand-orange text-white px-2 py-0.5 rounded shadow uppercase">
+                            Hội An
+                        </span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <h4 class="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-brand-orange transition duration-200">
+                            Show Diễn Ký Ức Hội An đỉnh cao nghệ thuật thực cảnh đẳng cấp thế giới
+                        </h4>
+                        <div class="text-[11px] text-slate-500 font-semibold truncate">📍 Công viên Ấn tượng Hội An</div>
+                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 uppercase font-black">Giá vé từ</span>
+                            <span class="text-xs font-black text-brand-orange">600.000 VND</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Dynamic Footer -->
+    <div id="footer-container"></div>
+
+    <!-- JS Scripts -->
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.pageUtils && typeof window.pageUtils.loadHeader === 'function') {
+                window.pageUtils.loadHeader();
+            }
+            if (window.pageUtils && typeof window.pageUtils.loadFooter === 'function') {
+                window.pageUtils.loadFooter();
+            }
+        });
+    </script>
+</body>
+</html>

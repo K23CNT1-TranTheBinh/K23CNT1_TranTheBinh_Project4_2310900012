@@ -121,27 +121,35 @@ function renderOrdersTable(orders) {
 }
 
 // ==========================================
-// ==========================================
 // 2. BỘ LỌC DỮ LIỆU ĐƠN HÀNG (FILTERS)
 // ==========================================
 async function handleSearchInput(e) {
-    // Không tự lọc bằng JS nữa, gọi luôn hàm lọc chung để đẩy dữ liệu xuống Backend
-    loadFilteredOrders();
+    const email = e.target.value.trim();
+    if (!email) {
+        loadFilteredOrders();
+        return;
+    }
+
+    try {
+        // Gọi API tìm kiếm theo email
+        const results = await window.apiClient.get(`/api/ttb/orders`);
+        if (results) {
+            const filtered = results.filter(o => 
+                o.user && o.user.email.toLowerCase().includes(email.toLowerCase())
+            );
+            renderOrdersTable(filtered);
+        }
+    } catch (err) {
+        console.error('Lỗi tìm kiếm đơn hàng:', err);
+    }
 }
 
 async function loadFilteredOrders() {
-    const status = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : '';
-    const startDateStr = document.getElementById('startDateFilter') ? document.getElementById('startDateFilter').value : '';
-    const endDateStr = document.getElementById('endDateFilter') ? document.getElementById('endDateFilter').value : '';
-    const searchVal = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
+    const status = document.getElementById('statusFilter').value;
+    const startDateStr = document.getElementById('startDateFilter').value;
+    const endDateStr = document.getElementById('endDateFilter').value;
 
     let query = [];
-
-    // Thêm từ khóa tìm kiếm (Email / Tên)
-    if (searchVal) {
-        query.push(`keyword=${encodeURIComponent(searchVal)}`);
-    }
-
     if (status) {
         query.push(`status=${status}`);
     }
@@ -168,14 +176,13 @@ async function loadFilteredOrders() {
 }
 
 function resetFilters() {
-    if(document.getElementById('statusFilter')) document.getElementById('statusFilter').value = '';
-    if(document.getElementById('startDateFilter')) document.getElementById('startDateFilter').value = '';
-    if(document.getElementById('endDateFilter')) document.getElementById('endDateFilter').value = '';
-    if(document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
-    
-    // Reset xong thì tải lại danh sách gốc
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('startDateFilter').value = '';
+    document.getElementById('endDateFilter').value = '';
+    document.getElementById('searchInput').value = '';
     loadOrders();
 }
+
 // ==========================================
 // 3. XEM CHI TIẾT & CẬP NHẬT TRẠNG THÁI
 // ==========================================

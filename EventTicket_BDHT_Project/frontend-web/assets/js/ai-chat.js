@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+﻿document.addEventListener('DOMContentLoaded', async () => {
     if (window.pageUtils && window.pageUtils.loadHeader) {
         await window.pageUtils.loadHeader();
     }

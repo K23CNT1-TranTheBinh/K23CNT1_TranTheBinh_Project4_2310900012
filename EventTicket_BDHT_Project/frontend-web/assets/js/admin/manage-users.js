@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = JSON.parse(currentUserStr);
             document.getElementById('admin-display-name').innerText = user.fullName || 'Admin BDHT';
             document.getElementById('admin-avatar-char').innerText = (user.fullName || 'A').charAt(0).toUpperCase();
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // Tải tài nguyên ban đầu
@@ -149,7 +149,7 @@ async function handleSearchInput(e) {
         loadFilteredUsers(); // Nạp theo lọc hiện hành
         return;
     }
-    
+
     try {
         const results = await window.apiClient.get(`/api/ttb/users?keyword=${encodeURIComponent(val)}`);
         if (results) {
@@ -163,7 +163,7 @@ async function handleSearchInput(e) {
 async function loadFilteredUsers() {
     const role = document.getElementById('roleFilter').value;
     const isActive = document.getElementById('statusFilter').value;
-    
+
     let query = [];
     if (role) query.push(`role=${role}`);
     if (isActive !== '') query.push(`isActive=${isActive}`);

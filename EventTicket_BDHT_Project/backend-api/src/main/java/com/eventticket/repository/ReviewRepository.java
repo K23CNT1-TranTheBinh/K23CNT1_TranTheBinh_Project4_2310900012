@@ -14,19 +14,22 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<G8_review, Integer> {
+
     @Query("SELECT r FROM G8_review r WHERE r.event.eventId = :eventId AND r.isHidden = false ORDER BY r.createdAt DESC")
     List<G8_review> findByEventIdNotHidden(@Param("eventId") Integer eventId);
+
+    
+    @Query("SELECT r FROM G8_review r WHERE r.user.userId = :userId ORDER BY r.createdAt DESC")
+    List<G8_review> findByUserId(@Param("userId") Integer userId);
 
     @Query("SELECT AVG(r.rating) FROM G8_review r WHERE r.event.eventId = :eventId AND r.isHidden = false")
     Double getAverageRatingByEventId(@Param("eventId") Integer eventId);
 
     @Query("SELECT r FROM G8_review r WHERE r.user.userId = :userId ORDER BY r.createdAt DESC")
-    List<G8_review> findByUserId(@Param("userId") Integer userId);
+    List<G8_review> findByUser_UserId(@Param("userId") Integer userId);
 
     @Query("SELECT COUNT(r) FROM G8_review r WHERE r.event.eventId = :eventId AND r.isHidden = false")
     long countReviewsByEventId(@Param("eventId") Integer eventId);
-
-    Optional<G8_review> findByUserAndEvent(G8_users userId, G8_event eventId);
 
     @Query("SELECT r FROM G8_review r WHERE r.user.userId = :userId AND r.event.eventId = :eventId")
     Optional<G8_review> findByUserIdAndEventId(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
