@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDHT - Thông tin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: { purple: '#5f1082', orange: '#f26f21' } },
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <main class="container" style="padding: 40px 0;">
+        <section class="info-section">
+            <h1 id="info-title">Thông tin BDHT</h1>
+            <div id="info-content" style="margin-top: 24px; line-height: 1.8; color: #333;"></div>
+        </section>
+    </main>
+    <div id="footer-container"></div>
+
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.pageUtils.loadHeader();
+            window.pageUtils.loadFooter();
+            renderInfoPage();
+        });
+
+        function getQueryParam(name) {
+            return new URLSearchParams(window.location.search).get(name);
+        }
+
+        function renderInfoPage() {
+            const topic = getQueryParam('topic') || 'about';
+            const infoTitle = document.getElementById('info-title');
+            const infoContent = document.getElementById('info-content');
+
+            const pages = {
+                about: {
+                    title: 'Về chúng tôi',
+                    content: '<p>BDHT là nền tảng đặt vé sự kiện trực tuyến hàng đầu, cung cấp vé ca nhạc, thể thao, giải trí và du lịch với trải nghiệm nhanh chóng, an toàn và tiện lợi.</p><p>Chúng tôi luôn nỗ lực mang tới các chương trình hấp dẫn và dịch vụ chăm sóc khách hàng tận tâm.</p>'
+                },
+                privacy: {
+                    title: 'Chính sách bảo mật và các điều khoản',
+                    content: '<p>Chúng tôi cam kết bảo mật thông tin cá nhân của khách hàng và chỉ sử dụng dữ liệu để phục vụ dịch vụ đặt vé.</p><p>Thông tin của bạn sẽ không được chia sẻ cho bên thứ ba khi chưa có sự đồng ý.</p>'
+                },
+                'how-to-book': {
+                    title: 'Hướng dẫn đặt vé',
+                    content: '<ol><li>Chọn sự kiện yêu thích.</li><li>Chọn loại vé và số lượng.</li><li>Hoàn tất thanh toán và nhận mã vé qua email.</li></ol>'
+                },
+                faq: {
+                    title: 'Các câu hỏi thường gặp',
+                    content: '<p><strong>Q:</strong> Tôi có thể đổi trả vé không?<br><strong>A:</strong> Vé đã mua thường không đổi trả trừ khi có thông báo khác từ nhà tổ chức.</p><p><strong>Q:</strong> Làm sao nhận được vé?<br><strong>A:</strong> Vé sẽ được gửi qua email hoặc mã QR hiển thị trong app.</p>'
+                },
+                terms: {
+                    title: 'Chính sách điều khoản sử dụng',
+                    content: '<p>Việc sử dụng dịch vụ BDHT đồng nghĩa với việc bạn đồng ý tuân thủ các điều khoản và điều kiện của chúng tôi.</p><p>Xin vui lòng đọc kỹ trước khi đặt vé.</p>'
+                },
+                'submit-event': {
+                    title: 'Gửi sự kiện',
+                    content: '<p>Nếu bạn là nhà tổ chức và muốn hợp tác, hãy gửi thông tin sự kiện cho BDHT để được hỗ trợ triển khai bán vé.</p>'
+                },
+                'past-events': {
+                    title: 'Sự kiện đã diễn ra',
+                    content: '<p>Danh sách các sự kiện đã kết thúc. Thông tin vé và hình ảnh sự kiện sẽ được lưu trữ để bạn tham khảo.</p>'
+                }
+            };
+
+            const page = pages[topic] || pages.about;
+            infoTitle.innerText = page.title;
+            infoContent.innerHTML = page.content;
+        }
+    </script>
+</body>
+</html>

@@ -28,4 +28,12 @@ public interface TicketRepository extends JpaRepository<G8_ticket, Integer> {
 
     @Query("SELECT COUNT(t) FROM G8_ticket t WHERE t.order.orderId = :orderId")
     long countTicketsByOrderId(@Param("orderId") Integer orderId);
+
+    @Query("""
+            SELECT COUNT(t) FROM G8_ticket t
+            WHERE t.order.user.userId = :userId
+              AND t.ticketType.event.eventId = :eventId
+              AND t.order.status = 'COMPLETED'
+            """)
+    long countCompletedTicketsByUserAndEvent(@Param("userId") Integer userId, @Param("eventId") Integer eventId);
 }

@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadPromotions() {
     const tableBody = document.getElementById('promoTableBody');
     try {
-        const promos = await window.apiClient.get('/api/ttb/promotions');
+        const promos = await window.apiClient.get('/api/lpth/admin/promotions');
         if (promos) {
             allPromotions = promos;
             renderPromoTable(promos);
@@ -176,7 +176,7 @@ async function loadFilteredPromotions(keywordOverride = null) {
     const queryString = query.length > 0 ? `?${query.join('&')}` : '';
 
     try {
-        const filtered = await window.apiClient.get(`/api/ttb/promotions${queryString}`);
+        const filtered = await window.apiClient.get(`/api/lpth/admin/promotions${queryString}`);
         if (filtered) {
             renderPromoTable(filtered);
         }
@@ -228,7 +228,7 @@ async function openEditModal(promoId) {
     document.getElementById('promoForm').reset();
     
     try {
-        const promo = await window.apiClient.get(`/api/ttb/promotions/${promoId}`);
+        const promo = await window.apiClient.get(`/api/lpth/admin/promotions/${promoId}`);
         if (promo) {
             document.getElementById('promoCode').value = promo.code;
             document.getElementById('promoDiscountType').value = promo.discountType;
@@ -293,11 +293,11 @@ async function handleFormSubmit(e) {
     try {
         if (activePromoId === null) {
             // Thêm mới
-            await window.apiClient.post('/api/ttb/promotions/add', payload);
+            await window.apiClient.post('/api/lpth/admin/promotions/add', payload);
             alert('🎉 Đã tạo mã giảm giá mới thành công!');
         } else {
             // Chỉnh sửa
-            await window.apiClient.put(`/api/ttb/promotions/update/${activePromoId}`, payload);
+            await window.apiClient.put(`/api/lpth/admin/promotions/update/${activePromoId}`, payload);
             alert('🎉 Đã lưu cập nhật thông tin mã giảm giá thành công!');
         }
         
@@ -312,7 +312,7 @@ async function handleFormSubmit(e) {
 // Bật/Tắt trạng thái hoạt động nhanh
 async function togglePromoStatusSubmit(promoId) {
     try {
-        await window.apiClient.patch(`/api/ttb/promotions/toggle-status/${promoId}`);
+        await window.apiClient.patch(`/api/lpth/admin/promotions/toggle-status/${promoId}`);
         loadFilteredPromotions(); // Tải lại bảng ngay lập tức
     } catch(err) {
         console.error('Lỗi kích hoạt nhanh mã giảm giá:', err);

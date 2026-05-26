@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDHT - Tin tức</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+    <main class="container" style="padding: 40px 0;">
+        <section class="news-section">
+            <h1>Tin tức</h1>
+            <div class="news-list" style="margin-top: 24px;">
+                <article class="news-item" style="margin-bottom: 28px;">
+                    <h2>Sự kiện mới nhất đã mở bán</h2>
+                    <p>BDHT vừa cập nhật danh sách sự kiện mới nhất, bao gồm các buổi biểu diễn âm nhạc, hội chợ và lễ hội hấp dẫn.</p>
+                </article>
+                <article class="news-item" style="margin-bottom: 28px;">
+                    <h2>Khuyến mãi giảm giá vé</h2>
+                    <p>Đăng ký ngay để nhận mã giảm giá và ưu đãi độc quyền cho khách hàng BDHT.</p>
+                </article>
+                <article class="news-item" style="margin-bottom: 28px;">
+                    <h2>Hướng dẫn an toàn khi tham dự sự kiện</h2>
+                    <p>Luôn mang theo vé điện tử, giấy tờ tùy thân và tuân thủ quy định phòng dịch tại nơi tổ chức.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+    <div id="footer-container"></div>
+
+    <script src="../../assets/js/core/api-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.pageUtils.loadHeader();
+            window.pageUtils.loadFooter();
+        });
+    </script>
+</body>
+</html>

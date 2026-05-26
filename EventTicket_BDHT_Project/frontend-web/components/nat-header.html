@@ -1,0 +1,121 @@
+﻿<!-- Header Component -->
+<header class="w-full">
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-8">
+
+        <!-- Logo -->
+        <a href="pages/index.html" class="flex flex-col flex-shrink-0 group">
+            <h1
+                class="text-2xl font-extrabold text-gray-900 tracking-tight group-hover:text-brand-purple transition-colors">
+                BDHT</h1>
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5" data-i18n="header.subtitle">
+                Premium Ticketing</p>
+        </a>
+
+        <!-- Search -->
+        <div class="hidden md:flex flex-1 max-w-xl">
+            <div class="relative w-full group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400 group-focus-within:text-brand-purple transition-colors"></i>
+                </div>
+                <input id="header-search-keyword" type="text" placeholder="Tìm kiếm sự kiện, nghệ sĩ, địa điểm..."
+                    data-i18n="header.search_placeholder"
+                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-transparent rounded-full text-sm font-medium text-gray-900 focus:bg-white focus:border-gray-200 focus:ring-4 focus:ring-gray-100 outline-none transition-all duration-300">
+            </div>
+        </div>
+
+        <!-- User Actions & Language -->
+        <div class="flex items-center gap-6">
+            <div class="hidden md:block">
+                <div
+                    class="ai-status-shell rounded-full bg-gradient-to-r from-amber-200 via-orange-200 to-rose-200 p-[1px] shadow-[0_0_24px_rgba(251,191,36,0.32)] transition-all duration-300">
+                    <div id="header-ai-status-pill"
+                        class="hidden md:flex items-center gap-3 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700 shadow-sm whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <span id="header-ai-status-dot"
+                                class="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span class="inline-flex items-center gap-1.5">
+                                <i class="fas fa-robot text-[10px]"></i>
+                                <span id="header-ai-status-text">Đang kiểm tra trợ lý AI...</span>
+                            </span>
+                        </div>
+                        <button id="header-ai-cta" type="button"
+                            class="hidden group items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 px-2.5 py-1 text-[10px] font-bold text-slate-950 shadow-[0_8px_20px_rgba(249,115,22,0.28)] transition-all duration-300 hover:scale-105 hover:-translate-y-0.5">
+                            <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-slate-950/10">
+                                <i class="fas fa-bolt text-[9px]"></i>
+                            </span>
+                            <span>Bật AI ngay</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-px h-6 bg-gray-200"></div>
+
+            <!-- Auth Buttons -->
+            <div id="guest-menu" class="flex items-center gap-3">
+                <a href="pages/user/nat-login.html" data-i18n="header.login"
+                    class="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors px-2">Đăng nhập</a>
+                <a href="pages/user/nat-register.html" data-i18n="header.register"
+                    class="bg-gray-900 hover:bg-brand-purple text-white text-sm font-bold px-5 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">Đăng
+                    ký</a>
+            </div>
+
+            <!-- User Menu (Hidden by default) -->
+            <div id="user-menu" style="display: none;" class="relative items-center gap-3">
+                <button type="button" id="user-dropdown-trigger"
+                    class="flex items-center gap-3 outline-none border-none bg-transparent cursor-pointer group">
+                    <span id="header-user-display-name"
+                        class="text-sm font-bold text-gray-700 leading-tight group-hover:text-brand-purple transition-colors">User
+                        Name</span>
+                    <div id="header-user-avatar-char"
+                        class="w-10 h-10 rounded-full bg-gradient-to-r from-brand-purple to-indigo-500 text-white font-extrabold text-sm flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                        U
+                    </div>
+                    <i
+                        class="fas fa-chevron-down text-[10px] text-gray-400 group-hover:text-brand-purple transition-colors"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="user-dropdown-menu"
+                    class="hidden absolute right-0 top-12 w-56 bg-white border border-gray-100 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-[100] py-2 flex flex-col overflow-hidden">
+                    <a href="pages/user/nat-profile.html"
+                        class="px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-purple transition-colors flex items-center gap-3">
+                        <i class="far fa-user w-5 text-center text-gray-400"></i> <span data-i18n="header.profile">Hồ sơ
+                            cá nhân</span>
+                    </a>
+                    <a href="pages/user/nat-dashboard.html"
+                        class="px-5 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-brand-purple transition-colors flex items-center gap-3">
+                        <i class="fas fa-ticket-alt w-5 text-center text-gray-400"></i> <span
+                            data-i18n="header.my_events">Sự kiện của bạn</span>
+                    </a>
+                    <div class="h-px bg-gray-100 my-1 mx-3"></div>
+                    <a href="javascript:void(0);" id="btn-logout"
+                        class="px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-3">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i> <span data-i18n="header.logout">Đăng
+                            xuất</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="bg-brand-purple w-full border-t border-purple-800/30">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+            <div id="header-category-nav" class="flex items-center gap-8 overflow-x-auto scrollbar-hide">
+                <span class="text-sm font-bold text-white/90">Đang tải danh mục...</span>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full border border-white/20">
+                <i class="fas fa-map-marker-alt text-white/70 text-xs"></i>
+                <select id="header-location-filter"
+                    class="bg-transparent text-white text-xs font-bold outline-none border-none cursor-pointer appearance-none pr-4 relative">
+                    <option value="" style="color: #1e293b; background-color: #ffffff;">Mọi địa điểm</option>
+                </select>
+                <i class="fas fa-chevron-down text-white/50 text-[10px] absolute right-4 pointer-events-none"></i>
+            </div>
+        </div>
+    </div>
+</header>

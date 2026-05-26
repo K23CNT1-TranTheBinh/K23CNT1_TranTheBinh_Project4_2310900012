@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sự Kiện - BDHT Premium</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            purpleHover: '#4d0b6b',
+                            orange: '#f26f21',
+                            orangeHover: '#d95a12',
+                            darkBg: '#333333'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Outfit & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css?v=1.3">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar hiding */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Shared Dynamic Header Element -->
+    <div id="header-container"></div>
+
+    <main class="pb-20">
+        
+        <!-- ==================== 3. SEARCH & CATEGORY CHIPS ==================== -->
+        <section class="max-w-7xl mx-auto px-6 py-8">
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex flex-col gap-1">
+                    <h3 class="text-base font-black text-slate-800 uppercase tracking-wider">Khám Phá Toàn Bộ Sự Kiện</h3>
+                    <p class="text-[10px] text-slate-400 font-bold">Tìm kiếm nhanh chóng sự kiện yêu thích của bạn</p>
+                </div>
+                <div class="flex-1 max-w-xl flex gap-3">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                        <input type="text" id="all-events-search" placeholder="Tìm theo tên sự kiện, ca sĩ hoặc địa điểm..." class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl text-xs font-semibold focus:border-brand-purple outline-none bg-slate-50/50 text-slate-800 transition" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIX: chips được render động từ dữ liệu sự kiện, không hardcode ở HTML -->
+            <div id="all-events-categories" class="flex flex-wrap gap-2.5 mt-8"></div>
+        </section>
+
+        <!-- ==================== 4. ALL EVENTS GRID ==================== -->
+        <section class="max-w-7xl mx-auto px-6 py-8">
+            <div id="all-events-section-title" class="flex items-center gap-2 mb-8">
+                <div class="w-1.5 h-6 bg-brand-purple rounded"></div>
+                <h2 class="text-lg font-black text-slate-900 uppercase tracking-wide">TẤT CẢ SỰ KIỆN</h2>
+            </div>
+
+            <!-- Responsive 4-Column Grid on Desktop -->
+            <div id="all-events-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Rendered dynamically via all-events.js -->
+            </div>
+
+            <!-- Pagination Bar -->
+            <div id="pagination-wrapper" class="flex items-center justify-center gap-2 mt-16 border-t border-slate-100 pt-8">
+                <div id="pagination-controls" class="flex items-center gap-2">
+                    <!-- Pagination buttons are rendered here dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Shared Dynamic Footer Element -->
+    <div id="footer-container"></div>
+
+    <!-- Script References -->
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-all-events.js"></script>
+</body>
+</html>
+

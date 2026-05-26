@@ -1,5 +1,6 @@
 package com.eventticket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class G8_users {
     private String email;
 
     @Column(name = "G8_password_hash", nullable = false, length = 255)
+    @JsonIgnore
     private String passwordHash;
 
     @Column(name = "G8_phone_number", length = 20)

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = JSON.parse(currentUserStr);
             document.getElementById('admin-display-name').innerText = user.fullName || 'Admin BDHT';
             document.getElementById('admin-avatar-char').innerText = (user.fullName || 'A').charAt(0).toUpperCase();
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // Tải tài nguyên ban đầu
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadUsers() {
     const tableBody = document.getElementById('usersTableBody');
     try {
-        const users = await window.apiClient.get('/api/ttb/users');
+        const users = await window.apiClient.get('/api/lpth/admin/users');
         if (users) {
             allUsers = users;
             renderUsersTable(users);
@@ -149,9 +149,9 @@ async function handleSearchInput(e) {
         loadFilteredUsers(); // Nạp theo lọc hiện hành
         return;
     }
-    
+
     try {
-        const results = await window.apiClient.get(`/api/ttb/users?keyword=${encodeURIComponent(val)}`);
+        const results = await window.apiClient.get(`/api/lpth/admin/users?keyword=${encodeURIComponent(val)}`);
         if (results) {
             renderUsersTable(results);
         }
@@ -163,7 +163,7 @@ async function handleSearchInput(e) {
 async function loadFilteredUsers() {
     const role = document.getElementById('roleFilter').value;
     const isActive = document.getElementById('statusFilter').value;
-    
+
     let query = [];
     if (role) query.push(`role=${role}`);
     if (isActive !== '') query.push(`isActive=${isActive}`);
@@ -171,7 +171,7 @@ async function loadFilteredUsers() {
     const queryString = query.length > 0 ? `?${query.join('&')}` : '';
 
     try {
-        const filtered = await window.apiClient.get(`/api/ttb/users${queryString}`);
+        const filtered = await window.apiClient.get(`/api/lpth/admin/users${queryString}`);
         if (filtered) {
             renderUsersTable(filtered);
         }
@@ -186,7 +186,7 @@ async function loadFilteredUsers() {
 async function blockUser(id) {
     if (confirm('🔒 Bạn chắc chắn muốn KHÓA tài khoản người dùng này? Người dùng sẽ không thể đăng nhập hoặc thanh toán vé.')) {
         try {
-            await window.apiClient.put(`/api/ttb/users/block/${id}`);
+            await window.apiClient.put(`/api/lpth/admin/users/block/${id}`);
             alert('🔒 Đã khóa tài khoản thành viên thành công.');
             loadFilteredUsers();
         } catch (err) {
@@ -198,7 +198,7 @@ async function blockUser(id) {
 
 async function unblockUser(id) {
     try {
-        await window.apiClient.put(`/api/ttb/users/unblock/${id}`);
+        await window.apiClient.put(`/api/lpth/admin/users/unblock/${id}`);
         alert('🔓 Đã mở khóa tài khoản thành viên thành công.');
         loadFilteredUsers();
     } catch (err) {
@@ -210,7 +210,7 @@ async function unblockUser(id) {
 async function deleteUser(id) {
     if (confirm('⚠️ CẢNH BÁO: Bạn thực sự muốn XÓA VĨNH VIỄN tài khoản người dùng này khỏi cơ sở dữ liệu? Hành động này không thể hoàn tác!')) {
         try {
-            await window.apiClient.delete(`/api/ttb/users/delete/${id}`);
+            await window.apiClient.delete(`/api/lpth/admin/users/delete/${id}`);
             alert('🗑️ Xóa người dùng vĩnh viễn thành công!');
             loadFilteredUsers();
         } catch (err) {
@@ -245,7 +245,7 @@ async function handleCreateUserSubmit(e) {
     };
 
     try {
-        await window.apiClient.post('/api/ttb/users/add', payload);
+        await window.apiClient.post('/api/lpth/admin/users/add', payload);
         alert('🎉 Đã khởi tạo và đăng ký tài khoản thành viên thành công!');
         closeCreateUserModal();
         loadFilteredUsers(); // Tải lại bảng dữ liệu

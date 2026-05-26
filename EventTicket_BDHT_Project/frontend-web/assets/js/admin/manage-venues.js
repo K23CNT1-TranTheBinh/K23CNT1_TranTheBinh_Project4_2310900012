@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = JSON.parse(currentUserStr);
             document.getElementById('admin-display-name').innerText = user.fullName || 'Admin BDHT';
             document.getElementById('admin-avatar-char').innerText = (user.fullName || 'A').charAt(0).toUpperCase();
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // Tải danh sách địa điểm
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadVenues() {
     const tableBody = document.getElementById('venuesTableBody');
     try {
-        const venues = await window.apiClient.get('/api/ttb/venues');
+        const venues = await window.apiClient.get('/api/lpth/admin/venues');
         if (venues) {
             allVenues = venues;
             renderVenuesTable(venues);
@@ -74,7 +74,7 @@ function renderVenuesTable(venues) {
         const id = v.venueId;
         const name = v.venueName;
         const address = v.address;
-        
+
         // Format sức chứa
         const capacityStr = new Intl.NumberFormat('vi-VN').format(v.capacity || 0);
 
@@ -111,24 +111,18 @@ function renderVenuesTable(venues) {
     });
 }
 
-// ==========================================
-// 2. BỘ LỌC TÌM KIẾM DỮ LIỆU
-// ==========================================
 function handleSearchInput(e) {
     const kw = e.target.value.trim().toLowerCase();
     if (!kw) {
         renderVenuesTable(allVenues);
         return;
     }
-    const filtered = allVenues.filter(v => 
+    const filtered = allVenues.filter(v =>
         v.venueName.toLowerCase().includes(kw) || v.address.toLowerCase().includes(kw)
     );
     renderVenuesTable(filtered);
 }
 
-// ==========================================
-// 3. THAO TÁC THÊM MỚI / CHỈNH SỬA / XÓA
-// ==========================================
 function openCreateModal() {
     activeVenueId = null;
     document.getElementById('modalTitle').innerText = 'Thêm Địa Điểm Tổ Chức';
@@ -140,14 +134,14 @@ function openEditModal(id) {
     activeVenueId = id;
     document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Địa Điểm';
     document.getElementById('venueForm').reset();
-    
+
     const venue = allVenues.find(v => v.venueId === id);
     if (venue) {
         document.getElementById('venueName').value = venue.venueName;
         document.getElementById('venueAddress').value = venue.address;
         document.getElementById('venueCapacity').value = venue.capacity;
     }
-    
+
     document.getElementById('venueModal').classList.remove('hidden');
 }
 
@@ -156,7 +150,6 @@ function closeVenueModal() {
     activeVenueId = null;
 }
 
-// Submit Form
 async function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -177,18 +170,16 @@ async function handleFormSubmit(e) {
 
     try {
         if (activeVenueId === null) {
-            // Thêm mới
-            await window.apiClient.post('/api/ttb/venues/add', payload);
+            await window.apiClient.post('/api/lpth/admin/venues/add', payload);
             alert('🎉 Đăng ký địa điểm mới thành công!');
         } else {
-            // Chỉnh sửa
-            await window.apiClient.put(`/api/ttb/venues/update/${activeVenueId}`, payload);
+            await window.apiClient.put(`/api/lpth/admin/venues/update/${activeVenueId}`, payload);
             alert('🎉 Đã cập nhật thông tin địa điểm thành công!');
         }
-        
+
         closeVenueModal();
         loadVenues();
-    } catch(err) {
+    } catch (err) {
         console.error('Lỗi khi gửi form địa điểm:', err);
         alert(`❌ Thao tác thất bại: ${err.message || 'Lỗi kết nối máy chủ.'}`);
     }
@@ -198,13 +189,13 @@ async function handleFormSubmit(e) {
 async function deleteVenueSubmit(id) {
     const v = allVenues.find(item => item.venueId === id);
     const vName = v ? v.venueName : 'địa điểm này';
-    
+
     if (confirm(`⚠️ Bạn thực sự muốn XÓA địa điểm "${vName}"? Điều này có thể ảnh hưởng đến các sự kiện đang được tổ chức tại đây.`)) {
         try {
-            await window.apiClient.delete(`/api/ttb/venues/delete/${id}`);
+            await window.apiClient.delete(`/api/lpth/admin/venues/delete/${id}`);
             alert('🗑️ Đã xóa địa điểm thành công!');
             loadVenues();
-        } catch(err) {
+        } catch (err) {
             console.error('Lỗi xóa địa điểm:', err);
             alert(`❌ Không thể xóa địa điểm: ${err.message || 'Có sự kiện liên kết đang diễn ra.'}`);
         }

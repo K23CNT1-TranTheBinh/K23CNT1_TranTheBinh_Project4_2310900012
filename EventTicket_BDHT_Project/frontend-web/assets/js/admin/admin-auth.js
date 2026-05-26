@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin Security Guard - BDHT Ticketing Platform
  * Ngăn chặn tuyệt đối các truy cập trái phép vào trang quản trị Admin.
  */
@@ -23,7 +23,7 @@
     if (!isAuthorized) {
         alert('⛔ Cảnh báo bảo mật: Bạn không có quyền truy cập khu vực Quản trị viên!');
         // Chuyển hướng ngay lập tức về trang đăng nhập
-        window.location.href = '../user/login.html';
+        window.location.href = '../user/nat-login.html';
         return;
     }
 
@@ -62,7 +62,7 @@
             localStorage.removeItem('token');
             localStorage.removeItem('currentUser');
             
-            window.location.href = '../user/login.html';
+            window.location.href = '../user/nat-login.html';
         }
     });
 })();
