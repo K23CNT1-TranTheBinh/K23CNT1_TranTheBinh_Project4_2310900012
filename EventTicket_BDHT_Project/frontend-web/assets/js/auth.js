@@ -23,7 +23,7 @@ function setLoginMessage(message, color = 'red') {
 function redirectAfterLogin(user) {
     const userRole = user.role || 'USER';
     if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
-        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/admin/lpth_dashboard.html') : '../admin/lpth_dashboard.html';
+        window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/admin/dashboard.html') : '../admin/dashboard.html';
     } else {
         window.location.href = window.pageUtils ? window.pageUtils.resolveUrl('pages/index.html') : '../../index.html';
     }

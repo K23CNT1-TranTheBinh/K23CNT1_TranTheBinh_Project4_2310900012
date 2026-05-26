@@ -1,12 +1,9 @@
 package com.eventticket.security;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +27,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // Bộ băm mật khẩu BCrypt (Dùng lúc đăng ký và đăng nhập)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,69 +40,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable()) // Tắt CSRF vì chúng ta dùng JWT bảo mật rồi
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không
-                                                                                                              // lưu
-                                                                                                              // phiên
-                                                                                                              // (Session)
-                .authorizeHttpRequests(auth -> auth
-                        // --- PUBLIC ---
-                        .requestMatchers(
-                                "/", "/index", "/home",
-                                "/api/auth/**",
-                                "/api/public/**",
-                                "/api/vtd/public/**",
-                                "/css/**", "/js/**", "/images/**", "/assets/**")
-                        .permitAll()
-
-                        // --- USER ---
-                        .requestMatchers(
-                                "/api/user/**")
-                        .hasAnyRole("USER", "ADMIN")
-
-                        // --- ADMIN ---
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/uploads/**").permitAll()
-
-                        // --- TẤT CẢ CÒN LẠI CHO PHÉP ---
-                        .anyRequest().permitAll())
-
-                // --- LOGIN ---
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler((request, response, authentication) -> {
-                            boolean isAdmin = authentication.getAuthorities().stream()
-                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-                            if (isAdmin) {
-                                response.sendRedirect("/admin/dashboard");
-                            } else {
-                                response.sendRedirect("/");
-                            }
-                        })
-                        .permitAll())
-
-                // --- LOGOUT ---
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll());
-
-        // Nhét ông bảo vệ JWT lên tuyến đầu tiên
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable()) // Tắt CSRF cho kiến trúc API Stateless
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // KHÔNG DÙNG SESSION
+            .authorizeHttpRequests(auth -> auth
+                // 1. Các endpoint công khai (Ai cũng vào được)
+                .requestMatchers("/", "/api/auth/**", "/api/public/**", "/api/vtd/public/**","/api/ttb/public/**", "/uploads/**").permitAll()
+                
+                // 2. Endpoint Admin (Yêu cầu quyền ADMIN)
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
+                // 3. Endpoint User (Yêu cầu quyền USER hoặc ADMIN)
+                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                
+                // 4. Mọi request khác đều phải xác thực (có token hợp lệ)
+                .anyRequest().authenticated()
+            )
+            // Lọc JWT trước khi vào filter của Spring Security
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/uploads/**");
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // Cho phép frontend gọi tới
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

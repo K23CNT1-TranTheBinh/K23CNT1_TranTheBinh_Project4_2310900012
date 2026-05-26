@@ -1,0 +1,32 @@
+package com.eventticket.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "users")
+@Data
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String passwordHash;
+
+    private String fullName;
+
+    private String phone;
+
+    @Column(nullable = false)
+    private String role = "USER";
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    // TODO: Add avatar, totalBookings, totalSpent fields
+}
