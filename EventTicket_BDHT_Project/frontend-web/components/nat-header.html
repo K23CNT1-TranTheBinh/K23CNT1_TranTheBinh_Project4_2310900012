@@ -1,0 +1,169 @@
+﻿<!-- Header Component -->
+<header class="w-full"
+    style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fffef9; border-bottom: 1px solid #ede8e0;">
+
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-8 h-[72px] flex items-center justify-between gap-7">
+
+        <!-- Logo -->
+        <a href="pages/nat-index.html" class="flex flex-col flex-shrink-0 no-underline group" style="gap: 3px;">
+            <h1 style="font-size: 20px; font-weight: 900; color: #1a1612; letter-spacing: 1px; line-height: 1;"
+                class="group-hover:opacity-75 transition-opacity">
+                BDHT
+            </h1>
+            <p style="font-size: 8.5px; font-weight: 700; color: #c4b49a; text-transform: uppercase; letter-spacing: 4px; line-height: 1;"
+                data-i18n="header.subtitle">
+                Premium Ticketing
+            </p>
+        </a>
+
+        <!-- Search -->
+        <div class="hidden md:flex flex-1 max-w-[440px]">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-[15px] flex items-center pointer-events-none">
+                    <i class="fas fa-search" style="color: #c4b49a; font-size: 13px;"></i>
+                </div>
+                <input id="header-search-keyword" type="text" placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
+                    data-i18n="header.search_placeholder"
+                    style="font-family: inherit; width: 100%; padding: 10px 16px 10px 40px; background: #f7f3ed; border: 1.5px solid #ede8e0; border-radius: 12px; font-size: 13px; color: #1a1612; outline: none; transition: all .2s;"
+                    onfocus="this.style.background='#fff';this.style.borderColor='#d4a853';this.style.boxShadow='0 0 0 3px rgba(212,168,83,0.12)'"
+                    onblur="this.style.background='#f7f3ed';this.style.borderColor='#ede8e0';this.style.boxShadow='none'">
+            </div>
+        </div>
+
+        <!-- User Actions -->
+        <div class="flex items-center" style="gap: 12px;">
+
+            <!-- AI Status Pill -->
+            <div class="hidden md:block">
+                <div id="header-ai-status-pill" class="hidden md:flex items-center whitespace-nowrap"
+                    style="gap: 6px; background: #fff8ec; border: 1.5px solid #f5d98a; border-radius: 10px; padding: 7px 12px;">
+                    <span id="header-ai-status-dot" class="inline-block animate-pulse"
+                        style="width: 6px; height: 6px; border-radius: 50%; background: #e8a020; flex-shrink: 0;"></span>
+                    <i class="fas fa-robot" style="font-size: 10px; color: #c48a1a;"></i>
+                    <span id="header-ai-status-text"
+                        style="font-size: 11px; font-weight: 700; color: #9a6b0a; letter-spacing: 0.3px;">
+                        Đang kiểm tra trợ lý AI...
+                    </span>
+                    <button id="header-ai-cta" type="button" class="hidden items-center"
+                        style="gap: 4px; background: #c97c2a; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; font-family: inherit;">
+                        <i class="fas fa-bolt" style="font-size: 9px;"></i>
+                        <span>Bật AI</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="width: 1px; height: 20px; background: #ede8e0;"></div>
+
+            <!-- Auth Buttons -->
+            <div id="guest-menu" class="flex items-center" style="gap: 4px;">
+                <a href="pages/user/nat-login.html" data-i18n="header.login"
+                    style="font-family: inherit; font-size: 13px; font-weight: 600; color: #6b5c4a; text-decoration: none; padding: 8px 14px; border-radius: 10px; transition: all .15s; white-space: nowrap;"
+                    onmouseover="this.style.color='#1a1612';this.style.background='#f2ece4'"
+                    onmouseout="this.style.color='#6b5c4a';this.style.background='transparent'">
+                    Đăng nhập
+                </a>
+                <a href="pages/user/nat-register.html" data-i18n="header.register"
+                    style="font-family: inherit; font-size: 13px; font-weight: 700; color: #fff; background: #c97c2a; text-decoration: none; padding: 9px 20px; border-radius: 10px; letter-spacing: 0.2px; transition: all .2s; white-space: nowrap;"
+                    onmouseover="this.style.background='#b56a1e'" onmouseout="this.style.background='#c97c2a'">
+                    Đăng ký
+                </a>
+            </div>
+
+            <!-- User Menu (Hidden by default) -->
+            <div id="user-menu" style="display: none;" class="relative items-center" style="gap: 12px;">
+                <button type="button" id="user-dropdown-trigger"
+                    class="flex items-center outline-none border-none bg-transparent cursor-pointer group"
+                    style="gap: 10px;">
+                    <span id="header-user-display-name"
+                        style="font-family: inherit; font-size: 13px; font-weight: 600; color: #1a1612; line-height: 1.2;">
+                        User Name
+                    </span>
+                    <div id="header-user-avatar-char"
+                        style="width: 36px; height: 36px; border-radius: 50%; background: #c97c2a; color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        U
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 9px; color: #c4b49a;"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="user-dropdown-menu" class="hidden absolute right-0 top-12 z-[100] overflow-hidden"
+                    style="width: 208px; background: #fffef9; border: 1.5px solid #ede8e0; border-radius: 14px; box-shadow: 0 8px 32px rgba(26,22,18,0.10); padding: 6px;">
+                    <a href="pages/user/nat-profile.html" class="flex items-center no-underline transition-colors"
+                        style="gap: 10px; padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #1a1612;"
+                        onmouseover="this.style.background='#f2ece4'" onmouseout="this.style.background='transparent'">
+                        <i class="far fa-user"
+                            style="width: 16px; text-align: center; color: #c4b49a; font-size: 13px;"></i>
+                        <span data-i18n="header.profile">Hồ sơ cá nhân</span>
+                    </a>
+                    <a href="pages/user/nat-dashboard.html" class="flex items-center no-underline transition-colors"
+                        style="gap: 10px; padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #1a1612;"
+                        onmouseover="this.style.background='#f2ece4'" onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-ticket-alt"
+                            style="width: 16px; text-align: center; color: #c4b49a; font-size: 13px;"></i>
+                        <span data-i18n="header.my_events">Sự kiện của bạn</span>
+                    </a>
+                    <div style="height: 1px; background: #ede8e0; margin: 4px 4px;"></div>
+                    <a href="javascript:void(0);" id="btn-logout"
+                        class="flex items-center no-underline transition-colors"
+                        style="gap: 10px; padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #c0392b;"
+                        onmouseover="this.style.background='#fdf0ef'" onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-sign-out-alt" style="width: 16px; text-align: center; font-size: 13px;"></i>
+                        <span data-i18n="header.logout">Đăng xuất</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div style="background: #f7f3ed; border-top: 1px solid #ede8e0;">
+        <style>
+            #header-category-nav a {
+                font-family: 'Inter', -apple-system, sans-serif !important;
+                font-size: 12.5px !important;
+                font-weight: 600 !important;
+                color: #7a6a58 !important;
+                text-decoration: none !important;
+                padding: 5px 13px !important;
+                border-radius: 8px !important;
+                letter-spacing: 0.1px !important;
+                white-space: nowrap !important;
+                transition: all .15s !important;
+                display: inline-block !important;
+            }
+
+            #header-category-nav a:hover {
+                color: #1a1612 !important;
+                background: #eaeaea !important;
+            }
+
+            #header-category-nav a.active,
+            #header-category-nav a[class*="text-white"],
+            #header-category-nav a.bg-white\/20 {
+                color: #7a3d08 !important;
+            }
+        </style>
+        <div class="max-w-7xl mx-auto px-8 flex items-center justify-between" style="height: 46px;">
+
+            <div id="header-category-nav" class="flex items-center overflow-x-auto scrollbar-hide" style="gap: 2px;">
+                <span style="font-size: 12.5px; font-weight: 600; color: #7a6a58; font-family: inherit;">
+                    Đang tải danh mục...
+                </span>
+            </div>
+
+            <div class="hidden lg:flex items-center"
+                style="gap: 7px; background: #fff; border: 1.5px solid #ede8e0; padding: 6px 14px; border-radius: 10px;">
+                <i class="fas fa-map-marker-alt" style="color: #c4b49a; font-size: 11px;"></i>
+                <select id="header-location-filter"
+                    style="font-family: inherit; background: transparent; border: none; font-size: 12px; font-weight: 600; color: #6b5c4a; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;">
+                    <option value="" style="color: #1e293b; background-color: #ffffff;">Mọi địa điểm</option>
+                </select>
+                <i class="fas fa-chevron-down" style="color: #c4b49a; font-size: 9px; pointer-events: none;"></i>
+            </div>
+
+        </div>
+    </div>
+
+</header>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Đơn Hàng - BDHT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#7c3aed',
+                            purpleLight: '#a78bfa',
+                            orange: '#f97316',
+                            orangeHover: '#ea6c0a',
+                            pink: '#ec4899',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        :root {
+            --bg: transparent;
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface2: rgba(243, 232, 255, 0.4);
+            --border: rgba(167, 139, 250, 0.2);
+            --accent: #7c3aed;
+            --accent2: #f97316;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #1e0a3c;
+            --text-muted: #6b7280;
+            --text-dim: #9ca3af;
+            --glow: rgba(124, 58, 237, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff7f0 40%, #f0f9ff 100%);
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ── Radial floating lights ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.06) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #header-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ── Layout ── */
+        .payment-page {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 680px) {
+            .payment-page {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Card (Glassmorphism) ── */
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 24px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.05);
+            animation: fade-up 0.4s ease both;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(167, 139, 250, 0.15);
+            padding-bottom: 12px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            border-radius: 99px;
+        }
+
+        /* ── Order info ── */
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(167, 139, 250, 0.1);
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-row .label {
+            color: var(--text-muted);
+        }
+
+        .order-row .value {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .order-row.total .label {
+            color: var(--text);
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .order-row.total .value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--accent2);
+        }
+
+        #payment-info-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+        /* ── QR Section ── */
+        #qr-section {
+            display: none;
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .qr-frame {
+            position: relative;
+            padding: 12px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.12);
+            border: 1px solid rgba(167, 139, 250, 0.15);
+        }
+
+        .qr-frame img {
+            width: 220px;
+            height: 220px;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .qr-pulse {
+            position: absolute;
+            inset: -3px;
+            border-radius: 22px;
+            border: 2px solid var(--accent);
+            animation: pulse-border 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.01);
+            }
+        }
+
+        .qr-amount {
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--accent2);
+            letter-spacing: -0.5px;
+        }
+
+        .qr-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .qr-timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #b45309;
+            background: #fef3c7;
+            padding: 6px 16px;
+            border-radius: 99px;
+            border: 1px solid #fde68a;
+        }
+
+        .qr-steps {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff7f0 100%);
+            border: 1.5px solid rgba(167, 139, 250, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.05);
+        }
+
+        /* ── Loading section ── */
+        #loading-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 0;
+        }
+
+        .loading-text {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ── Success ── */
+        #success-section {
+            display: none;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 20px;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--success);
+            margin-bottom: 8px;
+        }
+
+        .success-sub {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14.5px;
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+            transition: all 0.25s;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #ea6c0a 0%, #db2777 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(249, 115, 22, 0.35);
+        }
+
+        /* ── Error message ── */
+        #error-section {
+            display: none;
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(124, 58, 237, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        .spinner-lg {
+            width: 40px;
+            height: 40px;
+            border: 3.5px solid rgba(124, 58, 237, 0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Page title ── */
+        .page-header {
+            grid-column: 1 / -1;
+            margin-bottom: 8px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #1e0a3c;
+        }
+
+        .page-header h1 span {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14.5px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ── Fade in animation ── */
+        .card {
+            animation: fade-up 0.4s ease both;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="pb-24">
+    <div id="header-container"></div>
+
+    <main class="payment-page">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full tracking-wider mb-2"
+                style="background:linear-gradient(135deg,#fff0e6,#fce7f3);color:#f97316;border:1px solid #fed7aa;">
+                <i class="fas fa-wallet text-[9px]"></i> Cổng Thanh Toán / Payment Gateway
+            </span>
+            <h1>Thanh toán <span>đơn hàng</span></h1>
+            <p>Quét mã QR để hoàn tất thanh toán an toàn và nhận vé điện tử ngay lập tức.</p>
+        </div>
+
+        <!-- Card 1: Thông tin đơn hàng -->
+        <div class="card">
+            <div class="card-title">Thông tin đơn hàng</div>
+
+            <div id="payment-info">
+                <div id="payment-info-loading">
+                    <span class="spinner"></span>
+                    Đang tải thông tin đơn hàng...
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: QR + Success + Error -->
+        <div class="card">
+
+            <!-- Loading state -->
+            <div id="loading-section">
+                <div class="spinner-lg"></div>
+                <p class="loading-text">Đang tạo mã QR chuyển khoản...</p>
+            </div>
+
+            <!-- QR Section -->
+            <div id="qr-section">
+                <div class="card-title">Quét mã để thanh toán</div>
+                <div class="qr-container">
+                    <div class="qr-frame">
+                        <div class="qr-pulse"></div>
+                        <img id="qr-image" src="" alt="QR Code"/>
+                    </div>
+
+                    <div class="qr-amount" id="qr-amount"></div>
+
+                    <div class="qr-timer" id="qr-timer">
+                        ⏱ Đang tải...
+                    </div>
+
+                    <div class="qr-steps">
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            Mở ứng dụng ngân hàng hoặc ví điện tử
+                        </div>
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            Chọn tính năng "Quét mã QR" (QR Pay)
+                        </div>
+                        <div class="step">
+                            <span class="step-num">3</span>
+                            Số tiền &amp; Nội dung được điền tự động chính xác
+                        </div>
+                        <div class="step">
+                            <span class="step-num">4</span>
+                            Xác nhận giao dịch chuyển tiền để nhận vé điện tử
+                        </div>
+                    </div>
+
+                    <div class="qr-note">
+                        🔒 Hệ thống sẽ tự động xác thực và kích hoạt vé của bạn ngay sau khi nhận được tiền.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Section -->
+            <div id="success-section">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Thanh toán thành công!</div>
+                <p class="success-sub">
+                    Tuyệt vời! Đơn hàng của bạn đã được xác nhận.<br>
+                    Vé điện tử của bạn đã được lưu trực tiếp vào tài khoản cá nhân.
+                </p>
+                <a id="btn-view-tickets" href="#" class="btn-secondary">
+                    🎫 Xem vé của tôi
+                </a>
+            </div>
+
+            <!-- Error Section -->
+            <div id="error-section">
+                <p id="error-message" style="color:var(--danger); font-size:14.5px; font-weight: 600;"></p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-payment.js?v=2.0"></script>
+</body>
+</html>

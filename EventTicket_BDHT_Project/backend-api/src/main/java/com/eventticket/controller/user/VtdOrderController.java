@@ -171,15 +171,21 @@ public class VtdOrderController {
      * MEMBER: Áp dụng mã giảm giá trực tiếp vào đơn hàng.
      */
     @PostMapping("/api/vtd/member/orders/{orderId}/promotion")
-    public ResponseEntity<G8_order> applyPromotion(
+    public ResponseEntity<?> applyPromotion(
             @PathVariable Integer orderId,
             @RequestBody PromotionRequest request) {
         Integer userId = getCurrentUserId();
         if (!isCurrentUserOrder(orderId, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        G8_order order = orderService.applyPromotionToOrder(orderId, request.getPromotionCode());
-        return ResponseEntity.ok(order);
+        try {
+            G8_order order = orderService.applyPromotionToOrder(orderId, request.getPromotionCode());
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException e) {
+            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     /**
@@ -196,16 +202,22 @@ public class VtdOrderController {
     }
 
     /**
-     * MEMBER: Xác nhận đơn hàng (chuyển từ PENDING sang CONFIRMED)
+     * MEMBER: Xác nhận đơn hàng (giữ trạng thái PENDING, chờ thanh toán để chuyển sang COMPLETED)
      */
     @PostMapping("/api/vtd/member/orders/{orderId}/confirm")
-    public ResponseEntity<G8_order> confirmOrder(@PathVariable Integer orderId) {
+    public ResponseEntity<?> confirmOrder(@PathVariable Integer orderId) {
         Integer userId = getCurrentUserId();
         if (!isCurrentUserOrder(orderId, userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        G8_order order = orderService.confirmOrder(orderId);
-        return ResponseEntity.ok(order);
+        try {
+            G8_order order = orderService.confirmOrder(orderId);
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException e) {
+            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     /**
@@ -228,22 +240,6 @@ public class VtdOrderController {
     public static class AddTicketRequest {
         private Integer ticketTypeId;
         private Integer quantity;
-
-        public Integer getTicketTypeId() {
-            return ticketTypeId;
-        }
-
-        public void setTicketTypeId(Integer ticketTypeId) {
-            this.ticketTypeId = ticketTypeId;
-        }
-
-        public Integer getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(Integer quantity) {
-            this.quantity = quantity;
-        }
     }
 
     /**
@@ -252,14 +248,6 @@ public class VtdOrderController {
     @Data
     public static class UpdateQuantityRequest {
         private Integer quantity;
-
-        public Integer getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(Integer quantity) {
-            this.quantity = quantity;
-        }
     }
 
     /**
@@ -268,13 +256,5 @@ public class VtdOrderController {
     @Data
     public static class PromotionRequest {
         private String promotionCode;
-
-        public String getPromotionCode() {
-            return promotionCode;
-        }
-
-        public void setPromotionCode(String promotionCode) {
-            this.promotionCode = promotionCode;
-        }
     }
 }

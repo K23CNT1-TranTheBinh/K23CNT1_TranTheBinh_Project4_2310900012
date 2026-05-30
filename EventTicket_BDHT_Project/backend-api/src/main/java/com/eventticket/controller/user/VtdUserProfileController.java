@@ -88,22 +88,6 @@ public class VtdUserProfileController {
     public static class UpdateProfileRequest {
         private String fullName;
         private String phoneNumber;
-
-        public String getFullName() {
-            return fullName;
-        }
-
-        public void setFullName(String fullName) {
-            this.fullName = fullName;
-        }
-
-        public String getPhoneNumber() {
-            return phoneNumber;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-        }
     }
 
     /**
@@ -113,21 +97,5 @@ public class VtdUserProfileController {
     public static class ChangePasswordRequest {
         private String oldPassword;
         private String newPassword;
-
-        public String getOldPassword() {
-            return oldPassword;
-        }
-
-        public void setOldPassword(String oldPassword) {
-            this.oldPassword = oldPassword;
-        }
-
-        public String getNewPassword() {
-            return newPassword;
-        }
-
-        public void setNewPassword(String newPassword) {
-            this.newPassword = newPassword;
-        }
     }
 }

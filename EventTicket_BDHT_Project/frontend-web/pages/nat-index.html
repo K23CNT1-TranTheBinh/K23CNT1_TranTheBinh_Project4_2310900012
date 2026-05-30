@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDHT – Kênh Bán Vé Sự Kiện Hàng Đầu Việt Nam</title>
+    <meta name="description"
+        content="Mua vé sự kiện âm nhạc, concert, lễ hội nhanh chóng, uy tín trên BDHT – Kênh bán vé sự kiện hiện đại nhất Việt Nam.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            purpleHover: '#4d0b6b',
+                            orange: '#f26f21',
+                            orangeHover: '#d95a12',
+                            darkBg: '#333333'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=1.3">
+
+    <style>
+        :root {
+            --neon-orange: #ff6b2b;
+            --neon-purple: #a855f7;
+            --deep-bg: #f8f5ff;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-border: rgba(124, 58, 237, 0.12);
+            --glass-bg: rgba(255, 255, 255, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff7f0 40%, #f0f9ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.08) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ─── SCROLLBAR ─────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.35);
+            border-radius: 99px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.6);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* ─── HEADER CONTAINER ──────────────────────── */
+        #header-container {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(167, 139, 250, 0.2) !important;
+            box-shadow: 0 2px 20px rgba(124, 58, 237, 0.08) !important;
+        }
+
+        /* ─── HERO SECTION ──────────────────────────── */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: clamp(500px, 88vh, 720px);
+            overflow: hidden;
+            background: linear-gradient(160deg, #1e0a3c 0%, #3b0764 50%, #1a1a2e 100%);
+        }
+
+        #hero-slider-track {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.9s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .hero-slide {
+            width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: transform 8s ease, opacity 0.9s ease;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .hero-slide.is-active img {
+            transform: scale(1.06);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top,
+                    rgba(30, 10, 60, 0.97) 0%,
+                    rgba(30, 10, 60, 0.65) 38%,
+                    rgba(30, 10, 60, 0.15) 70%,
+                    transparent 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 3.5rem 2rem;
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(249, 115, 22, 0.18);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            color: #fdba74;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.85rem;
+            border-radius: 99px;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-badge .dot-live {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f97316;
+            animation: blink 1.4s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.08;
+            color: #fff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-title .accent {
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 45%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-desc {
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
+            color: rgba(253, 230, 213, 0.82);
+            max-width: 42rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.7;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.9rem 2.2rem;
+            border-radius: 99px;
+            text-decoration: none;
+            box-shadow: 0 8px 28px rgba(249, 115, 22, 0.45);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 14px 40px rgba(249, 115, 22, 0.55), 0 0 0 4px rgba(249, 115, 22, 0.18);
+        }
+
+        /* ─── HERO SLIDER CONTROLS ──────────────────── */
+        .hero-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.25s ease;
+            z-index: 10;
+            outline: none;
+        }
+
+        .hero-arrow:hover {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: rgba(249, 115, 22, 0.6);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .hero-arrow.left {
+            left: 1.5rem;
+        }
+
+        .hero-arrow.right {
+            right: 1.5rem;
+        }
+
+        #hero-dots-container {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .hero-dot {
+            height: 4px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, 0.35);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 20px;
+        }
+
+        .hero-dot.active {
+            background: #f97316;
+            width: 40px;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.7);
+        }
+
+        /* ─── SECTION HEADERS ───────────────────────── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .section-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #f97316;
+        }
+
+        .section-eyebrow::before {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background: #f97316;
+            border-radius: 99px;
+        }
+
+        .section-title-main {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            color: #1e0a3c;
+            letter-spacing: -0.02em;
+        }
+
+        .section-badge-count {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #7c3aed;
+            background: rgba(124, 58, 237, 0.08);
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+        }
+
+        .scroll-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .scroll-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            background: rgba(255, 255, 255, 0.7);
+            color: #7c3aed;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(249, 115, 22, 0.1);
+            border-color: rgba(249, 115, 22, 0.4);
+            color: #f97316;
+            transform: scale(1.1);
+        }
+
+        /* ─── MINI SLIDER CARD ──────────────────────── */
+        .mini-slider-card {
+            min-width: 260px;
+            width: 260px;
+        }
+
+        /* ─── GLASS EVENT CARD (light) ──────────────── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(249, 115, 22, 0.35);
+            box-shadow: 0 20px 50px rgba(124, 58, 237, 0.14), 0 0 0 1px rgba(249, 115, 22, 0.15);
+        }
+
+        .glass-card .card-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            background: #f3e8ff;
+            flex-shrink: 0;
+        }
+
+        .glass-card .card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .glass-card:hover .card-thumb img {
+            transform: scale(1.08);
+        }
+
+        .card-city-tag {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            backdrop-filter: blur(8px);
+            color: #3b0764;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.65rem;
+            border-radius: 99px;
+        }
+
+        .card-cat-tag {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 99px;
+        }
+
+        .glass-card .card-body {
+            padding: 1.1rem 1.2rem 1.2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-card .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e0a3c;
+            margin-bottom: 0.6rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s;
+        }
+
+        .glass-card:hover .card-title {
+            color: #7c3aed;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .card-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .card-meta-row i {
+            font-size: 0.7rem;
+            color: #f97316;
+            width: 12px;
+            text-align: center;
+        }
+
+        .card-footer-row {
+            border-top: 1px solid rgba(124, 58, 237, 0.1);
+            padding-top: 0.8rem;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 0.15rem;
+        }
+
+        .price-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #f97316;
+        }
+
+        .card-arrow-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff0e6, #fce7f3);
+            border: 1px solid #fed7aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f97316;
+            font-size: 0.75rem;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .glass-card:hover .card-arrow-btn {
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            border-color: transparent;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* ─── FILTER SECTION ────────────────────────── */
+        .filter-bar {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1.5px solid rgba(167, 139, 250, 0.22);
+            border-radius: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.08);
+        }
+
+        @media (max-width: 640px) {
+            .filter-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .filter-bar select {
+            background: #fff;
+            border: 1.5px solid #e9d5ff;
+            color: #374151;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .filter-bar select option {
+            background: #fff;
+            color: #374151;
+        }
+
+        .filter-bar select:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+        }
+
+        .filter-btn {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.42);
+            background: linear-gradient(135deg, #ea6c0a 0%, #db2777 100%);
+        }
+
+        .filter-btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        /* ─── ALL EVENTS GRID ───────────────────────── */
+        #all-events-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            #all-events-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            #all-events-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* ─── PAGINATION ────────────────────────────── */
+        #all-events-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        /* ─── SKELETON ──────────────────────────────── */
+        @keyframes shimmer {
+            0% {
+                background-position: -400px 0;
+            }
+
+            100% {
+                background-position: 400px 0;
+            }
+        }
+
+        .skeleton-shimmer {
+            background: linear-gradient(90deg,
+                    #f3e8ff 25%,
+                    #ede9fe 50%,
+                    #f3e8ff 75%);
+            background-size: 800px 100%;
+            animation: shimmer 1.6s infinite;
+        }
+
+        /* ─── SECTION SEPARATOR ─────────────────────── */
+        .section-sep {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.25), transparent);
+            margin: 0;
+        }
+
+        /* ─── STATS RIBBON ──────────────────────────── */
+        .stats-ribbon {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(249, 115, 22, 0.05) 100%);
+            border-top: 1px solid rgba(167, 139, 250, 0.18);
+            border-bottom: 1px solid rgba(167, 139, 250, 0.18);
+        }
+
+        /* ─── FOOTER CONTAINER ──────────────────────── */
+        #footer-container {
+            background: #fff !important;
+            border-top: 1px solid rgba(167, 139, 250, 0.18) !important;
+        }
+
+        /* ─── AI STATUS PILL ────────────────────────── */
+        #hero-ai-status-container {
+            margin-top: 1.5rem;
+        }
+
+        .ai-status-shell {
+            display: inline-block;
+        }
+
+        /* ─── GLOW SEPARATOR ────────────────────────── */
+        .glow-sep {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .glow-sep-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+        }
+
+        /* ─── RESPONSIVENESS ────────────────────────── */
+        @media (max-width: 768px) {
+            .hero-arrow {
+                display: none;
+            }
+
+            #hero-dots-container {
+                bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header-container" class="sticky top-0 z-[100]"></div>
+
+    <main>
+
+        <!-- ═══════════════════════════════════════════
+             HERO BANNER SLIDER
+             ═══════════════════════════════════════════ -->
+        <section class="hero-section">
+            <div id="hero-slider-track"></div>
+
+            <button onclick="moveHeroSlide(-1)" type="button" class="hero-arrow left">
+                <i class="fas fa-chevron-left text-sm"></i>
+            </button>
+            <button onclick="moveHeroSlide(1)" type="button" class="hero-arrow right">
+                <i class="fas fa-chevron-right text-sm"></i>
+            </button>
+
+            <div id="hero-dots-container"></div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             STATS RIBBON
+             ═══════════════════════════════════════════ -->
+        <div class="stats-ribbon py-5 px-4">
+            <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-8 md:gap-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style="background:rgba(255,107,43,0.12);border:1px solid rgba(255,107,43,0.2);">
+                        <i class="fas fa-ticket-alt text-sm" style="color:#ff6b2b;"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Sự kiện đang mở</p>
+                        <p id="stat-total-events" class="text-base font-800 font-extrabold text-slate-800">—</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);">
+                        <i class="fas fa-layer-group text-sm" style="color:#a855f7;"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Danh mục</p>
+                        <p id="stat-categories" class="text-base font-extrabold text-slate-800">—</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style="background:rgba(56,189,248,0.10);border:1px solid rgba(56,189,248,0.2);">
+                        <i class="fas fa-map-marker-alt text-sm" style="color:#38bdf8;"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Thành phố</p>
+                        <p id="stat-cities" class="text-base font-extrabold text-slate-800">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             SỰ KIỆN MỚI NHẤT
+             ═══════════════════════════════════════════ -->
+        <section class="max-w-7xl mx-auto px-5 py-14">
+            <div class="section-header">
+                <div class="section-label">
+                    <span class="section-eyebrow">Mới ra mắt</span>
+                    <h2 class="section-title-main">Sự Kiện Mới Nhất</h2>
+                </div>
+            </div>
+
+            <div class="relative -mx-5 px-5 overflow-hidden">
+                <div id="latest-events-track"
+                    class="flex gap-5 overflow-x-auto pb-6 pt-2 scrollbar-hide scroll-smooth snap-x">
+                    <!-- Dynamic rendering in JS -->
+                </div>
+            </div>
+        </section>
+
+        <div class="section-sep"></div>
+
+        <!-- ═══════════════════════════════════════════
+             SỰ KIỆN NỔI BẬT
+             ═══════════════════════════════════════════ -->
+        <section class="max-w-7xl mx-auto px-5 py-14">
+            <div class="section-header">
+                <div class="section-label">
+                    <span class="section-eyebrow" style="color:#a855f7;">
+                        <span
+                            style="background:#a855f7;width:20px;height:2px;border-radius:99px;display:inline-block;"></span>
+                        Đang thịnh hành
+                    </span>
+                    <h2 class="section-title-main">Sự Kiện Nổi Bật</h2>
+                </div>
+
+            </div>
+
+            <div class="relative -mx-5 px-5 overflow-hidden">
+                <div id="featured-events-track"
+                    class="flex gap-5 overflow-x-auto pb-6 pt-2 scrollbar-hide scroll-smooth snap-x">
+                    <!-- Dynamic rendering in JS -->
+                </div>
+            </div>
+        </section>
+
+        <div class="section-sep"></div>
+
+        <!-- ═══════════════════════════════════════════
+             TẤT CẢ SỰ KIỆN
+             ═══════════════════════════════════════════ -->
+        <section id="all-events-section" class="max-w-7xl mx-auto px-5 py-14">
+
+            <!-- Header -->
+            <div class="flex flex-col gap-2 mb-8">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h2 class="section-title-main">Tất Cả Sự Kiện</h2>
+                    <span id="all-events-badge-count" class="section-badge-count">0 sự kiện</span>
+                </div>
+                <p class="text-sm text-slate-500">Lọc theo danh mục, thời gian để tìm sự kiện phù hợp nhất với bạn.</p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar mb-10">
+                <select id="event-category-filter" aria-label="Lọc theo danh mục">
+                    <option value="">🎭 Tất cả danh mục</option>
+                </select>
+
+                <select id="event-time-filter" aria-label="Lọc theo thời gian">
+                    <option value="">📅 Tất cả thời gian</option>
+                    <option value="upcoming">⏳ Sắp diễn ra</option>
+                    <option value="this-week">📆 Trong tuần này</option>
+                    <option value="this-month">🗓️ Trong tháng nay</option>
+                </select>
+
+                <button id="btn-event-filter" class="filter-btn">
+                    <i class="fas fa-sliders-h mr-2"></i>Lọc sự kiện
+                </button>
+            </div>
+
+            <!-- Grid -->
+            <div id="all-events-grid" class="min-h-[300px]">
+                <!-- Dynamic rendering in JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="all-events-pagination"></div>
+
+        </section>
+
+    </main>
+
+    <div id="footer-container" class="pt-14"></div>
+
+    <!-- ═══════════════════════════════════════════════
+         TEMPLATES — Chỉ dùng bởi home.js (không hiển thị)
+         ═══════════════════════════════════════════════ -->
+
+    <template id="tmpl-latest-event-card">
+        <div class="mini-slider-card glass-card snap-start">
+            <div class="card-thumb" style="aspect-ratio:16/10;">
+                <img data-field="bannerImage" alt="">
+                <span data-field="categoryName" class="card-cat-tag">Sự kiện</span>
+            </div>
+            <div class="card-body">
+                <h3 data-field="title" class="card-title"></h3>
+                <div class="card-meta">
+                    <div class="card-meta-row">
+                        <i class="far fa-calendar-alt"></i>
+                        <span data-field="createdAt"></span>
+                    </div>
+                </div>
+                <div class="card-footer-row">
+                    <div>
+                        <p class="price-label">Giá từ</p>
+                        <span data-field="minPrice" class="price-value"></span>
+                    </div>
+                    <span class="card-arrow-btn"><i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tmpl-latest-event-empty">
+        <div class="w-full flex flex-col items-center justify-center py-16 rounded-2xl text-center"
+            style="border:1px dashed rgba(167,139,250,0.3);background:rgba(167,139,250,0.05);">
+            <i class="far fa-calendar-times text-5xl mb-4" style="color:#7c3aed;"></i>
+            <p class="font-semibold text-slate-600">Hiện tại không có sự kiện mới nhất nào được mở bán.</p>
+            <p class="text-slate-500 text-sm mt-1">Vui lòng quay lại sau nhé!</p>
+        </div>
+    </template>
+
+    <template id="tmpl-latest-event-error">
+        <div class="w-full flex flex-col items-center justify-center py-16 rounded-2xl"
+            style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);">
+            <p class="text-red-600 font-medium">Chưa có sự kiện này.</p>
+        </div>
+    </template>
+
+    <template id="tmpl-featured-event-error">
+        <div class="w-full flex flex-col items-center justify-center py-20 rounded-2xl"
+            style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);">
+            <p class="text-red-600 font-medium">Chưa có sự kiện này.</p>
+        </div>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════
+         SCRIPTS
+         ═══════════════════════════════════════════════ -->
+    <script src="../assets/js/core/nat-api-client.js"></script>
+    <script src="../assets/js/nat-home.js?v=2.0"></script>
+    <script src="../assets/js/nat-ai-chat.js"></script>
+
+</body>
+
+</html>

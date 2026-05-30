@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đánh giá - BDHT Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bảo mật chặn truy cập trái phép -->
+    <script src="../../assets/js/admin/lpth_admin-auth.js"></script>
+
+    <!-- Tailwind CSS CDN & Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        admin: {
+                            sidebar: '#0f172a',
+                            sidebarActive: '#1e293b',
+                            accent: '#6366f1',
+                            accentHover: '#4f46e5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden h-screen flex">
+
+    <!-- 1. SIDEBAR -->
+    <aside class="w-64 bg-admin-sidebar text-gray-300 flex flex-col flex-shrink-0 border-r border-slate-800 z-20">
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
+            <div
+                class="w-8 h-8 rounded-lg bg-admin-accent flex items-center justify-center text-white font-black text-lg shadow-md">
+                B
+            </div>
+            <div>
+                <h1 class="text-white font-extrabold text-sm tracking-wide">BDHT ADMIN</h1>
+                <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Portal Quản Trị</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <a href="lpth_dashboard.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-chart-pie text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="lpth_manage-events.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-calendar-days text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Sự kiện</span>
+            </a>
+
+            <a href="lpth_manage-tickets.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-receipt text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý vé </span>
+            </a>
+
+            <a href="lpth_manage-reviews.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm bg-admin-sidebarActive font-medium transition text-white border-l-4 border-admin-accent shadow-sm">
+                <i class="fa-solid fa-star text-lg text-admin-accent"></i>
+                <span>Quản lý đánh giá </span>
+            </a>
+
+            <a href="lpth_manage-orders.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-receipt text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Đơn hàng</span>
+            </a>
+
+            <a href="lpth_manage-promotions.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-tags text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Mã giảm giá</span>
+            </a>
+
+            <a href="lpth_manage-users.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i class="fa-solid fa-users text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Người dùng</span>
+            </a>
+
+            <a href="lpth_manage-venues.html"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white group">
+                <i
+                    class="fa-solid fa-map-location-dot text-lg text-gray-400 group-hover:text-admin-accent transition-colors"></i>
+                <span>Quản lý Địa điểm</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <a href="../nat-index.html"
+                class="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                Về trang chủ User
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. KHU VỰC CHÍNH BÊN PHẢI -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header
+            class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 z-10">
+            <div class="w-96 relative">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Tìm tên, email, số điện thoại..."
+                    class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-admin-accent focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+            </div>
+
+            <div class="flex items-center gap-6">
+                <!-- Dropdown Avatar -->
+                <div class="relative group">
+                    <button class="flex items-center gap-3 outline-none" id="admin-menu-button">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-extrabold flex items-center justify-center shadow-md shadow-indigo-500/20"
+                            id="admin-avatar-char">
+                            A
+                        </div>
+                        <div class="text-left hidden md:block">
+                            <h3 class="text-sm font-bold text-gray-900 leading-tight" id="admin-display-name">Admin BDHT
+                            </h3>
+                            <span class="text-xs text-gray-400 font-medium">Quản trị viên</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-50/50 p-8">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                        Quản lý Đánh giá
+                    </h2>
+
+                    <p class="text-sm text-gray-500 font-medium mt-1">
+                        Xem, kiểm duyệt hoặc xóa các đánh giá của người dùng.
+                    </p>
+                </div>
+            </div>
+
+            <div
+                class="bg-white rounded-2xl border border-gray-150 p-5 mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.01)] flex flex-wrap gap-4 items-center">
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        Bộ lọc:
+                    </span>
+                </div>
+
+                <div class="flex flex-col gap-1 min-w-[180px]">
+                    <select id="hiddenFilter"
+                        class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-500 outline-none focus:bg-white focus:border-indigo-500 transition">
+
+                        <option value="">-- Tất cả đánh giá --</option>
+                        <option value="false">Đang hiển thị</option>
+                        <option value="true">Đã bị ẩn</option>
+
+                    </select>
+                </div>
+
+                <div class="ml-auto text-xs font-bold text-gray-400 uppercase">
+                    Đang hiển thị:
+                    <span id="reviewCountText" class="text-indigo-600 font-extrabold">0</span>
+                    đánh giá
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div
+                class="bg-white rounded-2xl border border-gray-150 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr
+                            class="bg-gray-50 border-b border-gray-150 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <th class="px-6 py-4">ID</th>
+                            <th class="px-6 py-4">Người dùng</th>
+                            <th class="px-6 py-4">Số sao</th>
+                            <th class="px-6 py-4">Nội dung</th>
+                            <th class="px-6 py-4">Trạng thái</th>
+                            <th class="px-6 py-4 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="reviewsTableBody" class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fa-solid fa-spinner animate-spin text-2xl mb-2 block"></i>
+                                Đang tải danh sách đánh giá...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Core và JavaScript -->
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/admin/lpth_manage-reviews.js"></script>
+</body>
+
+</html>

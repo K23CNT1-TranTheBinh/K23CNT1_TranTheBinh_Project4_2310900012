@@ -28,7 +28,7 @@ public class VtdHomeController {
     @ResponseBody
     public String index() throws IOException {
         String projectRoot = System.getProperty("user.dir");
-        Path indexPath = Path.of(projectRoot, "..", "frontend-web", "pages", "index.html").normalize();
+        Path indexPath = Path.of(projectRoot, "..", "frontend-web", "pages", "nat-index.html").normalize();
         return Files.readString(indexPath, StandardCharsets.UTF_8);
     }
 

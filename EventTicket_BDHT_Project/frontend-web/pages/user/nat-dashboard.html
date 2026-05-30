@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Sự Kiện - BDHT</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            sidebar: '#2A2A4A',
+                            sidebarActive: '#3d3d63',
+                            brandBlue: '#4A4A7A',
+                            brandOrange: '#f26f21'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Outfit & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+        /* Custom scrollbar styling for seamless look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 antialiased overflow-hidden">
+
+    <div class="flex h-screen bg-gray-50">
+        
+        <!-- 1. Sidebar (Cột điều hướng bên trái) -->
+        <aside class="w-64 bg-theme-sidebar text-white flex flex-col justify-between flex-shrink-0 shadow-2xl">
+            <div class="flex flex-col">
+                <!-- Brand logo Header -->
+                <div class="p-6 border-b border-white/10 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-theme-brandOrange flex items-center justify-center shadow-lg animate-pulse">
+                        <i class="fas fa-ticket-alt text-white text-base"></i>
+                    </div>
+                    <span class="text-lg font-black tracking-widest uppercase text-white">BDHT</span>
+                </div>
+
+                <!-- Navigation menu links -->
+                <nav class="p-4 flex flex-col gap-1.5 mt-4">
+                    <button 
+                        type="button" 
+                        id="menu-btn-dashboard" 
+                        class="dashboard-menu-btn w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-xl text-xs font-bold transition duration-200 bg-theme-sidebarActive text-white"
+                    >
+                        <i class="fas fa-chart-pie text-base"></i>
+                        <span>BẢNG ĐIỀU KHIỂN</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        id="menu-btn-tickets" 
+                        class="dashboard-menu-btn w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-xl text-xs font-bold transition duration-200 text-slate-400 hover:bg-white/5 hover:text-white"
+                    >
+                        <i class="fas fa-ticket text-base"></i>
+                        <span>VÉ ĐÃ ĐẶT</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        id="menu-btn-customization" 
+                        class="dashboard-menu-btn w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-xl text-xs font-bold transition duration-200 text-slate-400 hover:bg-white/5 hover:text-white"
+                    >
+                        <i class="fas fa-sliders-h text-base"></i>
+                        <span>TÙY CHỈNH</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        id="menu-btn-reports" 
+                        class="dashboard-menu-btn w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-xl text-xs font-bold transition duration-200 text-slate-400 hover:bg-white/5 hover:text-white"
+                    >
+                        <i class="fas fa-file-invoice-dollar text-base"></i>
+                        <span>THỐNG KÊ HÓA ĐƠN</span>
+                    </button>
+
+                    <!-- TAB 5: ĐĂNG BÁN VÉ -->
+                    <button 
+                        type="button" 
+                        id="menu-btn-sell" 
+                        class="dashboard-menu-btn w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-xl text-xs font-bold transition duration-200 text-slate-400 hover:bg-white/5 hover:text-white"
+                    >
+                        <i class="fas fa-plus-circle text-base"></i>
+                        <span>ĐĂNG BÁN VÉ</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Footer indicator in sidebar -->
+            <div class="p-5 border-t border-white/5 text-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                &copy; 2026 Admin Panel
+            </div>
+        </aside>
+
+        <!-- 2. Main Content (Khu vực bên phải) -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Top Header -->
+            <header class="h-16 bg-white border-b border-gray-150 flex items-center justify-end px-6 shadow-sm z-20 relative">
+                <div class="relative">
+                    <button type="button" id="dashboard-user-trigger" class="flex items-center gap-3 outline-none border-none bg-transparent cursor-pointer group">
+                        <div class="flex flex-col text-right">
+                            <span id="dashboard-user-display-name" class="text-xs font-black text-slate-800 leading-tight group-hover:text-theme-brandOrange transition">Tuấn Nguyễn Anh</span>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Thành viên</span>
+                        </div>
+                        <div id="dashboard-user-avatar-char" class="w-9 h-9 rounded-full bg-theme-brandBlue text-white font-bold text-sm flex items-center justify-center shadow-md">
+                            T
+                        </div>
+                        <i class="fas fa-chevron-down text-[10px] text-slate-400 group-hover:text-theme-brandOrange transition"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="dashboard-user-menu" class="hidden absolute right-0 top-11 w-44 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] py-1.5 flex flex-col text-xs font-bold text-slate-700">
+                        <a href="nat-profile.html" class="px-4 py-2 hover:bg-slate-50 hover:text-theme-brandOrange transition flex items-center gap-2">
+                            <i class="far fa-user text-sm w-4 text-slate-400"></i> Hồ sơ
+                        </a>
+                        <a href="nat-dashboard.html" class="px-4 py-2 text-theme-brandOrange bg-orange-50/50 hover:bg-slate-50 transition flex items-center gap-2">
+                            <i class="fas fa-sliders-h text-sm w-4 text-slate-400"></i> Sự kiện của bạn
+                        </a>
+                        <hr class="border-gray-100 my-1">
+                        <a href="javascript:void(0);" id="dashboard-logout-btn" class="px-4 py-2 hover:bg-slate-50 hover:text-red-500 transition flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt text-sm w-4 text-slate-400"></i> Thoát
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area (Scrollable container) -->
+            <main class="flex-1 overflow-y-auto p-6 bg-slate-50">
+
+                <!-- TAB 1: BẢNG ĐIỀU KHIỂN (id="tab-dashboard") -->
+                <section id="tab-dashboard" class="dashboard-tab flex flex-col gap-6">
+                    <div class="border-b border-gray-250 pb-3 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 uppercase">Bảng Điều Khiển</h2>
+                            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Tổng quan dữ liệu và doanh thu bán vé</p>
+                        </div>
+                        <span class="text-xs font-bold text-theme-brandBlue bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase">
+                            Cập nhật: Mới nhất
+                        </span>
+                    </div>
+
+                    <!-- 3-Column Metrics Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-6 flex flex-col items-center justify-center gap-3.5 hover:shadow-md transition">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="text-center">
+                                <div id="stat-total-events" class="text-3xl font-black text-slate-900">0</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1 block">Tổng số sự kiện</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-6 flex flex-col items-center justify-center gap-3.5 hover:shadow-md transition">
+                            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="text-center">
+                                <div id="stat-total-tickets" class="text-3xl font-black text-slate-900">0</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1 block">Tổng số vé đã bán</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-6 flex flex-col items-center justify-center gap-3.5 hover:shadow-md transition">
+                            <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-lg">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="text-center">
+                                <div id="stat-total-revenue" class="text-2xl font-black text-slate-900">0 VND</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1 block">Tổng doanh thu</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: VÉ ĐÃ ĐẶT (id="tab-tickets" class="hidden") -->
+                <section id="tab-tickets" class="dashboard-tab flex flex-col gap-6 hidden">
+                    <div class="border-b border-gray-250 pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 uppercase">Vé đã đặt</h2>
+                            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Danh sách các vé khách hàng đã đặt hàng thành công</p>
+                        </div>
+                        
+                        <!-- Search & Datepicker Filters -->
+                        <div class="flex items-center gap-3 self-end sm:self-auto">
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                <input type="text" placeholder="Tìm đơn hàng..." class="pl-8.5 pr-4 py-2 border border-gray-200 rounded-xl text-xs font-semibold focus:border-theme-brandBlue outline-none bg-white w-48" />
+                            </div>
+                            <div class="relative">
+                                <select class="px-3 py-2 border border-gray-200 rounded-xl text-xs font-bold text-slate-650 focus:border-theme-brandBlue outline-none bg-white cursor-pointer">
+                                    <option value="all">Mọi ngày</option>
+                                    <option value="today">Hôm nay</option>
+                                    <option value="month">Tháng này</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông báo bán vé thành công động -->
+                    <div id="resale-success-alert" class="bg-emerald-50 border border-emerald-250 text-emerald-800 p-4.5 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold hidden shadow-sm shadow-emerald-500/5 animate-pulse">
+                         <div class="flex items-center gap-3">
+                             <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md flex-shrink-0">
+                                 <i class="fas fa-hand-holding-usd text-sm"></i>
+                             </div>
+                             <div>
+                                 <p class="font-extrabold text-slate-900">🎉 ĐÃ BÁN LẠI VÉ THÀNH CÔNG!</p>
+                                 <p class="text-[10px] text-slate-500 font-semibold mt-0.5" id="resale-alert-msg">Chúc mừng! Một trong các vé rao bán lại của bạn đã được thanh toán thành công và chuyển quyền sở hữu.</p>
+                             </div>
+                         </div>
+                         <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 font-extrabold text-sm">&times;</button>
+                    </div>
+
+                    <!-- Sub-tabs (Tab phụ) -->
+                    <div class="flex border-b border-gray-200">
+                        <button type="button" id="sub-tab-active-btn" class="px-5 py-3 text-xs font-bold bg-theme-brandBlue text-white rounded-t-xl transition-all duration-200 border border-b-0 border-theme-brandBlue">
+                            Sự kiện sắp diễn ra
+                        </button>
+                        <button type="button" id="sub-tab-past-btn" class="px-5 py-3 text-xs font-bold bg-white text-slate-700 rounded-t-xl hover:bg-slate-50 transition-all duration-200 border-t border-r border-gray-200">
+                            Sự kiện đã qua
+                        </button>
+                    </div>
+
+                    <!-- Sub-tab 1 Content: Table (Sự kiện sắp diễn ra) -->
+                    <div id="sub-tab-active-content" class="bg-white rounded-2xl shadow-sm border border-gray-150 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-bold border-collapse">
+                                <thead>
+                                    <tr class="bg-theme-brandBlue text-white uppercase tracking-wider border-b border-gray-100">
+                                        <th class="p-4">Sự kiện / Ngày đặt</th>
+                                        <th class="p-4">Mã đơn hàng</th>
+                                        <th class="p-4 text-center">Trạng thái</th>
+                                        <th class="p-4 text-center">Số vé</th>
+                                        <th class="p-4 text-right">Tổng tiền</th>
+                                        <th class="p-4 text-center">Vé QR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tickets-active-tbody">
+                                    <tr>
+                                        <td colspan="6" class="p-8 text-center text-slate-400">
+                                            <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Sub-tab 2 Content: Sự kiện đã qua -->
+                    <div id="sub-tab-past-content" class="bg-white rounded-2xl shadow-sm border border-gray-150 overflow-hidden hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-bold border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-500 text-white uppercase tracking-wider border-b border-gray-100">
+                                        <th class="p-4">Sự kiện / Ngày đặt</th>
+                                        <th class="p-4">Mã đơn hàng</th>
+                                        <th class="p-4 text-center">Trạng thái</th>
+                                        <th class="p-4 text-center">Số vé</th>
+                                        <th class="p-4 text-right">Tổng tiền</th>
+                                        <th class="p-4 text-center">Vé QR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tickets-past-tbody">
+                                    <tr>
+                                        <td colspan="6" class="p-8 text-center text-slate-400">
+                                            <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: TÙY CHỈNH (id="tab-customization" class="hidden") -->
+                <section id="tab-customization" class="dashboard-tab flex flex-col gap-6 hidden">
+                    <div class="border-b border-gray-250 pb-3 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 uppercase">Tùy chỉnh</h2>
+                            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Quản lý và cập nhật danh sách nhà tổ chức sự kiện</p>
+                        </div>
+                    </div>
+
+                    <!-- 1. VIEW DANH SÁCH (customization-list) -->
+                    <div id="customization-list" class="flex flex-col gap-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <button type="button" id="open-form-btn" class="inline-flex items-center gap-2 bg-theme-brandBlue hover:bg-slate-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl uppercase tracking-wider shadow transition">
+                                <i class="fas fa-plus"></i> Thêm mới nhà tổ chức sự kiện
+                            </button>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                <input type="text" placeholder="Tìm nhà tổ chức..." class="pl-8.5 pr-4 py-2 border border-gray-200 rounded-xl text-xs font-semibold focus:border-theme-brandBlue outline-none bg-white w-48" />
+                            </div>
+                        </div>
+
+                        <!-- Empty state / Demo organizer card lists -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-6 flex flex-col gap-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Danh sách đang quản lý (1)</h3>
+                            <div class="flex items-center justify-between p-4 border border-gray-150 rounded-xl bg-slate-50 hover:bg-white hover:shadow-md transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-150 text-indigo-650 font-black text-base flex items-center justify-center border border-indigo-200">
+                                        A
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-extrabold text-slate-800">CÔNG TY TNHH ALADDIN</span>
+                                        <span class="text-[9px] text-slate-400 font-semibold mt-0.5">contact@aladdin.com.vn | Facebook: AladdinEvent</span>
+                                    </div>
+                                </div>
+                                <span class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase">
+                                    Hoạt động
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. VIEW FORM TẠO MỚI (customization-form) (Ẩn mặc định) -->
+                    <div id="customization-form" class="bg-white rounded-2xl shadow-md border border-gray-150 overflow-hidden hidden">
+                        <!-- Form Header Banner -->
+                        <div class="bg-theme-brandBlue text-white px-6 py-4.5 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="far fa-calendar-alt text-lg"></i>
+                                <h3 class="text-xs font-black uppercase tracking-wider">Tạo mới nhà tổ chức sự kiện</h3>
+                            </div>
+                            <button type="button" id="close-form-btn" class="text-white/60 hover:text-white transition text-xs font-bold uppercase tracking-wider">
+                                <i class="fas fa-times mr-1"></i> Hủy
+                            </button>
+                        </div>
+
+                        <!-- Form Input details -->
+                        <form id="organizer-form" class="p-6 md:p-8 flex flex-col gap-5 text-xs font-bold">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-slate-500">Tên nhà tổ chức *</label>
+                                    <input type="text" required placeholder="Nhập tên nhà tổ chức..." class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg font-semibold focus:border-theme-brandBlue outline-none bg-white" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-slate-500">Địa chỉ Email *</label>
+                                    <input type="email" required placeholder="example@domain.com" class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg font-semibold focus:border-theme-brandBlue outline-none bg-white" />
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-500">Thông tin giới thiệu *</label>
+                                <textarea rows="4" required placeholder="Mô tả thông tin giới thiệu nhà tổ chức..." class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg font-semibold focus:border-theme-brandBlue outline-none bg-white"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-slate-500">Facebook URL</label>
+                                    <input type="url" placeholder="https://facebook.com/page..." class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg font-semibold focus:border-theme-brandBlue outline-none bg-white" />
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-slate-500">Twitter URL</label>
+                                    <input type="url" placeholder="https://twitter.com/profile..." class="w-full px-3.5 py-2.5 border border-gray-250 rounded-lg font-semibold focus:border-theme-brandBlue outline-none bg-white" />
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-500">Logo nhà tổ chức</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="file" id="organizer-logo-file" class="hidden" accept="image/*" />
+                                    <button type="button" onclick="document.getElementById('organizer-logo-file').click()" class="bg-gray-100 hover:bg-gray-200 text-slate-700 px-4.5 py-2 rounded-lg transition">
+                                        <i class="far fa-folder-open mr-1"></i> Browse...
+                                    </button>
+                                    <span id="logo-file-name" class="text-[10px] text-slate-400 font-semibold font-mono">Chưa chọn ảnh</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 bg-theme-brandBlue hover:bg-slate-700 text-white font-extrabold text-xs py-3 rounded-xl uppercase tracking-widest shadow transition">
+                                Tạo mới / Submit
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- TAB 4: THỐNG KÊ HÓA ĐƠN (id="tab-reports" class="hidden") -->
+                <section id="tab-reports" class="dashboard-tab flex flex-col gap-6 hidden">
+                    <div class="border-b border-gray-250 pb-3 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 uppercase">Thống kê hóa đơn</h2>
+                            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Báo cáo doanh thu và lịch sử giao dịch vé điện tử của bạn</p>
+                        </div>
+                        <button type="button" id="report-export-btn"
+                            class="inline-flex items-center gap-2 bg-theme-brandBlue hover:bg-slate-700 text-white font-extrabold text-xs px-4 py-2 rounded-xl uppercase tracking-wider shadow transition">
+                            <i class="fas fa-file-export"></i> Xuất CSV
+                        </button>
+                    </div>
+
+                    <!-- Summary stat cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition">
+                            <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div>
+                                <div id="report-stat-orders" class="text-2xl font-black text-slate-900">—</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Tổng đơn hàng</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition">
+                            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div>
+                                <div id="report-stat-tickets" class="text-2xl font-black text-slate-900">—</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Vé đã mua</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div>
+                                <div id="report-stat-revenue" class="text-xl font-black text-slate-900">—</div>
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">Tổng chi tiêu</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-150 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs font-bold border-collapse">
+                                <thead>
+                                    <tr class="bg-theme-brandBlue text-white uppercase tracking-wider border-b border-gray-100">
+                                        <th class="p-4">Tên sự kiện / Hóa đơn</th>
+                                        <th class="p-4 text-center">Số vé đã mua</th>
+                                        <th class="p-4 text-center">Chờ thanh toán</th>
+                                        <th class="p-4 text-center">Hoàn tiền</th>
+                                        <th class="p-4 text-right">Chi tiêu</th>
+                                        <th class="p-4 text-center">Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reports-tbody">
+                                    <tr>
+                                        <td colspan="6" class="p-8 text-center text-slate-400">
+                                            <i class="fas fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================================================ -->
+                <!-- TAB 5: ĐĂNG BÁN VÉ (id="tab-sell") -->
+                <!-- ============================================================ -->
+                <section id="tab-sell" class="dashboard-tab flex flex-col gap-6 hidden">
+                    <div class="border-b border-gray-200 pb-3 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-900 uppercase">Đăng Bán Vé Sự Kiện</h2>
+                            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Tạo sự kiện mới và bán vé — sự kiện sẽ hiển thị ngay trên trang chủ</p>
+                        </div>
+                        <button type="button" id="sell-open-form-btn"
+                            class="inline-flex items-center gap-2 bg-theme-brandOrange hover:bg-orange-600 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider shadow transition hover:scale-105 active:scale-95">
+                            <i class="fas fa-plus"></i> Tạo Sự Kiện Mới
+                        </button>
+                    </div>
+
+                    <!-- DANH SÁCH SỰ KIỆN ĐÃ ĐĂNG -->
+                    <div id="sell-my-events-section" class="flex flex-col gap-4">
+                        <h3 class="text-xs font-extrabold text-slate-500 uppercase tracking-widest">Sự Kiện Đã Đăng Của Tôi</h3>
+                        <div id="sell-my-events-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Rendered by JS -->
+                            <div class="col-span-full bg-white rounded-2xl border border-dashed border-gray-200 py-12 flex flex-col items-center justify-center gap-3 text-center">
+                                <div class="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-orange-400 text-2xl">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </div>
+                                <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Chưa có sự kiện nào</p>
+                                <p class="text-[10px] text-slate-400 font-medium">Nhấn "Tạo Sự Kiện Mới" để bắt đầu đăng bán vé</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORM TẠO SỰ KIỆN (ẩn mặc định) -->
+                    <div id="sell-form-wrapper" class="hidden">
+                        <div class="bg-white rounded-2xl shadow-md border border-gray-150 overflow-hidden">
+                            <!-- Form Header -->
+                            <div class="bg-gradient-to-r from-theme-brandOrange to-orange-400 text-white px-6 py-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-ticket-alt text-lg"></i>
+                                    <h3 class="text-sm font-black uppercase tracking-wider">Thông Tin Sự Kiện Mới</h3>
+                                </div>
+                                <button type="button" id="sell-close-form-btn" class="text-white/70 hover:text-white transition text-xs font-bold flex items-center gap-1">
+                                    <i class="fas fa-times"></i> Đóng
+                                </button>
+                            </div>
+
+                            <!-- Form Body -->
+                            <form id="sell-event-form" class="p-6 md:p-8 flex flex-col gap-6 text-xs font-bold">
+
+                                <!-- Thông tin cơ bản -->
+                                <div>
+                                    <p class="text-[10px] font-extrabold text-theme-brandOrange uppercase tracking-widest mb-4 pb-2 border-b border-orange-100">1. Thông Tin Cơ Bản</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">Tên sự kiện *</label>
+                                            <input type="text" id="sell-title" required placeholder="VD: Liveshow Sơn Tùng MTP 2026..."
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">Danh mục sự kiện *</label>
+                                            <select id="sell-category" required
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition">
+                                                <option value="">-- Chọn danh mục --</option>
+                                                <option value="Âm nhạc">Âm nhạc</option>
+                                                <option value="Hội thảo">Hội thảo / Workshop</option>
+                                                <option value="Thể thao">Thể thao</option>
+                                                <option value="Nghệ thuật">Nghệ thuật / Văn hóa</option>
+                                                <option value="Giải trí">Giải trí</option>
+                                                <option value="Sự kiện khác">Sự kiện khác</option>
+                                                <option value="__new__" class="text-theme-brandOrange font-bold">✏️ Tạo danh mục mới...</option>
+                                            </select>
+                                            <!-- Input tạo danh mục mới (ẩn mặc định) -->
+                                            <div id="sell-category-new-wrapper" class="hidden flex gap-2 items-center">
+                                                <input type="text" id="sell-category-new-input"
+                                                    placeholder="VD: Lễ hội, Triển lãm, Khóa học..."
+                                                    class="flex-1 px-3.5 py-2.5 border-2 border-theme-brandOrange rounded-xl font-semibold focus:outline-none bg-orange-50 text-xs transition" />
+                                                <button type="button" id="sell-category-new-cancel"
+                                                    class="px-3 py-2.5 text-slate-400 hover:text-red-400 transition text-xs font-bold" title="Hủy">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <p id="sell-category-new-hint" class="hidden text-[10px] text-theme-brandOrange font-semibold">💡 Nhập tên danh mục mới rồi tiếp tục điền form.</p>
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">Nghệ sĩ / Diễn giả</label>
+                                            <input type="text" id="sell-artist" placeholder="VD: Sơn Tùng MTP, Jack..."
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">URL Ảnh Banner</label>
+                                            <input type="url" id="sell-banner" placeholder="https://example.com/banner.jpg"
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">Ngày & Giờ bắt đầu *</label>
+                                            <input type="datetime-local" id="sell-start-time" required
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                        </div>
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-slate-500">Ngày & Giờ kết thúc *</label>
+                                            <input type="datetime-local" id="sell-end-time" required
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                        </div>
+                                        <div class="flex flex-col gap-2 col-span-full">
+                                            <label class="text-slate-500">Mô tả sự kiện *</label>
+                                            <textarea id="sell-description" rows="4" required placeholder="Mô tả chi tiết về sự kiện của bạn..."
+                                                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition resize-none"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Địa điểm -->
+                                <div>
+                                    <p class="text-[10px] font-extrabold text-theme-brandOrange uppercase tracking-widest mb-4 pb-2 border-b border-orange-100">2. Địa Điểm Tổ Chức</p>
+                                    <div class="flex flex-col gap-4">
+                                        <!-- Toggle chọn địa điểm có sẵn hay nhập mới -->
+                                        <div class="flex gap-3">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" name="venue-mode" id="venue-mode-existing" value="existing" checked
+                                                    class="w-4 h-4 accent-orange-500" />
+                                                <span>Chọn địa điểm có sẵn</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" name="venue-mode" id="venue-mode-new" value="new"
+                                                    class="w-4 h-4 accent-orange-500" />
+                                                <span>Tạo địa điểm mới</span>
+                                            </label>
+                                        </div>
+
+                                        <!-- Panel chọn địa điểm có sẵn -->
+                                        <div id="venue-existing-panel" class="flex flex-col gap-3">
+                                            <div class="flex gap-2">
+                                                <div class="relative flex-1">
+                                                    <i class="fas fa-search absolute left-3 top-2.5 text-slate-300 text-xs"></i>
+                                                    <input type="text" id="sell-venue-search" placeholder="Tìm kiếm địa điểm theo tên..."
+                                                        class="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                                </div>
+                                                <button type="button" id="sell-venue-load-btn"
+                                                    class="px-4 py-2.5 bg-theme-brandBlue hover:bg-slate-700 text-white font-bold rounded-xl transition text-xs">
+                                                    Tải danh sách
+                                                </button>
+                                            </div>
+                                            <select id="sell-venue-select" size="4"
+                                                class="w-full px-3.5 py-2 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition text-xs">
+                                                <option value="" disabled selected>Nhấn "Tải danh sách" để xem địa điểm...</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Panel tạo địa điểm mới -->
+                                        <div id="venue-new-panel" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-slate-500">Tên địa điểm *</label>
+                                                <input type="text" id="sell-new-venue-name" placeholder="VD: Nhà hát Hòa Bình..."
+                                                    class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                            </div>
+                                            <div class="flex flex-col gap-2 md:col-span-2">
+                                                <label class="text-slate-500">Địa chỉ đầy đủ *</label>
+                                                <input type="text" id="sell-new-venue-address" placeholder="VD: 240 Đ. 3 Tháng 2, Quận 10, TP.HCM"
+                                                    class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-slate-500">Sức chứa (người) *</label>
+                                                <input type="number" id="sell-new-venue-capacity" placeholder="VD: 5000" min="1"
+                                                    class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl font-semibold focus:border-theme-brandOrange outline-none bg-white transition" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Loại vé -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-orange-100">
+                                        <p class="text-[10px] font-extrabold text-theme-brandOrange uppercase tracking-widest">3. Hạng Vé & Giá Bán</p>
+                                        <button type="button" id="sell-add-ticket-type-btn"
+                                            class="inline-flex items-center gap-1.5 text-theme-brandOrange hover:text-orange-600 font-extrabold text-[10px] uppercase tracking-wider transition">
+                                            <i class="fas fa-plus-circle"></i> Thêm hạng vé
+                                        </button>
+                                    </div>
+
+                                    <div id="sell-ticket-types-container" class="flex flex-col gap-3">
+                                        <!-- Row loại vé đầu tiên (mặc định) -->
+                                        <div class="sell-ticket-type-row grid grid-cols-[1fr_1fr_1fr_auto] gap-3 items-end bg-orange-50/50 border border-orange-100 rounded-xl p-3">
+                                            <div class="flex flex-col gap-1.5">
+                                                <label class="text-slate-500 text-[10px] uppercase tracking-wide">Tên hạng vé</label>
+                                                <input type="text" name="tt-name" placeholder="VD: VIP, Standard..." required
+                                                    class="px-3 py-2 border border-gray-200 rounded-lg font-semibold focus:border-orange-400 outline-none bg-white text-xs transition" />
+                                            </div>
+                                            <div class="flex flex-col gap-1.5">
+                                                <label class="text-slate-500 text-[10px] uppercase tracking-wide">Giá vé (VNĐ)</label>
+                                                <input type="number" name="tt-price" placeholder="VD: 500000" min="0" required
+                                                    class="px-3 py-2 border border-gray-200 rounded-lg font-semibold focus:border-orange-400 outline-none bg-white text-xs transition" />
+                                            </div>
+                                            <div class="flex flex-col gap-1.5">
+                                                <label class="text-slate-500 text-[10px] uppercase tracking-wide">Số lượng</label>
+                                                <input type="number" name="tt-quantity" placeholder="VD: 100" min="1" required
+                                                    class="px-3 py-2 border border-gray-200 rounded-lg font-semibold focus:border-orange-400 outline-none bg-white text-xs transition" />
+                                            </div>
+                                            <button type="button" class="sell-remove-ticket-row pb-1 text-slate-300 hover:text-red-400 transition text-base" title="Xóa hạng vé">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nút submit -->
+                                <div class="pt-2">
+                                    <div id="sell-form-msg" class="hidden mb-4 px-4 py-3 rounded-xl text-xs font-bold"></div>
+                                    <button type="submit" id="sell-submit-btn"
+                                        class="w-full bg-gradient-to-r from-theme-brandOrange to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white font-black text-sm py-3.5 rounded-xl uppercase tracking-widest shadow-lg shadow-orange-500/20 transition hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2">
+                                        <i class="fas fa-rocket"></i>
+                                        Đăng Bán Ngay!
+                                    </button>
+                                    <p class="text-center text-[10px] text-slate-400 mt-2">Sự kiện sẽ được đăng ngay lên trang chủ sau khi xác nhận</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL XEM VÉ ĐIỆN TỬ + QR CODE                                   -->
+    <!-- Chỉ hiện sau khi người dùng đã mua vé thành công                 -->
+    <!-- ================================================================ -->
+    <div id="qr-modal-overlay"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-theme-sidebar to-theme-brandBlue text-white px-6 py-5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-theme-brandOrange flex items-center justify-center shadow-lg">
+                        <i class="fas fa-qrcode text-white text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black uppercase tracking-wider">Vé Điện Tử</h3>
+                        <p class="text-[10px] text-white/70 font-medium">Xuất trình khi vào cổng sự kiện</p>
+                    </div>
+                </div>
+                <button id="qr-modal-close"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition">
+                    <i class="fas fa-times text-white"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 py-6 flex flex-col items-center gap-5">
+
+                <!-- Thông tin đơn hàng -->
+                <div class="w-full text-center">
+                    <p class="text-sm font-extrabold text-slate-900" id="qr-order-title">Đơn hàng #---</p>
+                    <p class="text-[11px] text-slate-400 font-medium mt-1" id="qr-order-date"></p>
+                </div>
+
+                <!-- Chọn vé nếu có nhiều -->
+                <div id="qr-ticket-selector" class="w-full">
+                    <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 text-center">Chọn vé để xem QR</p>
+                    <div id="qr-ticket-tabs" class="flex gap-2 flex-wrap justify-center"></div>
+                </div>
+
+                <!-- QR Code canvas -->
+                <div class="relative">
+                    <div id="qr-code-canvas"
+                        class="w-52 h-52 flex items-center justify-center bg-white rounded-2xl border-4 border-dashed border-orange-200 p-3">
+                        <div id="qr-loading" class="flex flex-col items-center gap-2 text-slate-300">
+                            <i class="fas fa-spinner fa-spin text-3xl"></i>
+                            <span class="text-[10px] font-bold">Đang tạo QR...</span>
+                        </div>
+                    </div>
+                    <!-- Badge đã check-in -->
+                    <div id="qr-checked-badge"
+                        class="hidden absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-extrabold px-3 py-1 rounded-full shadow-lg">
+                        ✓ ĐÃ CHECK-IN
+                    </div>
+                </div>
+
+                <!-- Mã vé -->
+                <div class="text-center w-full">
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Mã bảo mật vé</p>
+                    <p id="qr-ticket-code" class="font-mono text-[10px] font-extrabold text-slate-600 bg-slate-100 px-4 py-2 rounded-lg break-all">---</p>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="flex gap-3 w-full">
+                    <button id="qr-download-btn" type="button"
+                        class="flex-1 flex items-center justify-center gap-2 bg-theme-brandOrange hover:bg-orange-600 text-white font-extrabold text-xs py-3 rounded-xl transition shadow-lg shadow-orange-100 hover:scale-105 active:scale-95">
+                        <i class="fas fa-download"></i> Tải QR
+                    </button>
+                    <button id="qr-print-btn" type="button"
+                        class="flex-1 flex items-center justify-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-extrabold text-xs py-3 rounded-xl transition">
+                        <i class="fas fa-print"></i> In vé
+                    </button>
+                </div>
+
+                <!-- Nút Đăng Bán Lại (Resell) -->
+                <div class="w-full pt-3 border-t border-dashed border-slate-100" id="qr-resell-container">
+                    <button id="qr-resell-btn" type="button"
+                        class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-black text-xs py-3.5 rounded-xl transition shadow-lg shadow-rose-500/25 hover:scale-[1.02] active:scale-[0.98]">
+                        <i class="fas fa-tags text-xs"></i> Đăng bán lại vé này
+                    </button>
+                </div>
+
+                <!-- Form Nhập Giá Bán Lại (Ẩn mặc định) -->
+                <div id="qr-resell-form-panel" class="w-full bg-slate-50 rounded-2xl border border-slate-150 p-4 hidden flex-col gap-3">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Đặt giá bán lại (VNĐ)</label>
+                        <input type="number" id="qr-resell-price" placeholder="VD: 500000" min="0" 
+                            class="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl outline-none focus:border-red-400 font-extrabold text-slate-900 bg-white" />
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="qr-resell-submit" type="button" class="flex-1 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase py-2.5 rounded-xl transition shadow-md shadow-red-500/10">
+                            Xác nhận bán
+                        </button>
+                        <button id="qr-resell-cancel" type="button" class="flex-1 bg-slate-200 hover:bg-slate-350 text-slate-700 text-[10px] font-black uppercase py-2.5 rounded-xl transition">
+                            Hủy bỏ
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 pb-5 text-center">
+                <p class="text-[10px] text-slate-400 font-medium">
+                    <i class="fas fa-shield-alt text-emerald-500 mr-1"></i>
+                    Vé điện tử có mã bảo mật riêng — Chỉ sử dụng được 1 lần
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal chi tiết hóa đơn báo cáo -->
+    <div id="report-detail-modal" class="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+            <!-- Modal header -->
+            <div class="bg-theme-brandBlue text-white px-6 py-4 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                        <i class="fas fa-file-invoice-dollar text-base"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-event-title" class="text-sm font-black uppercase tracking-wide truncate max-w-xs">Chi tiết hóa đơn</h3>
+                        <p id="modal-event-date" class="text-[10px] text-white/70 font-semibold mt-0.5"></p>
+                    </div>
+                </div>
+                <button type="button" id="report-modal-close"
+                    class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition text-lg leading-none">
+                    &times;
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div id="modal-body" class="flex-1 overflow-y-auto p-6 flex flex-col gap-4 text-xs font-bold">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-dashboard.js?v=1.1"></script>
+    <script src="../../assets/js/nat-sell-event.js?v=1.0"></script>
+    <script src="../../assets/js/nat-ticket-qr.js?v=1.0"></script>
+</body>
+
+</html>

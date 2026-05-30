@@ -15,49 +15,63 @@
 6. [API Endpoints](#6-api-endpoints)
 7. [Tính Năng Nổi Bật (Features)](#7-tính-năng-nổi-bật--features)
 8. [Công Nghệ & Stack (Technology Stack)](#8-công-nghệ--stack--technology-stack)
-9. [Quy Trình Phát Triển (Development Process)](#9-quy-trình-phát-triển--development-process)
-10. [Các Bước Tiếp Theo (Next Steps)](#10-các-bước-tiếp-theo--next-steps)
-
----
-
-## 1. THÔNG TIN DỰ ÁN
+9. [Quy Trình Phát T## 1. THÔNG TIN DỰ ÁN
 
 | Tiêu Chí | Chi Tiết |
 |---------|--------|
-| **Tên Dự Án** | Event Ticket Booking Platform (BDHT) |
-| **Mục Đích** | [Thêm mô tả mục đích dự án] |
-| **Công Nghệ Backend** | [Chỉ định công nghệ backend] |
-| **Công Nghệ Frontend** | [Chỉ định công nghệ frontend] |
-| **Cơ Sở Dữ Liệu** | [Chỉ định hệ quản trị CSDL] |
-| **Bảo Mật** | [Mô tả cơ chế bảo mật] |
-| **Xác Thực Phân Quyền** | [Mô tả hệ thống phân quyền] |
-| **Số Thành Viên** | [Số lượng thành viên] |
+| **Tên Dự Án** | Event Ticket Booking Platform (BDHT) - Hệ Thống Bán Vé Sự Kiện Trực Tuyến |
+| **Mục Đích** | Xây dựng nền tảng quản lý sự kiện và đặt vé xem ca nhạc, thể thao trực tuyến thời gian thực với đầy đủ 77 tính năng đạt chuẩn nghiệp vụ. |
+| **Công Nghệ Backend** | Java Spring Boot (Spring Security, Spring Data JPA, JWT Token, Hibernate) |
+| **Công Nghệ Frontend** | HTML5, Vanilla CSS, JavaScript thuần kết hợp Tailwind CSS CDN |
+| **Cơ Sở Dữ Liệu** | Microsoft SQL Server (12 bảng ánh xạ tối ưu, chống bán vượt vé bằng Optimistic Locking `@Version`) |
+| **Bảo Mật** | JWT Authentication, BCrypt Password Hashing, Phân quyền chặt chẽ theo vai trò (Role-based Authorization) |
+| **Xác Thực Phân Quyền** | Tách biệt hoàn toàn luồng API công khai (Public) và luồng API bắt buộc xác thực (Member / Admin) |
+| **Số Thành Viên** | 4 Thành viên (2 Backend, 2 Frontend) |
 
 ---
 
 ## 2. PHÂN CÔNG ĐỘI NGŨ (Team Structure)
 
+Dự án được phân chia nhiệm vụ vô cùng khoa học, phân định rõ ràng các chức năng theo cấu trúc tiền tố tên viết tắt của từng thành viên trong nhóm nhằm giảm thiểu tối đa xung đột mã nguồn:
+
 ### 👨‍💼 Đội Backend
-- **Thành Viên 1 (Backend Lead)**: [Mô tả trách nhiệm]
-- **Thành Viên 2 (Backend Dev)**: [Mô tả trách nhiệm]
+*   **Vũ Tiến Đức (Backend User & Core Systems - `Vtd` prefix)**:
+    *   Thiết kế hệ thống cơ sở dữ liệu chính (12 bảng SQL Server).
+    *   Xây dựng hệ thống Xác thực bảo mật (Security Config, JWT Token, Đăng ký/Đăng nhập, OTP Reset mật khẩu, Đăng nhập mạng xã hội).
+    *   Viết APIs cho luồng Khách hàng (Đăng ký, Đăng nhập, Xem Sự kiện, Chi tiết, Đặt vé, Thanh toán, Voucher).
+    *   Tích hợp dịch vụ gửi Mail thông báo hóa đơn, QR Code vé điện tử.
+*   **Trần Thế Bình (Backend Admin & Dashboard - `Ttb` prefix)**:
+    *   Xây dựng APIs Quản trị hệ thống (Thống kê Dashboard doanh thu, số lượng đơn hàng, biểu đồ tăng trưởng).
+    *   Viết các bộ API CRUD quản lý Sự kiện, Người dùng, Vé, Đơn hàng, Voucher Khuyến mại, Quản lý Địa điểm (Venues) và Hình ảnh sự kiện.
+    *   Thiết kế luồng API Check-in soát vé qua mã QR Code.
 
 ### 👨‍🎨 Đội Frontend
-- **Thành Viên 3 (Frontend Lead)**: [Mô tả trách nhiệm]
-- **Thành Viên 4 (Frontend Dev)**: [Mô tả trách nhiệm]
+*   **Nguyễn Anh Tuấn (Frontend User - `nat-` prefix)**:
+    *   Thiết kế toàn bộ giao diện khách hàng phía trước (Trang chủ `nat-index.html`, Đăng nhập `nat-login.html`, Đăng ký `nat-register.html`, Chi tiết sự kiện `nat-event-detail.html`).
+    *   Xây dựng trang giỏ hàng, trang điền thông tin khách hàng và lựa chọn thanh toán `nat-checkout.html`.
+    *   Xây dựng trang hiển thị VietQR thanh toán `nat-payment.html`, trang hồ sơ cá nhân `nat-profile.html` và lịch sử đặt vé `nat-dashboard.html`.
+    *   Thiết kế Widget AI Chatbot tư vấn khách hàng trực quan.
+*   **Lê Phan Trung Hiếu (Frontend Admin - `lpth_` prefix)**:
+    *   Xây dựng toàn bộ trang giao diện trang quản trị hệ thống Admin.
+    *   Thiết kế trang biểu đồ doanh thu `lpth_dashboard.html`, quản lý sự kiện `lpth_manage-events.html` và quản lý hình ảnh `lpth_manage-event-images.html`.
+    *   Xây dựng trang quản lý Đơn hàng `lpth_manage-orders.html`, Quản lý Mã giảm giá `lpth_manage-promotions.html`, Quản lý Đánh giá `lpth_manage-reviews.html`, Quản lý Vé `lpth_manage-tickets.html`, Quản lý Người dùng `lpth_manage-users.html` và Quản lý Địa điểm `lpth_manage-venues.html`.
+    *   Tích hợp script bảo vệ bảo mật Admin `lpth_admin-auth.js` chạy trước khi kết xuất giao diện để chống truy cập trái phép.
 
 ---
 
 ## 3. KIẾN TRÚC HỆ THỐNG (Architecture)
 
 ### 🔐 Authentication Flow
-1. [Bước 1 - Mô tả quy trình đăng nhập]
-2. [Bước 2 - Mô tả cấp phát token]
-3. [Bước 3 - Mô tả lưu trữ token]
-4. [Bước 4 - Mô tả gắn token vào request]
-5. [Bước 5 - Mô tả xác thực token]
+1. **Đăng nhập**: Khách hàng nhập email/mật khẩu -> Frontend gửi POST yêu cầu đến `/api/vtd/public/auth/login`.
+2. **Cấp Token**: Backend xác thực thông tin, mã hóa mật khẩu, kiểm tra trạng thái hoạt động và trả về JWT Token chứa Email & Role cùng thông tin User.
+3. **Lưu trữ**: Frontend lưu JWT Token vào `localStorage` dưới khóa `authToken`.
+4. **Đính kèm Request**: Với mọi request yêu cầu quyền hạn (MEMBER/ADMIN), API Client (`nat-api-client.js`) tự động đính kèm Token vào Header: `Authorization: Bearer {token}`.
+5. **Xác thực**: Bộ lọc `JwtAuthenticationFilter` phía Backend bắt lấy header, kiểm tra chữ ký và tính hợp lệ của token trước khi chuyển tiếp yêu cầu đến Controller xử lý.
 
 ### 🏗️ Kiến Trúc Tổng Thể
-[Thêm biểu đồ kiến trúc hoặc mô tả chi tiết kiến trúc hệ thống]
+Ứng dụng được thiết kế theo kiến trúc **Client-Server hoàn toàn tách biệt (Decoupled Architecture)** giúp tối ưu hóa hiệu suất và bảo mật:
+*   **Frontend**: Client-side thuần tĩnh chạy độc lập, giao tiếp với Server 100% bằng cơ chế gọi API phi đồng bộ (Asynchronous AJAX Fetch).
+*   **Backend**: API Server không lưu trạng thái (Stateless), phục vụ dữ liệu chuẩn định dạng JSON, bảo vệ tài nguyên bằng Spring Security.
 
 ---
 
@@ -69,70 +83,98 @@ Dự án áp dụng mô hình Workspace phân tách triệt để 2 phân hệ �
 EventTicket_BDHT_Project/
 │
 ├── backend-api/                               # ☕ JAVA SPRING BOOT BACKEND
-│   ├── pom.xml                                # Chứa thư viện (JPA, Security, SQL Server)
+│   ├── pom.xml                                # Thư viện Maven (Lombok, Security, JPA, SQL Server)
 │   └── src/main/java/com/eventticket/
-│       ├── config/                            # Cấu hình chung (CorsConfig, Swagger)
-│       ├── security/                          # JwtUtil, SecurityConfig, JwtFilter
+│       ├── config/                            # Cấu hình chung (CorsConfig, MailConfig, AiChatProperties)
+│       ├── security/                          # Bảo mật: JwtUtil, SecurityConfig, JwtAuthenticationFilter
 │       │
-│       ├── controller/                        # 🎯 TẦNG GIAO TIẾP (Phân chia URL rõ ràng)
-│       │   ├── admin/                         # (Bắt buộc Role ADMIN)
-│       │   │   ├── AdminDashboardController.java
-│       │   │   └── AdminEventController.java
-│       │   ├── user/                          # (Bắt buộc Role USER)
-│       │   │   ├── UserProfileController.java
-│       │   │   └── UserBookingController.java
-│       │   ├── auth/                          # (Không cần Token)
-│       │   │   └── AuthController.java
+│       ├── controller/                        # 🎯 TẦNG GIAO TIẾP (Phân chia URL theo vai trò & Tiền tố)
+│       │   ├── admin/                         # Bộ API dành cho ADMIN (prefix: Ttb)
+│       │   │   ├── TtbAdminDashboardController.java
+│       │   │   ├── TtbAdminEventController.java
+│       │   │   ├── TtbAdminOrderController.java
+│       │   │   ├── TtbAdminPromotionController.java
+│       │   │   ├── TtbAdminReviewController.java
+│       │   │   ├── TtbAdminTicketController.java
+│       │   │   ├── TtbAdminTicketTypeController.java
+│       │   │   ├── TtbAdminUserController.java
+│       │   │   ├── TtbAdminVenueController.java
+│       │   │   └── TtbEventImageController.java
+│       │   └── user/                          # Bộ API dành cho USER/PUBLIC (prefix: Vtd)
+│       │       ├── AiChatController.java
+│       │       ├── VtdAuthController.java
+│       │       ├── VtdEventController.java
+│       │       ├── VtdHomeController.java
+│       │       ├── VtdOrderController.java
+│       │       ├── VtdPaymentController.java
+│       │       ├── VtdPromotionController.java
+│       │       ├── VtdReviewController.java
+│       │       ├── VtdTicketController.java
+│       │       ├── VtdUserProfileController.java
+│       │       └── VtdVenueController.java
 │       │   
-│       ├── service/                           # 🧠 TẦNG NGHIỆP VỤ (Gộp chung dùng chéo)
-│       │   ├── AuthService.java               # Logic Hash Password, gen JWT
-│       │   ├── BookingService.java            # Logic Đặt vé (Bắt lỗi Optimistic Locking)
-│       │   ├── EventService.java              # Logic Quản lý sự kiện
-│       │   └── UserService.java               # Logic Quản lý người dùng
+│       ├── service/                           # 🧠 TẦNG NGHIỆP VỤ LOGIC (prefix: Vtd / Ttb)
+│       │   ├── admin/                         # Service quản trị (TtbAdminEvents, TtbAdminOrders...)
+│       │   └── user/                          # Service người dùng (VtdAuthService, VtdEmailService...)
 │       │
-│       ├── repository/                        # 🗄️ TẦNG DATABASE (JPA)
-│       │   └── (EventRepository, UserRepository, TicketTypeRepository...)
+│       ├── repository/                        # 🗄️ TẦNG GIAO TIẾP DATABASE (JPA Interfaces)
+│       │   └── (EventRepository, UserRepository, TicketRepository...)
 │       │
-│       ├── entity/                            # Ánh xạ 12 bảng SQL Server (Chứa @Version)
-│       ├── dto/                               # Chứa request gửi lên & response trả về chuẩn
-│       └── exception/                         # Xử lý lỗi toàn cục (GlobalExceptionHandler)
+│       └── entity/                            # Ánh xạ JPA 12 bảng dữ liệu SQL Server (prefix: G8_)
+│           ├── G8_users.java
+│           ├── G8_event.java
+│           └── (G8_order, G8_ticket, G8_payment...)
 │
-└── frontend-web/                              # 🎨 HTML/CSS/JS FRONTEND THUẦN
-    ├── index.html                             # Điểm vào hệ thống (Trang chủ)
+└── frontend-web/                              # 🎨 HTML/CSS/JS FRONTEND THUẦN TĨNH
     │
     ├── pages/                                 # 🖥️ GIAO DIỆN HIỂN THỊ (VIEWS)
-    │   ├── admin/                             # Giao diện Quản trị viên
-    │   │   ├── dashboard.html                 # Biểu đồ doanh thu
-    │   │   ├── manage-events.html             # Quản lý sự kiện
-    │   │   ├── manage-users.html              # Quản lý người dùng
-    │   │   └── qr-scanner.html                # Trang bật Camera quét vé
+    │   ├── nat-index.html                     # Trang chủ chính của toàn bộ hệ thống (Giao diện bởi Tuấn)
     │   │
-    │   ├── user/                              # Giao diện Khách hàng
-    │   │   ├── event-detail.html              # Chi tiết sự kiện & Form mua vé
-    │   │   ├── checkout.html                  # Thanh toán & Nhận vé điện tử
-    │   │   ├── profile.html                   # Quản lý hồ sơ cá nhân
-    │   │   └── my-bookings.html               # Lịch sử đơn hàng
+    │   ├── admin/                             # Giao diện Quản trị Admin (Giao diện bởi Hiếu)
+    │   │   ├── layout.html                    # Bộ khung thiết kế nháp
+    │   │   ├── lpth_dashboard.html            # Tổng quan biểu đồ doanh số
+    │   │   ├── lpth_manage-events.html        # Danh sách & chỉnh sửa sự kiện
+    │   │   ├── lpth_manage-event-images.html  # Album ảnh sự kiện
+    │   │   ├── lpth_manage-orders.html        # Danh sách đơn hàng mua vé
+    │   │   ├── lpth_manage-promotions.html    # Cài đặt mã coupon
+    │   │   ├── lpth_manage-reviews.html       # Kiểm duyệt bình luận đánh giá
+    │   │   ├── lpth_manage-tickets.html       # Soát vé soát QR code
+    │   │   ├── lpth_manage-users.html         # Danh sách quản lý thành viên
+    │   │   └── lpth_manage-venues.html        # Địa điểm tổ chức
     │   │
-    │   └── auth/                              # Giao diện Đăng nhập/Đăng ký
-    │       ├── login.html
-    │       └── register.html
+    │   └── user/                              # Giao diện Phân hệ Khách hàng (Giao diện bởi Tuấn)
+    │       ├── nat-all-events.html            # Danh sách và bộ lọc tìm kiếm sự kiện
+    │       ├── nat-event-detail.html          # Chi tiết sự kiện & đặt vé
+    │       ├── nat-checkout.html              # Điền thông tin cá nhân & Coupon giảm giá
+    │       ├── nat-payment.html               # Hiện VietQR chuyển khoản ngân hàng
+    │       ├── nat-dashboard.html             # Lịch sử đơn hàng, kho vé điện tử & QR
+    │       ├── nat-profile.html               # Cập nhật thông tin tài khoản
+    │       ├── nat-news.html                  # Danh sách tin tức
+    │       ├── nat-news-detail.html           # Chi tiết bài viết tin tức
+    │       ├── nat-login.html                 # Đăng nhập hệ thống
+    │       ├── nat-register.html              # Đăng ký tài khoản mới
+    │       └── nat-reset-password.html        # Quên mật khẩu & nhập OTP gửi từ email
     │
     ├── assets/
-    │   ├── css/                               # Thư mục style (Biến màu sắc, layout chung)
-    │   └── js/                                # 🧠 LOGIC XỬ LÝ (JAVASCRIPT)
+    │   ├── css/                               # Thư mục style (Biến màu sắc chung, glassmorphism)
+    │   │   └── style.css
+    │   └── js/                                # 🧠 CHỨC NĂNG XỬ LÝ (JAVASCRIPT THUẦN)
     │       ├── core/
-    │       │   └── api-client.js              # File quan trọng: Cấu hình Fetch API đính kèm JWT
-    │       ├── admin/                         # Script gọi API của Admin
-    │       │   ├── admin-dashboard.js
-    │       │   └── admin-events.js
-    │       └── user/                          # Script gọi API của User
-    │           ├── booking.js                 # Xử lý chọn ghế, tính tiền
-    │           └── profile.js                 # Validate dữ liệu hồ sơ cá nhân
+    │       │   └── nat-api-client.js          # File xương sống: Gọi Fetch API, chèn JWT Token tự động
+    │       ├── admin/                         # Logic Admin (prefix: lpth_)
+    │       │   ├── lpth_admin-auth.js         # Bảo vệ chặn trang khi chưa đăng nhập Admin
+    │       │   ├── lpth_manage-events.js      # Gọi API cập nhật sự kiện
+    │       │   └── (lpth_manage-users.js, lpth_manage-orders.js...)
+    │       └── user/                          # Logic Khách hàng (prefix: nat_)
+    │           ├── nat-home.js                # Render trang chủ, slider, marquee, phân trang
+    │           ├── nat-event-detail.js        # Chọn loại vé, gửi đánh giá
+    │           ├── nat-checkout.js            # Validate thông tin, áp coupon, tạo đơn hàng
+    │           └── (nat-auth.js, nat-profile.js, nat-ai-chat.js...)
     │
-    └── components/                            # Mã HTML dùng chung (Load bằng JS)
-        ├── header.html
-        ├── sidebar-admin.html
-        └── footer.html
+    └── components/                            # Giao diện dùng chung tải động bằng JavaScript
+        ├── nat-header.html                    # Thanh điều hướng phía trên
+        ├── nat-footer.html                    # Chân trang thông tin liên hệ
+        └── nat-chat-widget.html               # Giao diện khung Chatbot AI
 ```
 
 ---
@@ -198,87 +240,133 @@ curl -X GET http://localhost:8080/api/public/events
 
 ---
 
-## 6. API ENDPOINTS
+## 6. DANH SÁCH API ENDPOINTS (Tổng số: 111 APIs)
 
-### Public APIs (Không cần JWT)
+Hệ thống cung cấp tổng cộng **111 API Endpoints** được phân tách chặt chẽ theo phân hệ người dùng và quyền hạn truy cập:
 
-```
-🔓 POST /api/auth/register
-Request:
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "fullName": "John Doe",
-  "phone": "0123456789"
-}
-Response: {id, email, fullName, role, createdAt}
+---
 
-🔓 POST /api/auth/login
-Request: {email, password}
-Response: {token, expiresIn, user}
+### 👨‍💼 1. PHÂN HỆ USER & PUBLIC (Vũ Tiến Đức - 62 APIs)
 
-🔓 GET /api/public/events?page=0&size=10&category=Concert
-Response: {content: [...], totalElements, totalPages}
+Nhóm API phục vụ cho luồng nghiệp vụ khách hàng (Public và Member có JWT Token).
 
-🔓 GET /api/public/events/{eventId}
-Response: {id, name, category, venue, date, ticketTypes: [...], reviews: [...]}
-```
+#### 🔓 A. Luồng Công Khai (Public - Không yêu cầu Token)
+*   **Xác thực và Đăng ký tài khoản (`VtdAuthController`)**:
+    *   `POST /api/vtd/public/auth/register` - Đăng ký thành viên mới.
+    *   `POST /api/vtd/public/auth/login` - Đăng nhập tài khoản, nhận về JWT Token.
+    *   `POST /api/vtd/public/auth/social-login` - Đăng nhập qua mạng xã hội (Google OAuth2).
+    *   `POST /api/vtd/public/auth/logout` - Đăng xuất hệ thống.
+    *   `POST /api/vtd/public/auth/forgot-password` - Yêu cầu mã OTP khôi phục mật khẩu.
+    *   `POST /api/vtd/public/auth/verify-otp` - Xác minh mã OTP đã gửi qua email.
+    *   `POST /api/vtd/public/auth/reset-password` - Thiết lập mật khẩu mới sau khi xác thực OTP thành công.
+*   **Trang chủ và Danh mục (`VtdHomeController`)**:
+    *   `GET /` - Phục vụ tệp HTML trang chủ (`nat-index.html`).
+    *   `GET /api/vtd/public/home` - Lấy dữ liệu tổng hợp trang chủ (Slide banner, sự kiện HOT, mới nhất).
+    *   `GET /api/vtd/public/home/categories` - Danh sách các danh mục sự kiện hoạt động.
+*   **Tìm kiếm và Lọc sự kiện (`VtdEventController`)**:
+    *   `GET /api/vtd/public/events` - Phân trang danh sách sự kiện đã công bố (`PUBLISHED`).
+    *   `GET /api/vtd/public/events/{eventId}` - Xem thông tin chi tiết một sự kiện.
+    *   `GET /api/vtd/public/events/featured` - Danh sách các sự kiện tiêu điểm nổi bật.
+    *   `GET /api/vtd/public/events/search` - Tìm kiếm sự kiện theo từ khóa (tên nghệ sĩ, tên show).
+    *   `GET /api/vtd/public/events/category/{categoryName}` - Lọc sự kiện theo danh mục.
+    *   `GET /api/vtd/public/events/date-range` - Lọc sự kiện trong khoảng thời gian.
+    *   `GET /api/vtd/public/events/time-filter` - Bộ lọc nhanh: Hôm nay, tuần này, tháng này.
+    *   `GET /api/vtd/public/events/{eventId}/venue` - Xem chi tiết địa điểm của sự kiện.
+    *   `GET /api/vtd/public/events/{eventId}/images` - Xem thư viện ảnh sự kiện.
+*   **Khuyến mãi và Đánh giá (`VtdPromotionController` & `VtdReviewController`)**:
+    *   `POST /api/vtd/public/promotions/validate` - Kiểm tra tính khả dụng của mã Voucher.
+    *   `POST /api/vtd/public/promotions/calculate-discount` - Tính toán số tiền được giảm giá dựa trên giỏ hàng.
+    *   `GET /api/vtd/public/events/{eventId}/reviews` - Lấy danh sách bình luận đánh giá sự kiện.
+    *   `GET /api/vtd/public/events/{eventId}/reviews/average` - Xem điểm đánh giá trung bình (sao).
+*   **Địa điểm và Chatbot AI (`VtdVenueController` & `AiChatController`)**:
+    *   `GET /api/vtd/public/venues/{venueId}` - Lấy thông tin chi tiết địa điểm.
+    *   `GET /api/vtd/public/venues/search` - Tìm kiếm địa điểm.
+    *   `GET /api/vtd/public/ai-chat/generate-session` - Tạo mã phiên hội thoại ẩn danh với AI Chat.
+    *   `POST /api/vtd/public/ai-chat/message` - Gửi tin nhắn và nhận phản hồi tự động từ Google Gemini.
+    *   `GET /api/vtd/public/ai-chat/status` - Kênh kiểm tra sức khỏe/cấu hình của AI Service.
 
-### Protected APIs (Cần JWT Token)
+#### 🔐 B. Luồng Bảo Mật (Member - Yêu cầu Header `Authorization: Bearer {token}`)
+*   **Giỏ hàng và Đơn hàng (`VtdOrderController`)**:
+    *   `POST /api/vtd/member/orders` - Khởi tạo đơn hàng trống.
+    *   `POST /api/vtd/member/orders/{orderId}/items` - Thêm vé và số lượng tương ứng vào đơn hàng.
+    *   `GET /api/vtd/member/orders/{orderId}` - Lấy chi tiết thông tin đơn hàng hiện tại.
+    *   `GET /api/vtd/member/orders` - Lịch sử toàn bộ đơn hàng của khách hàng hiện tại.
+    *   `GET /api/vtd/member/orders/{orderId}/items` - Lấy danh sách chi tiết các vé đã chọn của đơn hàng.
+    *   `PUT /api/vtd/member/orders/{orderId}/items/{orderItemId}` - Cập nhật số lượng vé.
+    *   `DELETE /api/vtd/member/orders/{orderId}/items/{orderItemId}` - Xóa vé khỏi đơn hàng.
+    *   `POST /api/vtd/member/orders/{orderId}/promotion` - Áp dụng voucher giảm giá vào đơn hàng.
+    *   `DELETE /api/vtd/member/orders/{orderId}/promotion` - Hủy áp dụng voucher.
+    *   `POST /api/vtd/member/orders/{orderId}/confirm` - Xác nhận chốt đơn để chuyển sang trạng thái chờ thanh toán.
+    *   `DELETE /api/vtd/member/orders/{orderId}/cancel` - Hủy đơn hàng PENDING.
+*   **Thanh toán và Vé điện tử (`VtdPaymentController` & `VtdTicketController`)**:
+    *   `POST /api/vtd/member/payments` - Khởi tạo giao dịch thanh toán cho đơn hàng.
+    *   `GET /api/vtd/member/payments/{paymentId}` - Lấy trạng thái hóa đơn thanh toán.
+    *   `GET /api/vtd/member/payments/{paymentId}/qr` - Tạo chuỗi mã thanh toán QR-Code VietQR động (chuyển khoản ngân hàng tự động điền số tiền và nội dung đơn).
+    *   `GET /api/vtd/member/my-tickets` - Kho vé điện tử của tôi (lấy tất cả vé đã thanh toán thành công).
+    *   `GET /api/vtd/member/tickets/{ticketId}` - Xem vé điện tử và mã QR Code cá nhân độc bản để check-in.
+*   **Hồ sơ thành viên (`VtdUserProfileController`)**:
+    *   `GET /api/vtd/member/profile` - Xem thông tin hồ sơ cá nhân.
+    *   `PUT /api/vtd/member/profile` - Cập nhật thông tin cá nhân.
+    *   `POST /api/vtd/member/change-password` - Đổi mật khẩu.
+*   **Đánh giá sự kiện (`VtdReviewController`)**:
+    *   `POST /api/vtd/member/events/{eventId}/reviews` - Đăng bài viết đánh giá và xếp hạng sao sự kiện.
+    *   `PUT /api/vtd/member/reviews/{reviewId}` - Sửa đánh giá đã gửi.
+    *   `DELETE /api/vtd/member/reviews/{reviewId}` - Xóa bài viết đánh giá của mình.
 
-```
-🔐 POST /api/bookings
-Header: Authorization: Bearer {token}
-Request: {eventId, ticketTypeId, quantity, totalPrice}
-Response: {id, userId, eventId, status, qrCode, bookingDate}
+---
 
-🔐 GET /api/users/profile
-Header: Authorization: Bearer {token}
-Response: {id, email, fullName, phone, avatar, totalBookings, totalSpent}
+### 👨‍⚖️ 2. PHÂN HỆ ADMIN QUẢN TRỊ (Trần Thế Bình - 49 APIs)
 
-🔐 PUT /api/users/profile
-Header: Authorization: Bearer {token}
-Request: {fullName, phone, avatar}
-Response: {...updated user info...}
+Toàn bộ các bộ API bắt buộc xác thực bảo mật và phân quyền nghiêm ngặt chỉ cho phép tài khoản có vai trò `ROLE_ADMIN` truy cập (Header chứa Token hợp lệ).
 
-🔐 GET /api/users/{userId}/bookings
-Header: Authorization: Bearer {token}
-Response: [{id, event, quantity, totalPrice, status, qrCode}]
-
-🔐 POST /api/events/{eventId}/reviews
-Header: Authorization: Bearer {token}
-Request: {rating, comment}
-Response: {id, eventId, userId, rating, comment, createdAt}
-```
-
-### Admin APIs (Role: ADMIN)
-
-```
-👨‍⚖️ POST /api/admin/events
-Header: Authorization: Bearer {token}
-Request: {name, category, date, venue, description, imageUrl}
-Response: {id, ...event info...}
-
-👨‍⚖️ PUT /api/admin/events/{eventId}
-Request: {...updated event...}
-Response: {...}
-
-👨‍⚖️ DELETE /api/admin/events/{eventId}
-Response: {message: "Event deleted"}
-
-👨‍⚖️ GET /api/admin/stats/dashboard
-Response: {totalRevenue, totalBookings, totalEvents, totalUsers, revenueByMonth}
-
-👨‍⚖️ GET /api/admin/users?page=0&size=20
-Response: [{id, email, fullName, totalBookings, createdAt}]
-
-👨‍⚖️ GET /api/admin/bookings?status=PENDING
-Response: [{id, userId, eventId, quantity, status, createdAt}]
-
-👨‍⚖️ POST /api/admin/check-in
-Request: {qrCode}
-Response: {ticketNumber, eventName, attendeeName, status}
-```
+*   **Báo cáo & Thống kê (`TtbAdminDashboardController`)**:
+    *   `GET /api/ttb/admin/dashboard/stats` - Số liệu tổng hợp ngày (Doanh thu, Đơn hàng, Vé bán, Thành viên mới).
+    *   `GET /api/ttb/admin/dashboard/revenue` - Lấy dữ liệu doanh thu theo khoảng ngày chọn vẽ biểu đồ đường/cột.
+    *   `GET /api/ttb/admin/dashboard/ticket-sales/{eventId}` - Tỷ lệ vé đã bán theo phân khúc ghế vẽ biểu đồ tròn.
+*   **Soát vé Check-in (`TtbAdminTicketController`)**:
+    *   `GET /api/ttb/admin/tickets/all` - Xem danh sách toàn bộ vé đã được phát hành trên hệ thống.
+    *   `GET /api/ttb/admin/tickets/qr/{qrCode}` - Quét và lấy thông tin chi tiết của vé dựa trên mã QR Code.
+    *   `GET /api/ttb/admin/tickets/status/{checkInStatus}` - Lọc danh sách vé theo trạng thái (Đã check-in / Chưa check-in).
+    *   `POST /api/ttb/admin/tickets/process-checkin/{qrCode}` - Soát vé tại cửa: Đổi trạng thái vé thành "Đã sử dụng", ghi nhận thời gian check-in chính xác, kiểm duyệt vé giả hoặc vé quét trùng.
+*   **Quản lý Sự kiện & Loại vé (`TtbAdminEventController` & `TtbAdminTicketTypeController`)**:
+    *   `GET /api/ttb/admin/events` - Danh sách toàn bộ sự kiện phục vụ quản trị viên.
+    *   `POST /api/ttb/admin/events/add` - Tạo sự kiện mới (Liên kết với VenueID).
+    *   `PUT /api/ttb/admin/events/update/{id}` - Cập nhật thông tin sự kiện.
+    *   `DELETE /api/ttb/admin/events/delete/{id}` - Đánh dấu ẩn/xóa sự kiện khỏi hệ thống.
+    *   `GET /api/ttb/admin/ticket-types/event/{eventId}` - Xem danh sách loại vé của sự kiện chọn.
+    *   `POST /api/ttb/admin/ticket-types/add` - Thêm hạng ghế/hạng vé mới (VVIP, VIP, GA...).
+    *   `PUT /api/ttb/admin/ticket-types/update/{id}` - Thay đổi giá tiền, số lượng vé phân phối.
+    *   `DELETE /api/ttb/admin/ticket-types/delete/{id}` - Xóa hạng vé.
+*   **Quản lý Khách hàng (`TtbAdminUserController`)**:
+    *   `GET /api/ttb/admin/users` - Danh sách thành viên, lọc và tìm kiếm theo tên/email.
+    *   `POST /api/ttb/admin/users/add` - Tạo trực tiếp tài khoản mới từ Admin.
+    *   `PUT /api/ttb/admin/users/block/{id}` - Khóa tài khoản (chặn quyền đăng nhập).
+    *   `PUT /api/ttb/admin/users/unblock/{id}` - Kích hoạt lại tài khoản.
+    *   `DELETE /api/ttb/admin/users/delete/{id}` - Xóa thông tin thành viên.
+*   **Quản lý Hóa đơn & Đơn hàng (`TtbAdminOrderController`)**:
+    *   `GET /api/ttb/admin/orders` - Danh sách đơn hàng toàn hệ thống, lọc theo ngày tháng và trạng thái.
+    *   `GET /api/ttb/admin/orders/{id}` - Chi tiết hóa đơn mua vé.
+    *   `GET /api/ttb/admin/orders/{id}/items` - Danh sách vé trong hóa đơn.
+    *   `PUT /api/ttb/admin/orders/update-status/{id}` - Thay đổi thủ công trạng thái đơn (PENDING, PAID, CANCELLED).
+    *   `PUT /api/ttb/admin/orders/{id}/approve-refund` - Duyệt hoàn trả vé và hoàn tiền tự động cho khách hàng.
+*   **Quản lý Voucher Khuyến mãi (`TtbAdminPromotionController`)**:
+    *   `GET /api/ttb/admin/promotions` - Danh sách toàn bộ mã giảm giá.
+    *   `POST /api/ttb/admin/promotions/add` - Tạo mã coupon mới (loại giảm theo %, trừ tiền trực tiếp).
+    *   `PUT /api/ttb/admin/promotions/update/{id}` - Sửa đổi ngày hết hạn, hạn mức sử dụng.
+    *   `PATCH /api/ttb/admin/promotions/toggle-status/{id}` - Kích hoạt nhanh / Ngừng hoạt động Voucher.
+*   **Quản lý Kiểm duyệt đánh giá (`TtbAdminReviewController`)**:
+    *   `GET /api/ttb/admin/reviews` - Lấy danh sách toàn bộ bình luận của khách hàng.
+    *   `PUT /api/ttb/admin/reviews/{id}/hide` - Ẩn bình luận nhạy cảm, xúc phạm hoặc vi phạm tiêu chuẩn cộng đồng.
+    *   `PUT /api/ttb/admin/reviews/{id}/show` - Khôi phục hiển thị bình luận.
+    *   `DELETE /api/ttb/admin/reviews/{id}` - Xóa vĩnh viễn bình luận khỏi database.
+*   **Quản lý Thư viện ảnh & Địa điểm (`TtbEventImageController` & `TtbAdminVenueController`)**:
+    *   `GET /api/ttb/events/{eventId}/images` - Danh sách album ảnh sự kiện.
+    *   `POST /api/ttb/events/{eventId}/images` - Tải tệp hình ảnh vật lý lên máy chủ.
+    *   `DELETE /api/ttb/events/{eventId}/images/{imageId}` - Xóa ảnh.
+    *   `GET /api/ttb/admin/venues` - Danh sách và tìm kiếm địa điểm tổ chức sự kiện.
+    *   `POST /api/ttb/admin/venues/add` - Thêm sân vận động, nhà hát mới (sức chứa, bản đồ).
+    *   `PUT /api/ttb/admin/venues/update/{id}` - Cập nhật địa điểm.
+    *   `DELETE /api/ttb/admin/venues/delete/{id}` - Xóa địa điểm.
 
 ---
 

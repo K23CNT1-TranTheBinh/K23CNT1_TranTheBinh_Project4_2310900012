@@ -17,6 +17,10 @@ public class TtbEventImageController {
 
     private final TtbEventImageService ttbeventImageService;
 
+    public static class ImageUrlRequest {
+        public String imageUrl;
+    }
+
     // 1. Lấy danh sách ảnh của sự kiện
     @GetMapping
     public ResponseEntity<List<G8_event_image>> getImages(@PathVariable Integer eventId) {
@@ -25,7 +29,7 @@ public class TtbEventImageController {
     }
 
     // 2. Upload ảnh mới (Nhận File vật lý)
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(consumes = { "multipart/form-data" })
     public ResponseEntity<?> uploadImage(
             @PathVariable Integer eventId,
             @RequestParam("file") MultipartFile file) {
@@ -39,10 +43,23 @@ public class TtbEventImageController {
         }
     }
 
+    // 2b. Them anh moi bang duong dan URL
+    @PostMapping(consumes = { "application/json" })
+    public ResponseEntity<?> addImageByUrl(
+            @PathVariable Integer eventId,
+            @RequestBody ImageUrlRequest request) {
+        try {
+            G8_event_image savedImage = ttbeventImageService.addEventImageUrl(eventId, request.imageUrl);
+            return ResponseEntity.ok(savedImage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     // 3. Xóa ảnh
     @DeleteMapping("/{imageId}")
     public ResponseEntity<?> deleteImage(
-            @PathVariable Integer eventId, 
+            @PathVariable Integer eventId,
             @PathVariable Integer imageId) {
         try {
             ttbeventImageService.deleteEventImage(imageId);

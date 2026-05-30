@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - BDHT Premium Ticketing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5f1082',
+                            purpleHover: '#4d0b6b',
+                            orange: '#f26f21',
+                            orangeHover: '#d95a12',
+                            darkBg: '#333333'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #0e0414;
+            overflow-x: hidden;
+        }
+
+        .page-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── LEFT: HERO PANEL ── */
+        .hero-panel {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 3rem;
+            background: #0e0414;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 20%, rgba(242, 111, 33, 0.4) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 80% 80%, rgba(95, 16, 130, 0.35) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 10% 60%, rgba(242, 111, 33, 0.2) 0%, transparent 60%),
+                #0e0414;
+        }
+
+        .ticket-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: floatCard 6s ease-in-out infinite;
+        }
+
+        .ticket-card:nth-child(2) {
+            animation-delay: -2s;
+            animation-duration: 7s;
+        }
+
+        .ticket-card:nth-child(3) {
+            animation-delay: -4s;
+            animation-duration: 5.5s;
+        }
+
+        @keyframes floatCard {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(-1deg);
+            }
+
+            50% {
+                transform: translateY(-12px) rotate(1deg);
+            }
+        }
+
+        .card-a {
+            top: 10%;
+            left: 8%;
+            width: 220px;
+        }
+
+        .card-b {
+            top: 38%;
+            right: 6%;
+            width: 210px;
+        }
+
+        .card-c {
+            top: 62%;
+            left: 12%;
+            width: 190px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.orange {
+            background: rgba(242, 111, 33, 0.55);
+            color: #ffd4a8;
+        }
+
+        .card-icon.purple {
+            background: rgba(95, 16, 130, 0.55);
+            color: #e1b4f7;
+        }
+
+        .card-icon.teal {
+            background: rgba(20, 180, 160, 0.4);
+            color: #a0ffe8;
+        }
+
+        .card-text p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .card-text strong {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            display: block;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            background: rgba(242, 111, 33, 0.35);
+            top: -60px;
+            left: -80px;
+        }
+
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: rgba(95, 16, 130, 0.3);
+            bottom: 80px;
+            right: -40px;
+        }
+
+        .dot-grid {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+        }
+
+        .hero-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-logo .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #f26f21, #5f1082);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 24px rgba(242, 111, 33, 0.5);
+        }
+
+        .hero-logo span {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffd4a8, #e1b4f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-title .accent {
+            background: linear-gradient(90deg, #f26f21, #c97dea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 320px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .perk-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+        }
+
+        .perk-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .perk-dot.orange {
+            background: rgba(242, 111, 33, 0.4);
+        }
+
+        .perk-dot.purple {
+            background: rgba(95, 16, 130, 0.5);
+        }
+
+        .perk-dot.teal {
+            background: rgba(20, 180, 160, 0.35);
+        }
+
+        .hero-arch {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #f26f21, #5f1082, #f26f21);
+        }
+
+        /* ── RIGHT: FORM PANEL ── */
+        .form-panel {
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(242, 111, 33, 0.07) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .form-eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #d95a12;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #1a0027;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-sub {
+            font-size: 13px;
+            color: #888;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+
+        #register-msg {
+            display: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .field {
+            margin-bottom: 0.9rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .field label .optional {
+            font-size: 10px;
+            color: #bbb;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bbb;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px 0 40px;
+            border: 1.5px solid #e8e0ef;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            color: #1a0027;
+            background: #faf8fc;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: #f26f21;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(242, 111, 33, 0.1);
+        }
+
+        .input-wrap input::placeholder {
+            color: #c4b8cf;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #f26f21 0%, #e05510 100%);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(242, 111, 33, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #d95a12 0%, #c44d0d 100%);
+            box-shadow: 0 8px 28px rgba(242, 111, 33, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .login-cta {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .login-cta a {
+            font-weight: 800;
+            color: #5f1082;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .login-cta a:hover {
+            color: #f26f21;
+        }
+
+        /* Image strip */
+        .event-strip {
+            margin-top: 1.5rem;
+            border-top: 1px solid #f0e8f8;
+            padding-top: 1.1rem;
+        }
+
+        .event-strip-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #c4b8cf;
+            margin-bottom: 0.65rem;
+        }
+
+        .event-strip-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .event-thumb {
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/10;
+        }
+
+        .event-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .event-thumb .thumb-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(14, 4, 20, 0.7) 0%, transparent 60%);
+            display: flex;
+            align-items: flex-end;
+            padding: 6px 8px;
+        }
+
+        .thumb-overlay span {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-panel {
+                min-height: 240px;
+                padding: 2rem;
+                justify-content: center;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .card-a,
+            .card-b,
+            .card-c {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 2rem 1.75rem;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- ══ LEFT: HERO PANEL ══ -->
+        <div class="hero-panel">
+            <div class="hero-bg"></div>
+            <div class="dot-grid"></div>
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+
+            <div class="ticket-card card-a">
+                <div class="card-icon orange"><i class="fas fa-gift"></i></div>
+                <div class="card-text">
+                    <strong>Ưu đãi thành viên mới</strong>
+                    <p>Giảm 20% đơn đầu tiên</p>
+                </div>
+            </div>
+            <div class="ticket-card card-b">
+                <div class="card-icon purple"><i class="fas fa-bolt"></i></div>
+                <div class="card-text">
+                    <strong>Đặt vé siêu nhanh</strong>
+                    <p>Chỉ mất 30 giây</p>
+                </div>
+            </div>
+            <div class="ticket-card card-c">
+                <div class="card-icon teal"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-text">
+                    <strong>Bảo mật tuyệt đối</strong>
+                    <p>Mã hóa SSL 256-bit</p>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div class="hero-logo">
+                    <div class="logo-icon">🎫</div>
+                    <span>BDHT Ticketing</span>
+                </div>
+
+                <h1 class="hero-title">
+                    Tham gia<br>
+                    <span class="accent">cộng đồng</span><br>
+                    hôm nay
+                </h1>
+                <p class="hero-sub">
+                    Hàng ngàn sự kiện đang chờ bạn. Tạo tài khoản ngay để không bỏ lỡ vé hot nhất.
+                </p>
+
+                <div class="hero-perks">
+                    <div class="perk-item">
+                        <div class="perk-dot orange"><i class="fas fa-ticket-alt"
+                                style="color:#ffd4a8;font-size:12px"></i></div>
+                        Đặt vé ưu tiên trước công chúng
+                    </div>
+                    <div class="perk-item">
+                        <div class="perk-dot purple"><i class="fas fa-bell" style="color:#e1b4f7;font-size:12px"></i>
+                        </div>
+                        Nhận thông báo sự kiện yêu thích
+                    </div>
+                    <div class="perk-item">
+                        <div class="perk-dot teal"><i class="fas fa-history" style="color:#a0ffe8;font-size:12px"></i>
+                        </div>
+                        Lưu lịch sử & quản lý vé dễ dàng
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-arch"></div>
+        </div>
+
+        <!-- ══ RIGHT: FORM PANEL ══ -->
+        <div class="form-panel">
+            <p class="form-eyebrow">Miễn phí · Nhanh chóng</p>
+            <h2 class="form-title">Tạo Tài Khoản</h2>
+            <p class="form-sub">Trở thành thành viên BDHT ngay hôm nay</p>
+
+            <form id="registerForm">
+                <div id="register-msg"></div>
+
+                <div class="field">
+                    <label>Họ và Tên</label>
+                    <div class="input-wrap">
+                        <i class="far fa-user"></i>
+                        <input type="text" id="fullName" required placeholder="Nhập họ và tên của bạn">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <div class="input-wrap">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="email" required placeholder="Nhập email">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Số điện thoại <span class="optional">(Tùy chọn)</span></label>
+                    <div class="input-wrap">
+                        <i class="fas fa-phone"></i>
+                        <input type="text" id="phoneNumber" placeholder="Nhập số điện thoại">
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field" style="margin-bottom:0">
+                        <label>Mật khẩu</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" required placeholder="Nhập mật khẩu">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom:0">
+                        <label>Xác nhận</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmPassword" required placeholder="Nhập lại">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-user-plus"></i>
+                    Đăng Ký Ngay
+                </button>
+            </form>
+
+            <p class="login-cta">
+                Đã có tài khoản? <a href="nat-login.html">Đăng nhập ngay</a>
+            </p>
+
+            <!-- Event image strip -->
+            <div class="event-strip">
+                <div class="event-strip-label">Sự kiện nổi bật</div>
+                <div class="event-strip-cards">
+                    <div class="event-thumb">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&q=80"
+                            alt="Concert">
+                        <div class="thumb-overlay"><span>Hoà nhạc<br>Sân khấu lớn</span></div>
+                    </div>
+                    <div class="event-thumb">
+                        <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=300&q=80"
+                            alt="Festival">
+                        <div class="thumb-overlay"><span>Music<br>Festival 2025</span></div>
+                    </div>
+                    <div class="event-thumb">
+                        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80" alt="Show">
+                        <div class="thumb-overlay"><span>Live Show<br>Premium</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-auth.js"></script>
+</body>
+
+</html>

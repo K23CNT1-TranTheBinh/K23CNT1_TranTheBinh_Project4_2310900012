@@ -16,6 +16,11 @@ public interface PaymentRepository extends JpaRepository<G8_payment, Integer> {
     @Query("SELECT p FROM G8_payment p WHERE p.order.orderId = :orderId")
     List<G8_payment> findByOrderId(@Param("orderId") Integer orderId);
 
+    Optional<G8_payment> findTopByOrder_OrderIdAndStatusAndPaymentMethodOrderByPaymentIdDesc(
+            Integer orderId,
+            String status,
+            String paymentMethod);
+
     Optional<G8_payment> findByTransactionId(String transactionId);
 
     @Query("SELECT p FROM G8_payment p WHERE p.status = :status")

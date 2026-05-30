@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import lombok.Data;
 
 @RestController
@@ -44,6 +45,14 @@ public class VtdPaymentController {
                 .orElse(null);
     }
 
+    private boolean isCurrentUserPayment(G8_payment payment, Integer userId) {
+        return userId != null
+                && payment != null
+                && payment.getOrder() != null
+                && payment.getOrder().getUser() != null
+                && userId.equals(payment.getOrder().getUser().getUserId());
+    }
+
     /**
      * MEMBER: Tạo giao dịch thanh toán
      */
@@ -71,7 +80,11 @@ public class VtdPaymentController {
      */
     @GetMapping("/api/vtd/member/payments/{paymentId}")
     public ResponseEntity<G8_payment> getPaymentStatus(@PathVariable Integer paymentId) {
+        Integer userId = getCurrentUserId();
         G8_payment payment = paymentService.getPaymentStatus(paymentId);
+        if (!isCurrentUserPayment(payment, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(payment);
     }
 
@@ -99,8 +112,46 @@ public class VtdPaymentController {
      */
     @PostMapping("/api/vtd/member/payments/{paymentId}/refund")
     public ResponseEntity<G8_payment> requestRefund(@PathVariable Integer paymentId) {
+        Integer userId = getCurrentUserId();
+        G8_payment existingPayment = paymentService.getPaymentStatus(paymentId);
+        if (!isCurrentUserPayment(existingPayment, userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         G8_payment payment = paymentService.requestRefund(paymentId);
         return ResponseEntity.ok(payment);
+    }
+
+    /**
+     * MEMBER: Lấy thông tin thanh toán của đơn hàng để thực hiện yêu cầu hoàn tiền
+     */
+    @GetMapping("/api/vtd/member/payments/order/{orderId}")
+    public ResponseEntity<G8_payment> getPaymentByOrderId(@PathVariable Integer orderId) {
+        Integer userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        G8_order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+
+        // SECURITY: Chỉ cho phép người sở hữu đơn hàng xem thanh toán
+        if (order.getUser() == null || !userId.equals(order.getUser().getUserId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<G8_payment> payments = paymentService.getPaymentsByOrderId(orderId);
+        if (payments == null || payments.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Chọn giao dịch thành công (SUCCESS) hoặc giao dịch mới nhất
+        G8_payment selectedPayment = payments.stream()
+                .filter(p -> "SUCCESS".equalsIgnoreCase(p.getStatus()))
+                .findFirst()
+                .orElse(payments.get(payments.size() - 1));
+
+        return ResponseEntity.ok(selectedPayment);
     }
 
     /**
@@ -136,7 +187,6 @@ public class VtdPaymentController {
      */
     @PostMapping("/api/vtd/public/payments/webhook/sepay")
     public ResponseEntity<Map<String, Object>> sePayWebhook(
-            @RequestHeader(value = "X-SePay-Signature", required = false) String signature,
             @RequestBody Map<String, Object> body) {
 
         System.out.println("📩 Webhook nhận: " + body);

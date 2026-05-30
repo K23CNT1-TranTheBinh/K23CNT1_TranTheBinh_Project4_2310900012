@@ -48,18 +48,18 @@ public class VtdTicketController {
      * GUEST: Xem danh sách loại vé của sự kiện
      */
     @GetMapping("/api/vtd/public/ticket-types/{eventId}")
-    public ResponseEntity<List<G8_ticketType>> getActiveTicketTypes(@PathVariable Integer eventId) {
+    public ResponseEntity<List<TicketTypeDTO>> getActiveTicketTypes(@PathVariable Integer eventId) {
         List<G8_ticketType> ticketTypes = ticketTypeService.getActiveTicketTypesByEvent(eventId);
-        return ResponseEntity.ok(ticketTypes);
+        return ResponseEntity.ok(ticketTypes.stream().map(TicketTypeDTO::new).toList());
     }
 
     /**
      * MEMBER: Xem các loại vé còn hàng
      */
     @GetMapping("/api/vtd/member/ticket-types/{eventId}/available")
-    public ResponseEntity<List<G8_ticketType>> getAvailableTicketTypes(@PathVariable Integer eventId) {
+    public ResponseEntity<List<TicketTypeDTO>> getAvailableTicketTypes(@PathVariable Integer eventId) {
         List<G8_ticketType> ticketTypes = ticketTypeService.getAvailableTicketsByEvent(eventId);
-        return ResponseEntity.ok(ticketTypes);
+        return ResponseEntity.ok(ticketTypes.stream().map(TicketTypeDTO::new).toList());
     }
 
     /**

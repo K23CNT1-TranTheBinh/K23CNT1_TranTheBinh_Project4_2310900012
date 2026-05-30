@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - BDHT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#7c3aed',
+                            purpleLight: '#a78bfa',
+                            orange: '#f97316',
+                            orangeHover: '#ea6c0a',
+                            pink: '#ec4899',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'glow-orange': '0 0 20px rgba(249,115,22,0.25)',
+                        'glow-purple': '0 0 20px rgba(124,58,237,0.2)',
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff7f0 40%, #f0f9ff 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.06) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.05);
+        }
+
+        /* ─── Payment option custom interactions ─── */
+        .pay-option {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1.5px solid rgba(167, 139, 250, 0.2);
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pay-option:hover {
+            border-color: #f97316;
+            background: #fff7f0;
+        }
+
+        .pay-option:has(input:checked) {
+            border-color: #f97316;
+            background: #fff7f0;
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.1);
+        }
+
+        /* Inputs style */
+        .form-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1.5px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1e0a3c;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #7c3aed;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+        }
+
+        /* Buttons style */
+        .btn-premium {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+            transition: all 0.25s ease;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(249, 115, 22, 0.35);
+            background: linear-gradient(135deg, #ea6c0a 0%, #db2777 100%);
+        }
+
+        .btn-premium:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+
+<body class="text-[#1e0a3c] pb-24">
+    <div id="header-container"></div>
+
+    <main class="max-w-6xl mx-auto px-4 py-10">
+        <div class="mb-8">
+            <span
+                class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full tracking-wider mb-2"
+                style="background:linear-gradient(135deg,#fff0e6,#fce7f3);color:#f97316;border:1px solid #fed7aa;">
+                <i class="fas fa-shopping-cart text-[9px]"></i> Thanh toán / Checkout
+            </span>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight mt-1 text-[#1e0a3c]">
+                Hoàn tất thông tin <span
+                    class="bg-gradient-to-r from-brand-orange to-brand-pink bg-clip-text text-transparent">mua vé</span>
+            </h1>
+            <p class="text-slate-500 font-medium mt-2">Kiểm tra thông tin vé, áp dụng mã giảm giá và lựa chọn phương
+                thức thanh toán phù hợp.</p>
+        </div>
+
+        <div id="checkout-message"
+            class="glass-card border border-gray-100 rounded-3xl p-10 text-center text-slate-500 font-bold shadow-sm">
+            <i class="fas fa-spinner fa-spin text-brand-orange text-2xl mb-3"></i>
+            <div>Đang tải thông tin thanh toán...</div>
+        </div>
+
+        <div id="checkout-details" style="display:none;" class="grid lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
+            <section class="space-y-6">
+                <!-- Vé sự kiện đã chọn -->
+                <div class="glass-card rounded-3xl shadow-sm overflow-hidden p-6">
+                    <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-purple-100">
+                        <div class="w-1.5 h-6 rounded-full" style="background:linear-gradient(180deg,#f97316,#ec4899);">
+                        </div>
+                        <h2 class="text-base font-extrabold tracking-wider uppercase text-[#1e0a3c]">
+                            VÉ SỰ KIỆN ĐÃ CHỌN
+                        </h2>
+                    </div>
+                    <div
+                        class="flex items-center gap-4 mb-4 bg-slate-50/50 p-4 rounded-2xl border border-purple-100/55">
+                        <img id="checkout-event-image" src="" alt="Sự kiện"
+                            class="w-24 h-16 object-cover rounded-xl bg-slate-100 shadow-sm border border-white">
+                        <div>
+                            <div class="text-xs font-bold uppercase text-slate-400">Sự kiện</div>
+                            <h3 id="checkout-event-name" class="text-base md:text-lg font-black text-[#1e0a3c]"></h3>
+                        </div>
+                    </div>
+                    <div id="checkout-items" class="divide-y divide-purple-100/50"></div>
+                </div>
+
+                <!-- Thông tin khách hàng -->
+                <div class="glass-card rounded-3xl shadow-sm p-6">
+                    <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-purple-100">
+                        <div class="w-1.5 h-6 rounded-full" style="background:linear-gradient(180deg,#7c3aed,#a78bfa);">
+                        </div>
+                        <h2 class="text-base font-extrabold tracking-wider uppercase text-[#1e0a3c]">
+                            THÔNG TIN NGƯỜI MUA
+                        </h2>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <label class="flex flex-col gap-1.5 text-xs font-bold uppercase text-slate-500">
+                            Họ và tên *
+                            <input id="cust-name" class="form-input" type="text" placeholder="Nhập đầy đủ họ và tên">
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-xs font-bold uppercase text-slate-500">
+                            Số điện thoại *
+                            <input id="cust-phone" class="form-input" type="tel" placeholder="Nhập số điện thoại">
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-xs font-bold uppercase text-slate-500">
+                            Địa chỉ Email *
+                            <input id="cust-email" class="form-input" type="email" placeholder="example@gmail.com">
+                        </label>
+                        <label class="flex flex-col gap-1.5 text-xs font-bold uppercase text-slate-500">
+                            Số CCCD / Passport *
+                            <input id="cust-idcard" class="form-input" type="text"
+                                placeholder="Nhập số căn cước công dân">
+                        </label>
+                        <label class="md:col-span-2 flex flex-col gap-1.5 text-xs font-bold uppercase text-slate-500">
+                            Địa chỉ thường trú *
+                            <input id="cust-address" class="form-input" type="text"
+                                placeholder="Số nhà, tên đường, quận/huyện, tỉnh/thành phố">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán -->
+                <div class="glass-card rounded-3xl shadow-sm p-6">
+                    <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-purple-100">
+                        <div class="w-1.5 h-6 rounded-full" style="background:linear-gradient(180deg,#ec4899,#f472b6);">
+                        </div>
+                        <h2 class="text-base font-extrabold tracking-wider uppercase text-[#1e0a3c]">
+                            PHƯƠNG THỨC THANH TOÁN
+                        </h2>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-3.5">
+                        <label class="pay-option flex items-center gap-3">
+                            <input type="radio" name="payment-method" value="BANK_TRANSFER"
+                                class="w-4 h-4 cursor-pointer accent-[#f97316]" checked>
+                            <i class="fas fa-qrcode text-lg text-brand-orange"></i>
+                            <span class="font-extrabold text-sm text-[#1e0a3c]">Chuyển khoản nhanh VietQR (Khuyên
+                                dùng)</span>
+                        </label>
+                        <label class="pay-option flex items-center gap-3">
+                            <input type="radio" name="payment-method" value="MOMO"
+                                class="w-4 h-4 cursor-pointer accent-[#f97316]">
+                            <i class="fas fa-wallet text-lg text-pink-500"></i>
+                            <span class="font-extrabold text-sm text-[#1e0a3c]">Ví điện tử MoMo</span>
+                        </label>
+                        <label class="pay-option flex items-center gap-3">
+                            <input type="radio" name="payment-method" value="VNPAY"
+                                class="w-4 h-4 cursor-pointer accent-[#f97316]">
+                            <i class="far fa-credit-card text-lg text-blue-600"></i>
+                            <span class="font-extrabold text-sm text-[#1e0a3c]">Ví điện tử VNPay / Thẻ quốc tế</span>
+                        </label>
+                        <label class="pay-option flex items-center gap-3">
+                            <input type="radio" name="payment-method" value="CASH"
+                                class="w-4 h-4 cursor-pointer accent-[#f97316]">
+                            <i class="fas fa-money-bill-wave text-lg text-emerald-600"></i>
+                            <span class="font-extrabold text-sm text-[#1e0a3c]">Thanh toán tiền mặt</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cột Tổng đơn hàng -->
+            <aside class="glass-card rounded-3xl shadow-sm p-6 lg:sticky lg:top-24">
+                <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-purple-100">
+                    <div class="w-1.5 h-6 rounded-full" style="background:linear-gradient(180deg,#7c3aed,#ec4899);">
+                    </div>
+                    <h2 class="text-base font-extrabold tracking-wider uppercase text-[#1e0a3c]">
+                        TỔNG ĐƠN HÀNG
+                    </h2>
+                </div>
+
+                <!-- Mã giảm giá -->
+                <div class="flex gap-2">
+                    <input id="promotion-code"
+                        class="form-input flex-1 font-bold uppercase placeholder:normal-case placeholder:font-medium"
+                        placeholder="Nhập mã giảm giá">
+                    <button id="btn-apply-promo" type="button"
+                        class="px-5 py-3 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] active:scale-95 transition-all text-white font-extrabold text-sm">
+                        Áp dụng
+                    </button>
+                </div>
+                <button id="btn-remove-promo" type="button"
+                    class="hidden text-xs font-bold text-red-500 mt-2.5 hover:underline flex items-center gap-1">
+                    <i class="fas fa-trash-alt"></i> Bỏ mã giảm giá
+                </button>
+                <div id="promotion-message" class="text-xs font-bold mt-2 text-slate-500"></div>
+
+                <!-- Chi tiết thanh toán -->
+                <div class="mt-6 space-y-3.5 text-sm">
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-bold">Tạm tính</span>
+                        <span id="summary-subtotal" class="font-extrabold text-[#1e0a3c]">0đ</span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-bold">Giảm giá</span>
+                        <span id="summary-discount" class="font-extrabold text-emerald-600">0đ</span>
+                    </div>
+                    <div class="border-t border-purple-100/50 pt-4 flex justify-between gap-4 items-end">
+                        <span class="text-[#1e0a3c] font-black text-base">Tổng tiền</span>
+                        <span id="summary-final" class="text-2xl font-black text-brand-orange">0đ</span>
+                    </div>
+                </div>
+
+                <!-- Điều khoản -->
+                <label class="mt-6 flex items-start gap-3 text-xs text-slate-600 font-bold cursor-pointer">
+                    <input id="terms-chk" type="checkbox" class="mt-0.5 w-4 h-4 cursor-pointer accent-[#f97316]">
+                    <span class="leading-relaxed">Tôi đồng ý với điều khoản mua vé và chính sách thanh toán của
+                        BDHT.</span>
+                </label>
+
+                <!-- Nút Tiến hành thanh toán -->
+                <button id="btn-go-payment"
+                    class="btn-premium mt-5 w-full active:scale-95 transition-all text-white font-extrabold uppercase tracking-wider py-4 px-5 rounded-2xl flex items-center justify-center gap-3">
+                    <span>Tiến hành thanh toán</span> <i class="fas fa-arrow-right text-sm"></i>
+                </button>
+            </aside>
+        </div>
+    </main>
+
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-checkout.js?v=1.0"></script>
+</body>
+
+</html>

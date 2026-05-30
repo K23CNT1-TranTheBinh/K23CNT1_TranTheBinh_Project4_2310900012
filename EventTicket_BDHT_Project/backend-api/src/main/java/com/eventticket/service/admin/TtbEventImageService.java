@@ -57,13 +57,37 @@ public class TtbEventImageService {
         // Map dữ liệu vào Entity
         G8_event_image newImage = new G8_event_image();
         newImage.setEvent(event);
-        newImage.setImageUrl("/" + UPLOAD_DIR + fileName); 
+        newImage.setImageUrl("/" + UPLOAD_DIR + fileName);
         newImage.setSortOrder((int) currentImageCount + 1); // Đẩy ảnh mới xuống cuối cùng
 
         return imageRepository.save(newImage);
     }
 
     // Xóa ảnh
+    // Them anh moi bang URL, giong cach luu bannerImageUrl cua su kien
+    @Transactional
+    public G8_event_image addEventImageUrl(Integer eventId, String imageUrl) {
+        long currentImageCount = imageRepository.countByEventId(eventId);
+        if (currentImageCount >= 10) {
+            throw new RuntimeException("Su kien nay da dat so luong anh toi da (10 anh).");
+        }
+
+        String cleanImageUrl = imageUrl == null ? "" : imageUrl.trim();
+        if (cleanImageUrl.isEmpty()) {
+            throw new RuntimeException("Vui long nhap duong dan anh.");
+        }
+
+        G8_event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay su kien voi ID: " + eventId));
+
+        G8_event_image newImage = new G8_event_image();
+        newImage.setEvent(event);
+        newImage.setImageUrl(cleanImageUrl);
+        newImage.setSortOrder((int) currentImageCount + 1);
+
+        return imageRepository.save(newImage);
+    }
+
     @Transactional
     public void deleteEventImage(Integer imageId) {
         G8_event_image image = imageRepository.findById(imageId)
@@ -71,8 +95,11 @@ public class TtbEventImageService {
 
         // Xóa file vật lý trong thư mục
         try {
-            String filePath = image.getImageUrl().replaceFirst("/", "");
-            Files.deleteIfExists(Paths.get(filePath));
+            String imageUrl = image.getImageUrl();
+            if (imageUrl != null && (imageUrl.startsWith("/" + UPLOAD_DIR) || imageUrl.startsWith(UPLOAD_DIR))) {
+                String filePath = imageUrl.replaceFirst("^/", "");
+                Files.deleteIfExists(Paths.get(filePath));
+            }
         } catch (IOException e) {
             System.err.println("Cảnh báo: Không thể xóa file vật lý: " + e.getMessage());
         }

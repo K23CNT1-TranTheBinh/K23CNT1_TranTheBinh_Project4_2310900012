@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sự Kiện - EventTicket</title>
+    <link rel="stylesheet" href="../../assets/css/style.css?v=1.3">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#7c3aed',
+                            purpleLight: '#a78bfa',
+                            orange: '#f97316',
+                            orangeHover: '#ea6c0a',
+                            pink: '#ec4899',
+                        }
+                    },
+                    boxShadow: {
+                        'glow-orange': '0 0 20px rgba(249,115,22,0.25)',
+                        'glow-purple': '0 0 20px rgba(124,58,237,0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Outfit & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff7f0 40%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+
+        /* ─── Hero gradient overlay ─── */
+        .hero-wrapper {
+            position: relative;
+            background: linear-gradient(160deg, #1e0a3c 0%, #3b0764 50%, #1a1a2e 100%);
+        }
+
+        /* ─── Glass card ─── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* ─── Section headings ─── */
+        .section-heading {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #3b0764;
+            border-left: 4px solid #f97316;
+            padding-left: 12px;
+        }
+
+        /* ─── Ticket type card ─── */
+        .ticket-card {
+            background: linear-gradient(135deg, #fff7f0 0%, #fef3ff 100%);
+            border: 1.5px solid #fed7aa;
+            border-radius: 14px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
+            border-color: #f97316;
+        }
+
+        /* ─── Booking sidebar ─── */
+        .booking-sidebar {
+            background: linear-gradient(160deg, #ffffff 0%, #fdf4ff 100%);
+            border: 1.5px solid rgba(167, 139, 250, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ─── Buy button glow ─── */
+        .btn-buy {
+            background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+            transition: all 0.25s ease;
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(249, 115, 22, 0.45);
+            background: linear-gradient(135deg, #ea6c0a 0%, #db2777 100%);
+        }
+
+        .btn-buy:active {
+            transform: scale(0.97);
+        }
+
+        /* ─── Rating widget ─── */
+        .rating-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #fdf4ff 100%);
+            border: 1.5px solid #fed7aa;
+            border-radius: 18px;
+        }
+
+        /* ─── Review form ─── */
+        .review-form-bg {
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff0f7 100%);
+            border: 1.5px solid #e9d5ff;
+            border-radius: 16px;
+        }
+
+        /* ─── Organizer badge ─── */
+        .organizer-badge {
+            background: linear-gradient(135deg, #fff7f0 0%, #fdf4ff 100%);
+            border: 1.5px solid #fed7aa;
+            border-radius: 16px;
+        }
+
+        /* ─── Payment option ─── */
+        .pay-option {
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .pay-option:hover {
+            border-color: #f97316;
+            background: #fff7f0;
+        }
+
+        .pay-option.selected {
+            border-color: #f97316;
+            background: #fff7f0;
+        }
+
+        /* ─── Fade-in animation ─── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeInUp 0.35s ease both;
+        }
+
+        /* ─── Scrollbar thin ─── */
+        #reviews-list::-webkit-scrollbar,
+        #modal-cart-items::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #reviews-list::-webkit-scrollbar-track,
+        #modal-cart-items::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        #reviews-list::-webkit-scrollbar-thumb,
+        #modal-cart-items::-webkit-scrollbar-thumb {
+            background: #c4b5fd;
+            border-radius: 4px;
+        }
+
+        /* ─── Related event card hover ─── */
+        #related-events-grid a,
+        #related-events-grid>div {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #related-events-grid a:hover,
+        #related-events-grid>div:hover {
+            transform: translateY(-4px);
+        }
+
+        /* ─── Star rating hover ─── */
+        #star-rating button {
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        #star-rating button:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body class="pb-32">
+
+    <!-- 1. Header & Navigation (Placeholder tags) -->
+    <div id="header-container"></div>
+    <div id="header-placeholder"></div>
+
+    <main class="w-full">
+        <!-- Loading and Error indicator messages -->
+        <div id="loading-msg" class="text-center py-24 font-bold text-lg" style="color:#f97316;">
+            <i class="fas fa-circle-notch fa-spin mr-2"></i> Đang tải thông tin sự kiện...
+        </div>
+        <div id="error-msg" class="hidden text-center py-24 text-red-500 font-bold text-lg"></div>
+
+        <!-- Main Event Details Content Container -->
+        <div id="event-content" class="hidden flex-col">
+
+            <!-- 2. Hero Banner -->
+            <div class="hero-wrapper w-full h-[320px] md:h-[460px] overflow-hidden flex items-center justify-center">
+                <!-- Blurred backing screen -->
+                <div id="detail-blur-bg"
+                    class="absolute inset-0 bg-cover bg-center filter blur-2xl opacity-30 scale-110"></div>
+                <!-- Subtle gradient tint -->
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-[5]"></div>
+                <img id="detail-image" src="" alt="Event Banner"
+                    class="relative z-10 max-h-full max-w-full w-full h-full object-contain drop-shadow-2xl" />
+            </div>
+
+            <!-- 3. Main Content Area -->
+            <div class="max-w-5xl mx-auto px-4 w-full -mt-16 relative z-20">
+
+                <!-- Event Summary Box -->
+                <div
+                    class="glass-card rounded-3xl shadow-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="flex-1 flex flex-col gap-3">
+                        <span
+                            class="inline-flex items-center gap-1.5 self-start text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full tracking-wider"
+                            style="background:linear-gradient(135deg,#fff0e6,#fce7f3);color:#f97316;border:1px solid #fed7aa;">
+                            <i class="fas fa-star text-[9px]"></i> VÉ SỰ KIỆN ĐẶC SẮC
+                        </span>
+                        <h1 id="detail-title" class="text-xl md:text-2xl lg:text-3xl font-extrabold leading-tight"
+                            style="color:#1e0a3c;">
+                            Đang tải tiêu đề sự kiện...
+                        </h1>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                            <div class="flex items-center gap-2.5 text-sm font-medium" style="color:#6b7280;">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style="background:linear-gradient(135deg,#fff0e6,#fce7f3);">
+                                    <i class="far fa-clock" style="color:#f97316;"></i>
+                                </span>
+                                <span id="detail-time-row">20:00</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-sm font-medium" style="color:#6b7280;">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);">
+                                    <i class="far fa-calendar-alt" style="color:#10b981;"></i>
+                                </span>
+                                <span id="detail-date">Đang cập nhật</span>
+                            </div>
+                            <div class="flex items-center gap-2.5 text-sm font-medium" style="color:#6b7280;">
+                                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style="background:linear-gradient(135deg,#eff6ff,#eef2ff);">
+                                    <i class="fas fa-map-marker-alt" style="color:#6366f1;"></i>
+                                </span>
+                                <span id="detail-venue" class="truncate">Đang cập nhật địa điểm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right column buy action button -->
+                    <div
+                        class="w-full md:w-auto flex flex-col items-center gap-3 border-t md:border-t-0 md:border-l border-gray-100 pt-5 md:pt-0 md:pl-8 flex-shrink-0">
+                        <button id="summary-buy-btn"
+                            class="btn-buy w-full md:w-56 text-white py-4 px-6 rounded-2xl font-bold uppercase text-sm tracking-wider">
+                            <i class="fas fa-rocket mr-2"></i> MUA NGAY / BUY NOW
+                        </button>
+                        <p class="text-[10px] text-gray-400 font-medium">Đặt vé an toàn &amp; bảo mật 🔒</p>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout: Description Left, Booking Form Right -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
+
+                    <!-- Left column: Event Details -->
+                    <div class="lg:col-span-8 flex flex-col gap-8">
+                        <div class="glass-card rounded-2xl shadow-lg p-6 md:p-8">
+
+                            <!-- Tiêu đề GIỚI THIỆU -->
+                            <div class="flex flex-col items-center mb-8">
+                                <h2 class="text-xl md:text-2xl font-black uppercase tracking-widest pb-2"
+                                    style="color:#7c3aed;border-bottom:3px solid;border-image:linear-gradient(90deg,#7c3aed,#f97316) 1;padding-bottom:8px;">
+                                    GIỚI THIỆU VỀ SỰ KIỆN
+                                </h2>
+                                <div class="h-0.5 w-16 mt-2 rounded-full"
+                                    style="background:linear-gradient(90deg,#7c3aed,#f97316);"></div>
+                            </div>
+
+                            <!-- Description -->
+                            <div id="detail-desc" class="prose prose-lg max-w-none leading-relaxed"
+                                style="color:#374151;">
+                                Chưa có thông tin giới thiệu chi tiết cho sự kiện này.
+                            </div>
+
+                            <!-- Ticket price listing -->
+                            <div class="mt-8 pt-8 border-t border-gray-100">
+                                <h3 class="section-heading mb-5">
+                                    <i class="fas fa-ticket-alt text-brand-orange"></i>
+                                    I. Bảng Hạng Vé &amp; Giá Vé Chi Tiết
+                                </h3>
+                                <ul id="ticket-types-list-static" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Populated dynamically via JS -->
+                                </ul>
+                            </div>
+
+                            <!-- Event gallery -->
+                            <div class="mt-8 pt-8 border-t border-gray-100">
+                                <div class="w-full overflow-hidden rounded-2xl border border-gray-100 shadow-md"
+                                    style="background:#0f0f1a;">
+                                    <img id="content-main-image" src="" alt="Ảnh sự kiện"
+                                        class="w-full max-h-[460px] object-contain cursor-zoom-in"
+                                        style="background:#0f0f1a;" />
+                                </div>
+                                <div id="detail-images" class="flex flex-wrap gap-2.5 mt-4 justify-center"></div>
+                            </div>
+                        </div>
+
+                        <!-- Organizer info widget -->
+                        <div class="glass-card rounded-2xl shadow-lg p-6 md:p-8">
+                            <h3 class="section-heading mb-5">
+                                <i class="fas fa-building"></i>
+                                THÔNG TIN ĐƠN VỊ TỔ CHỨC
+                            </h3>
+                            <div class="organizer-badge flex items-center gap-4 p-4">
+                                <div class="w-12 h-12 rounded-full text-white flex items-center justify-center font-extrabold text-xl shadow-md flex-shrink-0"
+                                    style="background:linear-gradient(135deg,#f97316,#ec4899);">
+                                    L
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-base font-extrabold" style="color:#1e0a3c;">Lamour Nights</h4>
+                                    <p class="text-xs font-medium mt-0.5" style="color:#6b7280;">Đối tác liên kết tổ
+                                        chức đại
+                                        nhạc hội và phân phối vé chính thức.</p>
+                                </div>
+                                <span class="text-[10px] font-extrabold px-3 py-1 rounded-full"
+                                    style="background:#f0fdf4;color:#10b981;border:1px solid #a7f3d0;">✓ Đã xác
+                                    minh</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column Sidebar -->
+                    <div class="lg:col-span-4 relative">
+                        <div id="booking-block"
+                            class="booking-sidebar lg:sticky lg:top-28 p-7 flex flex-col gap-6 relative z-30">
+
+                            <div class="border-b border-purple-100 pb-3 flex justify-between items-center">
+                                <h3 class="text-base font-extrabold uppercase" style="color:#7c3aed;">
+                                    <i class="fas fa-shopping-bag mr-1.5 text-sm"></i> ĐẶT VÉ ONLINE
+                                </h3>
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                                    style="background:linear-gradient(135deg,#ede9fe,#fce7f3);color:#7c3aed;">BDHT</span>
+                            </div>
+
+                            <form id="booking-form" class="flex flex-col gap-5">
+                                <div class="flex flex-col gap-2">
+                                    <span class="text-xs font-bold uppercase" style="color:#a78bfa;">
+                                        1. Chọn hạng vé của bạn
+                                    </span>
+                                    <div id="ticket-types" class="flex flex-col gap-2.5">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-2 mt-2">
+                                    <button type="submit"
+                                        class="btn-buy w-full text-white font-black text-sm tracking-widest uppercase py-4 rounded-xl">
+                                        <i class="fas fa-bolt mr-1"></i> MUA VÉ NGAY
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div id="booking-msg" class="text-xs font-bold text-center"></div>
+
+                            <!-- Venue details widget -->
+                            <div id="detail-venue-info"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Related Events -->
+                <section class="mt-14 pt-10 border-t border-gray-200">
+                    <div class="flex flex-col items-center mb-8 gap-1">
+                        <div class="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[.12em]"
+                            style="color:#a78bfa;">
+                            <span class="w-8 h-px"
+                                style="background:linear-gradient(90deg,transparent,#a78bfa);"></span>
+                            Khám phá thêm
+                            <span class="w-8 h-px"
+                                style="background:linear-gradient(90deg,#a78bfa,transparent);"></span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold tracking-tight" style="color:#1e0a3c;">
+                            Sự kiện liên quan
+                        </h2>
+                    </div>
+                    <div id="related-events-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+                        <!-- JS rendered -->
+                    </div>
+                </section>
+
+                <!-- ===== REVIEW / RATING SECTION ===== -->
+                <section class="mt-14 pt-10 border-t border-gray-200">
+                    <div class="glass-card rounded-2xl shadow-lg p-6 md:p-8">
+
+                        <!-- Header -->
+                        <div class="flex flex-col items-center mb-10">
+                            <h2 class="text-2xl md:text-3xl font-black tracking-widest pb-2 text-center"
+                                style="background:linear-gradient(90deg,#7c3aed,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                                ⭐ ĐÁNH GIÁ &amp; NHẬN XÉT
+                            </h2>
+                            <p class="text-xs font-semibold mt-3 uppercase tracking-wider" style="color:#9ca3af;">
+                                Chia sẻ trải nghiệm của bạn với cộng đồng
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                            <!-- Left Column: Thống kê đánh giá -->
+                            <div class="flex flex-col gap-6">
+                                <div class="rating-box p-6 shadow-sm">
+                                    <div class="text-center mb-4">
+                                        <div id="avg-rating" class="text-5xl font-black mb-1"
+                                            style="background:linear-gradient(135deg,#f97316,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                                            0.0
+                                        </div>
+                                        <div class="flex items-center justify-center gap-1 text-lg">
+                                            <span style="color:#fbbf24;">★★★★★</span>
+                                        </div>
+                                        <p id="total-reviews-count" class="text-xs mt-2 font-medium"
+                                            style="color:#9ca3af;">
+                                            Đang tải đánh giá...
+                                        </p>
+                                    </div>
+
+                                    <!-- Rating Distribution -->
+                                    <div class="flex flex-col gap-3 mt-5 text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold" style="color:#fbbf24;">★★★★★</span>
+                                            <div class="flex-1 h-2 rounded-full overflow-hidden"
+                                                style="background:#f3f4f6;">
+                                                <div id="star-5-bar"
+                                                    class="h-full rounded-full transition-all duration-700"
+                                                    style="width:0%;background:linear-gradient(90deg,#fbbf24,#f97316);">
+                                                </div>
+                                            </div>
+                                            <span id="star-5-count" class="w-8 text-right font-semibold"
+                                                style="color:#6b7280;">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold" style="color:#a3e635;">★★★★</span>
+                                            <div class="flex-1 h-2 rounded-full overflow-hidden"
+                                                style="background:#f3f4f6;">
+                                                <div id="star-4-bar"
+                                                    class="h-full rounded-full transition-all duration-700"
+                                                    style="width:0%;background:linear-gradient(90deg,#a3e635,#34d399);">
+                                                </div>
+                                            </div>
+                                            <span id="star-4-count" class="w-8 text-right font-semibold"
+                                                style="color:#6b7280;">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold" style="color:#60a5fa;">★★★</span>
+                                            <div class="flex-1 h-2 rounded-full overflow-hidden"
+                                                style="background:#f3f4f6;">
+                                                <div id="star-3-bar"
+                                                    class="h-full rounded-full transition-all duration-700"
+                                                    style="width:0%;background:linear-gradient(90deg,#60a5fa,#a78bfa);">
+                                                </div>
+                                            </div>
+                                            <span id="star-3-count" class="w-8 text-right font-semibold"
+                                                style="color:#6b7280;">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold" style="color:#fb923c;">★★</span>
+                                            <div class="flex-1 h-2 rounded-full overflow-hidden"
+                                                style="background:#f3f4f6;">
+                                                <div id="star-2-bar"
+                                                    class="h-full rounded-full transition-all duration-700"
+                                                    style="width:0%;background:linear-gradient(90deg,#fb923c,#f97316);">
+                                                </div>
+                                            </div>
+                                            <span id="star-2-count" class="w-8 text-right font-semibold"
+                                                style="color:#6b7280;">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-8 font-bold" style="color:#f87171;">★</span>
+                                            <div class="flex-1 h-2 rounded-full overflow-hidden"
+                                                style="background:#f3f4f6;">
+                                                <div id="star-1-bar"
+                                                    class="h-full rounded-full transition-all duration-700"
+                                                    style="width:0%;background:linear-gradient(90deg,#f87171,#ec4899);">
+                                                </div>
+                                            </div>
+                                            <span id="star-1-count" class="w-8 text-right font-semibold"
+                                                style="color:#6b7280;">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Middle/Right Column -->
+                            <div class="lg:col-span-2 flex flex-col gap-6">
+
+                                <!-- Form Đánh Giá -->
+                                <div id="review-form-container" class="review-form-bg p-6">
+                                    <h3 class="text-base font-extrabold mb-5 flex items-center gap-2"
+                                        style="color:#1e0a3c;">
+                                        <i class="fas fa-edit" style="color:#f97316;"></i> Để lại đánh giá của bạn
+                                    </h3>
+
+                                    <!-- Điều kiện hiển thị -->
+                                    <div id="review-login-prompt" class="hidden p-4 rounded-xl text-center"
+                                        style="background:linear-gradient(135deg,#eff6ff,#eef2ff);border:1.5px solid #bfdbfe;">
+                                        <p class="text-sm font-semibold" style="color:#1d4ed8;">
+                                            <i class="fas fa-lock mr-2"></i> Vui lòng <a href="./nat-login.html"
+                                                class="underline font-extrabold" style="color:#7c3aed;">đăng nhập</a> để
+                                            đánh
+                                            giá sự kiện này.
+                                        </p>
+                                    </div>
+
+                                    <div id="review-not-purchased-prompt" class="hidden p-4 rounded-xl text-center"
+                                        style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;">
+                                        <p class="text-sm font-semibold" style="color:#92400e;">
+                                            <i class="fas fa-info-circle mr-2"></i> Bạn cần mua vé tham gia sự kiện này
+                                            để có thể để lại đánh giá.
+                                        </p>
+                                    </div>
+
+                                    <div id="review-already-reviewed-prompt" class="hidden p-4 rounded-xl text-center"
+                                        style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1.5px solid #a7f3d0;">
+                                        <p class="text-sm font-semibold" style="color:#065f46;">
+                                            <i class="fas fa-check-circle mr-2"></i> Cảm ơn bạn! Bạn đã đánh giá sự kiện
+                                            này rồi.
+                                        </p>
+                                    </div>
+
+                                    <form id="review-form" class="hidden flex flex-col gap-4">
+
+                                        <!-- Rating Stars -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-bold uppercase" style="color:#7c3aed;">Xếp hạng
+                                                *</label>
+                                            <div class="flex gap-2 items-center" id="star-rating">
+                                                <button type="button" class="text-4xl transition cursor-pointer"
+                                                    style="color:#d1d5db;" data-rating="1">★</button>
+                                                <button type="button" class="text-4xl transition cursor-pointer"
+                                                    style="color:#d1d5db;" data-rating="2">★</button>
+                                                <button type="button" class="text-4xl transition cursor-pointer"
+                                                    style="color:#d1d5db;" data-rating="3">★</button>
+                                                <button type="button" class="text-4xl transition cursor-pointer"
+                                                    style="color:#d1d5db;" data-rating="4">★</button>
+                                                <button type="button" class="text-4xl transition cursor-pointer"
+                                                    style="color:#d1d5db;" data-rating="5">★</button>
+                                            </div>
+                                            <input type="hidden" id="review-rating" value="5" />
+                                            <span id="rating-display" class="text-sm font-bold"
+                                                style="color:#f97316;">Bạn xếp
+                                                hạng: 5 sao ⭐⭐⭐⭐⭐</span>
+                                        </div>
+
+                                        <!-- Review Content -->
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-xs font-bold uppercase" style="color:#7c3aed;">Chia sẻ
+                                                nhận xét
+                                                của bạn *</label>
+                                            <textarea id="review-content" required
+                                                placeholder="Trải nghiệm của bạn như thế nào? Điều gì ấn tượng nhất? Có gì cần cải thiện?"
+                                                class="w-full h-28 px-4 py-3 border border-[#e9d5ff] focus:border-brand-purple rounded-xl text-sm resize-none outline-none bg-white transition"></textarea>
+                                            <span class="text-xs" style="color:#9ca3af;">Tối thiểu 10 ký tự, tối đa 500
+                                                ký tự</span>
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <button type="submit"
+                                            class="btn-buy w-full text-white font-extrabold py-3 rounded-xl uppercase text-sm tracking-wider">
+                                            <i class="fas fa-paper-plane mr-2"></i> Gửi đánh giá
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Danh sách Reviews -->
+                                <div class="flex flex-col gap-4">
+                                    <h3 class="text-base font-extrabold flex items-center gap-2" style="color:#1e0a3c;">
+                                        <i class="fas fa-comments" style="color:#7c3aed;"></i> Các nhận xét từ cộng đồng
+                                    </h3>
+                                    <div id="reviews-list"
+                                        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto pr-2">
+                                        <div class="text-center py-8" style="color:#c4b5fd;">
+                                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                            <p class="text-sm font-semibold">Đang tải bình luận...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+    <div id="footer-placeholder"></div>
+
+    <!-- =========================================================================
+        4. STICKY FOOTER
+        ========================================================================= -->
+    <div id="sticky-checkout-bar"
+        class="fixed bottom-0 left-0 w-full py-4 text-center shadow-2xl transition-all duration-300 transform translate-y-full opacity-0 pointer-events-none z-50 flex items-center justify-center cursor-pointer"
+        style="background:linear-gradient(90deg,#f97316,#ec4899);">
+        <button id="sticky-buy-btn"
+            class="bg-transparent text-white font-extrabold text-sm md:text-base uppercase tracking-widest flex items-center gap-2">
+            <i class="fas fa-rocket"></i>
+            <span>MUA NGAY / BUY NOW</span>
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <!-- Image preview modal -->
+    <div id="image-preview-modal"
+        class="fixed inset-0 z-[3000] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-200"
+        style="background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);">
+        <button type="button" id="image-preview-close"
+            class="absolute top-5 right-5 w-10 h-10 rounded-full text-white border transition"
+            style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="image-preview-img" src="" alt="Ảnh sự kiện"
+            class="max-w-[92vw] max-h-[86vh] object-contain rounded-2xl shadow-2xl" style="background:#000;" />
+    </div>
+
+    <!-- =========================================================================
+        5. BOOKING MODAL
+        ========================================================================= -->
+    <div id="booking-modal"
+        class="fixed inset-0 z-[100] flex justify-center items-start overflow-y-auto pt-10 pb-10 hidden"
+        style="background:rgba(15,10,40,0.7);backdrop-filter:blur(4px);">
+        <!-- Modal Container -->
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl p-6 md:p-8 mx-4 my-auto relative animate-fadeIn"
+            style="border:1.5px solid rgba(167,139,250,0.2);">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Cột Trái: Form Khách hàng & Thanh toán -->
+                <div class="flex flex-col gap-6">
+                    <!-- Form thông tin -->
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-5">
+                            <div class="w-1.5 h-6 rounded-full"
+                                style="background:linear-gradient(180deg,#f97316,#ec4899);"></div>
+                            <h3 class="text-sm font-extrabold tracking-wider uppercase" style="color:#1e0a3c;">
+                                THÔNG TIN KHÁCH HÀNG / CUSTOMER INFORMATION
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold uppercase tracking-wide" style="color:#9ca3af;">Họ và
+                                    tên *</label>
+                                <input type="text" id="cust-name" required placeholder="Nhập đầy đủ họ và tên"
+                                    class="w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none bg-white transition"
+                                    style="border-color:#e9d5ff;" />
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-xs font-bold uppercase tracking-wide" style="color:#9ca3af;">Số
+                                        điện thoại *</label>
+                                    <input type="tel" id="cust-phone" required placeholder="Nhập số điện thoại"
+                                        class="w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none bg-white transition"
+                                        style="border-color:#e9d5ff;" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-xs font-bold uppercase tracking-wide" style="color:#9ca3af;">Số
+                                        CCCD / Passport *</label>
+                                    <input type="text" id="cust-idcard" required placeholder="Nhập số căn cước"
+                                        class="w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none bg-white transition"
+                                        style="border-color:#e9d5ff;" />
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold uppercase tracking-wide" style="color:#9ca3af;">Địa chỉ
+                                    Email *</label>
+                                <input type="email" id="cust-email" required placeholder="example@gmail.com"
+                                    class="w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none bg-white transition"
+                                    style="border-color:#e9d5ff;" />
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold uppercase tracking-wide" style="color:#9ca3af;">Địa chỉ
+                                    thường trú *</label>
+                                <input type="text" id="cust-address" required
+                                    placeholder="Số nhà, tên đường, quận/huyện, thành phố"
+                                    class="w-full px-3.5 py-2.5 border rounded-xl text-sm outline-none bg-white transition"
+                                    style="border-color:#e9d5ff;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phương thức thanh toán -->
+                    <div class="border-t border-gray-100 pt-5">
+                        <div class="flex items-center gap-2.5 mb-5">
+                            <div class="w-1.5 h-6 rounded-full"
+                                style="background:linear-gradient(180deg,#7c3aed,#a78bfa);"></div>
+                            <h3 class="text-sm font-extrabold tracking-wider uppercase" style="color:#1e0a3c;">
+                                LỰA CHỌN THANH TOÁN / PAYMENT METHOD
+                            </h3>
+                        </div>
+
+                        <div class="flex flex-col gap-2.5">
+                            <label class="pay-option flex items-center gap-3 selected">
+                                <input type="radio" name="payment-method" checked value="vietqr"
+                                    class="w-4 h-4 cursor-pointer" style="accent-color:#f97316;" />
+                                <span class="flex items-center gap-2 text-xs font-bold" style="color:#f97316;">
+                                    <i class="fas fa-qrcode text-lg"></i> Chuyển khoản nhanh VietQR (Khuyên dùng)
+                                </span>
+                            </label>
+
+                            <label class="pay-option flex items-center gap-3">
+                                <input type="radio" name="payment-method" value="zalopay" class="w-4 h-4 cursor-pointer"
+                                    style="accent-color:#f97316;" />
+                                <span class="flex items-center gap-2 text-xs font-medium" style="color:#374151;">
+                                    <i class="fas fa-wallet text-lg" style="color:#3b82f6;"></i> Ví điện tử ZaloPay
+                                </span>
+                            </label>
+
+                            <label class="pay-option flex items-center gap-3">
+                                <input type="radio" name="payment-method" value="credit" class="w-4 h-4 cursor-pointer"
+                                    style="accent-color:#f97316;" />
+                                <span class="flex items-center gap-2 text-xs font-medium" style="color:#374151;">
+                                    <i class="far fa-credit-card text-lg" style="color:#f43f5e;"></i> Thẻ tín dụng Quốc
+                                    tế (Visa / Mastercard)
+                                </span>
+                            </label>
+
+                            <label class="pay-option flex items-center gap-3">
+                                <input type="radio" name="payment-method" value="atm" class="w-4 h-4 cursor-pointer"
+                                    style="accent-color:#f97316;" />
+                                <span class="flex items-center gap-2 text-xs font-medium" style="color:#374151;">
+                                    <i class="fas fa-university text-lg" style="color:#6366f1;"></i> Thẻ ATM nội địa /
+                                    Internet Banking
+                                </span>
+                            </label>
+
+                            <label class="pay-option flex items-center gap-3">
+                                <input type="radio" name="payment-method" value="momo" class="w-4 h-4 cursor-pointer"
+                                    style="accent-color:#f97316;" />
+                                <span class="flex items-center gap-2 text-xs font-medium" style="color:#374151;">
+                                    <i class="fas fa-mobile-alt text-lg" style="color:#ec4899;"></i> Ví điện tử MoMo
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột Phải: Ảnh & Giỏ hàng & Tổng -->
+                <div class="flex flex-col gap-6 justify-between rounded-2xl p-5"
+                    style="background:linear-gradient(135deg,#f8f5ff,#fff0f7);border:1.5px solid #e9d5ff;">
+                    <!-- Ảnh sự kiện -->
+                    <div class="w-full h-40 overflow-hidden rounded-xl border border-purple-100 relative"
+                        style="background:#0f0f1a;">
+                        <img id="modal-event-image" src="" alt="Event Banner Thumbnail"
+                            class="w-full h-full object-cover" />
+                        <div class="absolute bottom-3 left-3 text-white text-[9px] font-extrabold px-3 py-1 rounded-full uppercase shadow"
+                            style="background:linear-gradient(135deg,#7c3aed,#ec4899);">
+                            EventTicket Checkout
+                        </div>
+                    </div>
+
+                    <!-- Giỏ hàng -->
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2.5 mb-4 pb-2 border-b border-purple-100">
+                            <div class="w-1.5 h-6 rounded-full"
+                                style="background:linear-gradient(180deg,#7c3aed,#a78bfa);"></div>
+                            <h3 class="text-sm font-extrabold tracking-wider uppercase" style="color:#1e0a3c;">
+                                GIỎ HÀNG CỦA BẠN / SHOPPING CART
+                            </h3>
+                        </div>
+                        <div id="modal-cart-items" class="flex flex-col gap-3 max-h-[200px] overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Mã giảm giá -->
+                    <div class="border-t border-purple-100 pt-4">
+                        <div class="flex gap-2 items-center">
+                            <input type="text" id="coupon-code" placeholder="NHẬP MÃ GIẢM GIÁ"
+                                class="flex-1 px-3 py-2 border rounded-xl text-xs font-semibold outline-none bg-white uppercase"
+                                style="border-color:#e9d5ff;" />
+                            <button type="button" onclick="checkCoupon()"
+                                class="btn-buy text-white text-xs font-extrabold uppercase px-4 py-2 rounded-xl">
+                                Kiểm tra
+                            </button>
+                        </div>
+                        <div id="coupon-msg" class="text-[10px] font-bold text-center mt-1"></div>
+                    </div>
+
+                    <!-- Tổng cộng -->
+                    <div class="border-t border-purple-100 pt-4 flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase" style="color:#374151;">Tổng cộng / Total:</span>
+                        <span id="modal-cart-total" class="text-base font-black"
+                            style="background:linear-gradient(90deg,#f97316,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                            0 VNĐ
+                        </span>
+                    </div>
+
+                    <!-- Điều khoản & Nút xác nhận -->
+                    <div class="flex flex-col gap-3">
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input type="checkbox" id="terms-chk" required class="w-4 h-4 rounded mt-0.5"
+                                style="accent-color:#7c3aed;" />
+                            <span class="text-[10px] leading-normal font-semibold" style="color:#6b7280;">
+                                Tôi đồng ý với các <a href="#" class="hover:underline font-extrabold"
+                                    style="color:#7c3aed;">Điều khoản &amp;
+                                    Chính sách mua hàng</a> của BDHT.
+                            </span>
+                        </label>
+
+                        <div class="flex gap-3">
+                            <button type="button" onclick="addToCartModal()"
+                                class="w-1/2 py-3 px-4 rounded-xl font-extrabold uppercase text-xs tracking-widest shadow transition flex flex-col items-center justify-center text-center gap-1 text-white"
+                                style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
+                                <span>Thêm vào giỏ</span>
+                                <span class="text-[9px] opacity-80 normal-case">Add to Cart</span>
+                            </button>
+                            <button type="button" onclick="submitModalCheckout()"
+                                class="btn-buy w-1/2 py-3 px-4 rounded-xl font-extrabold uppercase text-xs tracking-widest shadow flex flex-col items-center justify-center text-center gap-1 text-white">
+                                <span>Thanh toán ngay</span>
+                                <span class="text-[9px] opacity-80 normal-case">Checkout Now</span>
+                            </button>
+                        </div>
+
+                        <button id="close-modal-btn" type="button"
+                            class="w-full py-2.5 px-6 rounded-xl font-bold uppercase text-xs tracking-wider transition"
+                            style="background:#f3f4f6;color:#374151;">
+                            <i class="fas fa-times mr-1"></i> Đóng / Close
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Core Dynamic client scripts -->
+    <script src="../../assets/js/core/nat-api-client.js"></script>
+    <script src="../../assets/js/nat-event-detail.js?v=1.7"></script>
+
+    <script>
+        function scrollToBooking() {
+            const block = document.getElementById('booking-block');
+            if (block) {
+                block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    </script>
+</body>
+
+</html>

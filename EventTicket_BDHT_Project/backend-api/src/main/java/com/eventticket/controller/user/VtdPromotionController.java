@@ -26,7 +26,7 @@ public class VtdPromotionController {
     @PostMapping("/api/vtd/public/promotions/validate")
     public ResponseEntity<PromotionResponse> validatePromotion(@RequestBody ValidatePromotionRequest request) {
         try {
-            G8_promotion promotion = promotionService.validateAndApplyPromotion(request.getCode());
+            G8_promotion promotion = promotionService.applyPromotionAndConsumeUsage(request.getCode());
             PromotionResponse response = new PromotionResponse();
             response.setSuccess(true);
             response.setPromotion(promotion);
@@ -46,7 +46,7 @@ public class VtdPromotionController {
      */
     @GetMapping("/api/vtd/public/promotions/{code}")
     public ResponseEntity<G8_promotion> getPromotionByCode(@PathVariable String code) {
-        G8_promotion promotion = promotionService.validateAndApplyPromotion(code);
+        G8_promotion promotion = promotionService.validatePromotion(code);
         return ResponseEntity.ok(promotion);
     }
 
@@ -56,9 +56,14 @@ public class VtdPromotionController {
     @PostMapping("/api/vtd/public/promotions/calculate-discount")
     public ResponseEntity<Map<String, Object>> calculateDiscount(@RequestBody CalculateDiscountRequest request) {
         try {
-            G8_promotion promotion = promotionService.validateAndApplyPromotion(request.getPromotionCode());
+            G8_promotion promotion = promotionService.validatePromotion(request.getPromotionCode());
 
             java.math.BigDecimal originalPrice = request.getOriginalPrice();
+
+            if (promotion.getMinOrderValue() != null && originalPrice.compareTo(promotion.getMinOrderValue()) < 0) {
+                throw new RuntimeException("Tổng tiền chưa đủ để sử dụng mã này. Cần tối thiểu " + promotion.getMinOrderValue().intValue() + " đ");
+            }
+
             java.math.BigDecimal discountAmount = java.math.BigDecimal.ZERO;
 
             // Tính chiết khấu theo loại
@@ -70,6 +75,7 @@ public class VtdPromotionController {
             }
 
             java.math.BigDecimal finalPrice = originalPrice.subtract(discountAmount);
+            promotion = promotionService.applyPromotionAndConsumeUsage(request.getPromotionCode());
 
             Map<String, Object> response = new HashMap<>();
             response.put("originalPrice", originalPrice);
